@@ -1,0 +1,613 @@
+// Figma Plugin — code.js
+figma.showUI(__html__, { width: 280, height: 220 });
+
+figma.ui.onmessage = async (msg) => {
+  if (msg.type !== 'bridge-request') return;
+  const req = msg.payload;
+  try {
+    const data = await handleRequest(req);
+    figma.ui.postMessage({ type: 'bridge-response', payload: { requestId: req.requestId, data } });
+  } catch (err) {
+    figma.ui.postMessage({ type: 'bridge-response', payload: { requestId: req.requestId, error: String(err) } });
+  }
+};
+
+async function handleRequest(req) {
+  const { type, nodeIds, params } = req;
+  switch (type) {
+    case 'get_document': return serializePage(figma.currentPage);
+    case 'get_metadata': return { fileName: figma.root.name, pages: figma.root.children.map(p => ({ id: p.id, name: p.name })), currentPage: { id: figma.currentPage.id, name: figma.currentPage.name } };
+    case 'get_pages': return figma.root.children.map(p => ({ id: p.id, name: p.name }));
+    case 'get_selection': return figma.currentPage.selection.map(n => serializeNode(n, 2));
+    case 'get_node': return serializeNode(figma.getNodeById(nodeIds[0]), 3);
+    case 'get_nodes_info': return nodeIds.map(id => serializeNode(figma.getNodeById(id), 2));
+    case 'get_viewport': return { center: figma.viewport.center, zoom: figma.viewport.zoom, bounds: figma.viewport.bounds };
+    case 'get_styles': return getStyles();
+    case 'get_variable_defs': return getVariableDefs();
+    case 'get_local_components': return getLocalComponents();
+    case 'get_fonts': return getFonts();
+    case 'get_annotations': return [];
+    case 'get_reactions': return getReactions(nodeIds[0]);
+    case 'get_design_context': return getDesignContext(nodeIds, params);
+    case 'search_nodes': return searchNodes(params);
+    case 'scan_text_nodes': return scanTextNodes(params);
+    case 'scan_nodes_by_types': return scanNodesByTypes(params);
+    case 'get_screenshot': return getScreenshot(nodeIds, params);
+    case 'export_tokens': return exportTokens(params);
+    case 'create_frame': return createFrame(params);
+    case 'create_rectangle': return createRectangle(params);
+    case 'create_ellipse': return createEllipse(params);
+    case 'create_text': return createText(params);
+    case 'create_component_instance': return createComponentInstance(params);
+    case 'create_section': return createSection(params);
+    case 'set_text': return setText(params);
+    case 'set_fills': return setFills(params);
+    case 'set_strokes': return setStrokes(params);
+    case 'set_opacity': return setOpacity(params);
+    case 'set_visibility': return setVisibility(params);
+    case 'set_dimensions': return setDimensions(params);
+    case 'set_rotation': return setRotation(params);
+    case 'set_auto_layout': return {};
+    case 'set_corner_radius': return {};
+    case 'set_effects': return {};
+    case 'create_paint_style': return createPaintStyle(params);
+    case 'create_text_style': return createTextStyle(params);
+    case 'create_effect_style': return createEffectStyle(params);
+    case 'create_grid_style': return createGridStyle(params);
+    case 'apply_style': return applyStyle(params);
+    case 'create_variable': return createVariable(params);
+    case 'set_variable_value': return setVariableValue(params);
+    case 'switch_variable_collection': return switchVariableCollection(params);
+    case 'add_reaction': return addReaction(params);
+    case 'set_navigation': return setNavigation(params);
+    case 'set_overlay': return setOverlay(params);
+    case 'create_page': return createPage(params);
+    case 'reorder_pages': return reorderPages(params);
+    case 'navigate_to_page': return navigateToPage(params);
+    case 'group_nodes': return groupNodes(params);
+    case 'ungroup_node': return ungroupNode(params);
+    case 'swap_component': return swapComponent(params);
+    case 'detach_instance': return detachInstance(params);
+    case 'delete_node': return deleteNode(params);
+    case 'move_node': return moveNode(params);
+    default: throw new Error(`Unknown tool: ${type}`);
+  }
+}
+
+function serializePage(page) {
+  return { id: page.id, name: page.name, type: page.type, children: page.children.map(c => serializeNode(c, 2)) };
+}
+
+function serializeNode(node, depth = 1) {
+  if (!node) return null;
+  const base = { id: node.id, name: node.name, type: node.type, visible: node.visible };
+  if ('x' in node) { base.x = node.x; base.y = node.y; }
+  if ('width' in node) { base.width = node.width; base.height = node.height; }
+  if ('fills' in node && node.fills !== figma.mixed) base.fills = node.fills;
+  if ('strokes' in node) base.strokes = node.strokes;
+  if ('opacity' in node) base.opacity = node.opacity;
+  if ('cornerRadius' in node) base.cornerRadius = node.cornerRadius;
+  if ('characters' in node) base.characters = node.characters;
+  if ('layoutMode' in node && node.layoutMode !== 'NONE') {
+    base.layoutMode = node.layoutMode;
+    base.itemSpacing = node.itemSpacing;
+    base.paddingTop = node.paddingTop;
+    base.paddingBottom = node.paddingBottom;
+    base.paddingLeft = node.paddingLeft;
+    base.paddingRight = node.paddingRight;
+  }
+  if (depth > 0 && 'children' in node) {
+    base.children = node.children.map(c => serializeNode(c, depth - 1));
+  }
+  return base;
+}
+
+function getStyles() {
+  return {
+    paint: figma.getLocalPaintStyles().map(s => ({ id: s.id, name: s.name, paints: s.paints })),
+    text: figma.getLocalTextStyles().map(s => ({ id: s.id, name: s.name, fontSize: s.fontSize, fontName: s.fontName })),
+    effect: figma.getLocalEffectStyles().map(s => ({ id: s.id, name: s.name, effects: s.effects })),
+    grid: figma.getLocalGridStyles().map(s => ({ id: s.id, name: s.name, grids: s.layoutGrids })),
+  };
+}
+
+function getVariableDefs() {
+  const collections = figma.variables.getLocalVariableCollections();
+  return collections.map(c => ({
+    id: c.id, name: c.name, modes: c.modes,
+    variables: c.variableIds.map(vid => {
+      const v = figma.variables.getVariableById(vid);
+      return v ? { id: v.id, name: v.name, resolvedType: v.resolvedType, valuesByMode: v.valuesByMode } : null;
+    }).filter(Boolean),
+  }));
+}
+
+function getLocalComponents() {
+  const components = figma.currentPage.findAll(n => n.type === 'COMPONENT');
+  const sets = figma.currentPage.findAll(n => n.type === 'COMPONENT_SET');
+  return {
+    components: components.map(c => ({ id: c.id, name: c.name })),
+    componentSets: sets.map(s => ({ id: s.id, name: s.name, children: s.children.map(c => ({ id: c.id, name: c.name })) })),
+  };
+}
+
+function getFonts() {
+  const fontMap = {};
+  figma.currentPage.findAll(n => n.type === 'TEXT').forEach(t => {
+    const font = t.fontName;
+    if (font && font !== figma.mixed) {
+      const key = `${font.family}-${font.style}`;
+      fontMap[key] = (fontMap[key] || 0) + 1;
+    }
+  });
+  return Object.entries(fontMap).map(([key, count]) => {
+    const [family, style] = key.split('-');
+    return { family, style, count };
+  }).sort((a, b) => b.count - a.count);
+}
+
+function getReactions(nodeId) {
+  const node = figma.getNodeById(nodeId);
+  if (!node || !('reactions' in node)) return [];
+  return node.reactions;
+}
+// Add these functions to the end of plugin/code.js
+
+function getDesignContext(nodeIds, params) {
+  var depth = (params && params.depth !== undefined) ? params.depth : 2;
+  var detail = (params && params.detail) || 'compact';
+  var root = (nodeIds && nodeIds[0]) ? figma.getNodeById(nodeIds[0]) : figma.currentPage;
+  return serializeNodeWithDetail(root, depth, detail);
+}
+
+function serializeNodeWithDetail(node, depth, detail) {
+  if (!node) return null;
+  const base = { id: node.id, name: node.name, type: node.type };
+  if (detail === 'minimal') {
+    if ('x' in node) { base.x = node.x; base.y = node.y; }
+    if ('width' in node) { base.width = node.width; base.height = node.height; }
+  } else if (detail === 'compact') {
+    if ('x' in node) { base.x = node.x; base.y = node.y; }
+    if ('width' in node) { base.width = node.width; base.height = node.height; }
+    base.visible = node.visible;
+    if ('characters' in node) base.characters = node.characters;
+    if ('layoutMode' in node && node.layoutMode !== 'NONE') base.layoutMode = node.layoutMode;
+    if ('fills' in node && node.fills !== figma.mixed && node.fills.length > 0) base.fillCount = node.fills.length;
+  } else {
+    return serializeNode(node, depth);
+  }
+  if (depth > 0 && 'children' in node) {
+    base.children = node.children.map(c => serializeNodeWithDetail(c, depth - 1, detail));
+  }
+  return base;
+}
+
+function searchNodes(params) {
+  const root = params.nodeId ? figma.getNodeById(params.nodeId) : figma.currentPage;
+  if (!root || !('findAll' in root)) return [];
+  const query = params.query.toLowerCase();
+  const limit = params.limit || 100;
+  let results = root.findAll(n => {
+    if (params.type && n.type !== params.type) return false;
+    return n.name.toLowerCase().includes(query);
+  });
+  return results.slice(0, limit).map(n => serializeNode(n, 0));
+}
+
+function scanTextNodes(params) {
+  const root = figma.getNodeById(params.nodeId);
+  if (!root || !('findAll' in root)) return [];
+  return root.findAll(n => n.type === 'TEXT').map(n => ({ id: n.id, name: n.name, characters: n.characters }));
+}
+
+function scanNodesByTypes(params) {
+  const root = figma.getNodeById(params.nodeId);
+  if (!root || !('findAll' in root)) return [];
+  const types = params.types.map(t => t.toUpperCase());
+  return root.findAll(n => types.includes(n.type)).map(n => serializeNode(n, 0));
+}
+
+async function getScreenshot(nodeIds, params) {
+  const node = (nodeIds && nodeIds[0]) ? figma.getNodeById(nodeIds[0]) : figma.currentPage;
+  if (!node || !('exportAsync' in node)) throw new Error('Node not exportable');
+  const format = (params && params.format) || 'PNG';
+  const scale = (params && params.scale) || 2;
+  const settings = format !== 'SVG' ? { format: format, constraint: { type: 'SCALE', value: scale } } : { format: format };
+  const bytes = await node.exportAsync(settings);
+  const base64 = figma.base64Encode(bytes);
+  return { exports: [{ nodeId: node.id, nodeName: node.name, base64, width: node.width, height: node.height }] };
+}
+
+function exportTokens(params) {
+  const format = (params && params.format) || 'json';
+  const collections = figma.variables.getLocalVariableCollections();
+  const paintStyles = figma.getLocalPaintStyles();
+  const tokens = { variables: {}, colors: {} };
+  collections.forEach(c => {
+    c.variableIds.forEach(vid => {
+      const v = figma.variables.getVariableById(vid);
+      if (v) tokens.variables[v.name] = v.valuesByMode;
+    });
+  });
+  paintStyles.forEach(s => { tokens.colors[s.name] = s.paints; });
+  if (format === 'css') return tokensToCSS(tokens);
+  return tokens;
+}
+
+function tokensToCSS(tokens) {
+  let css = ':root {\n';
+  for (const [name, value] of Object.entries(tokens.colors)) {
+    if (Array.isArray(value) && value[0] && value[0].color) {
+      const c = value[0].color;
+      css += `  --${name.replace(/\s+/g, '-').toLowerCase()}: rgba(${Math.round(c.r*255)}, ${Math.round(c.g*255)}, ${Math.round(c.b*255)}, ${c.a !== undefined ? c.a : 1});\n`;
+    }
+  }
+  css += '}\n';
+  return css;
+}
+
+async function getDesignContext(nodeIds, params) {
+  var depth = (params && params.depth !== undefined) ? params.depth : 2;
+  var detail = (params && params.detail) || 'compact';
+  var root = (nodeIds && nodeIds[0]) ? figma.getNodeById(nodeIds[0]) : figma.currentPage;
+  return serializeNodeWithDetail(root, depth, detail);
+}
+
+function serializeNodeWithDetail(node, depth, detail) {
+  if (!node) return null;
+  const base = { id: node.id, name: node.name, type: node.type };
+  if (detail === 'minimal') {
+    if ('x' in node) { base.x = node.x; base.y = node.y; }
+    if ('width' in node) { base.width = node.width; base.height = node.height; }
+  } else if (detail === 'compact') {
+    if ('x' in node) { base.x = node.x; base.y = node.y; }
+    if ('width' in node) { base.width = node.width; base.height = node.height; }
+    base.visible = node.visible;
+    if ('characters' in node) base.characters = node.characters;
+    if ('layoutMode' in node && node.layoutMode !== 'NONE') base.layoutMode = node.layoutMode;
+    if ('fills' in node && node.fills !== figma.mixed && node.fills.length > 0) base.fillCount = node.fills.length;
+  } else {
+    return serializeNode(node, depth);
+  }
+  if (depth > 0 && 'children' in node) {
+    base.children = node.children.map(c => serializeNodeWithDetail(c, depth - 1, detail));
+  }
+  return base;
+}
+
+function hexToRgb(hex) {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return result ? {
+    r: parseInt(result[1], 16) / 255,
+    g: parseInt(result[2], 16) / 255,
+    b: parseInt(result[3], 16) / 255,
+    a: 1,
+  } : null;
+}
+
+function getParent(node) {
+  return node.parent && node.parent.type !== 'DOCUMENT' ? node.parent : null;
+}
+
+// Create handlers
+function createFrame(params) {
+  const frame = figma.createFrame();
+  applyNodeProps(frame, params);
+  if (params.name) frame.name = params.name;
+  if (params.layoutMode) frame.layoutMode = params.layoutMode;
+  if (params.itemSpacing !== undefined) frame.itemSpacing = params.itemSpacing;
+  if (params.paddingTop !== undefined) frame.paddingTop = params.paddingTop;
+  if (params.paddingBottom !== undefined) frame.paddingBottom = params.paddingBottom;
+  if (params.paddingLeft !== undefined) frame.paddingLeft = params.paddingLeft;
+  if (params.paddingRight !== undefined) frame.paddingRight = params.paddingRight;
+  return { id: frame.id, name: frame.name, type: frame.type };
+}
+
+function createRectangle(params) {
+  const rect = figma.createRectangle();
+  applyNodeProps(rect, params);
+  if (params.name) rect.name = params.name;
+  if (params.cornerRadius !== undefined) rect.cornerRadius = params.cornerRadius;
+  return { id: rect.id, name: rect.name, type: rect.type };
+}
+
+function createEllipse(params) {
+  const ellipse = figma.createEllipse();
+  applyNodeProps(ellipse, params);
+  if (params.name) ellipse.name = params.name;
+  return { id: ellipse.id, name: ellipse.name, type: ellipse.type };
+}
+
+async function createText(params) {
+  const font = params.fontName || { family: 'Inter', style: 'Regular' };
+  await figma.loadFontAsync(font);
+  if (font.style !== 'Regular') await figma.loadFontAsync({ family: font.family, style: 'Regular' });
+  const text = figma.createText();
+  applyNodeProps(text, params);
+  if (params.name) text.name = params.name;
+  if (params.fontName) text.fontName = params.fontName;
+  if (params.fontSize) text.fontSize = params.fontSize;
+  if (params.characters) text.characters = params.characters;
+  return { id: text.id, name: text.name, type: text.type };
+}
+
+function createComponentInstance(params) {
+  const component = figma.getNodeById(params.componentId);
+  if (!component || component.type !== 'COMPONENT') throw new Error('Invalid component ID');
+  const instance = component.createInstance();
+  applyNodeProps(instance, params);
+  return { id: instance.id, name: instance.name, type: instance.type };
+}
+
+function createSection(params) {
+  const section = figma.createSection();
+  applyNodeProps(section, params);
+  if (params.name) section.name = params.name;
+  return { id: section.id, name: section.name, type: section.type };
+}
+
+function applyNodeProps(node, params) {
+  if (params.x !== undefined) node.x = params.x;
+  if (params.y !== undefined) node.y = params.y;
+  if (params.width !== undefined) node.resize(params.width, node.height);
+  if (params.height !== undefined) node.resize(node.width, params.height);
+  if (params.width !== undefined && params.height !== undefined) node.resize(params.width, params.height);
+  if (params.fills) node.fills = params.fills;
+  if (params.strokes) node.strokes = params.strokes;
+  if (params.strokeWeight !== undefined) node.strokeWeight = params.strokeWeight;
+  if (params.opacity !== undefined) node.opacity = params.opacity;
+  const parent = params.parentId ? figma.getNodeById(params.parentId) : figma.currentPage;
+  if (parent && 'appendChild' in parent) parent.appendChild(node);
+}
+
+// Modify handlers
+async function setText(params) {
+  const node = figma.getNodeById(params.nodeId);
+  if (!node || node.type !== 'TEXT') throw new Error('Node is not a text node');
+  const font = params.fontName || node.fontName;
+  if (font && typeof font === 'object' && font.family) {
+    await figma.loadFontAsync({ family: font.family, style: 'Regular' });
+    await figma.loadFontAsync(font);
+  }
+  if (params.fontName !== undefined) node.fontName = params.fontName;
+  if (params.fontSize !== undefined) node.fontSize = params.fontSize;
+  if (params.characters !== undefined) node.characters = params.characters;
+  if (params.textAlignHorizontal !== undefined) node.textAlignHorizontal = params.textAlignHorizontal;
+  if (params.textAlignVertical !== undefined) node.textAlignVertical = params.textAlignVertical;
+  if (params.letterSpacing !== undefined) node.letterSpacing = params.letterSpacing;
+  if (params.lineHeight !== undefined) node.lineHeight = params.lineHeight;
+  return { id: node.id, name: node.name, characters: node.characters };
+}
+
+function setFills(params) {
+  const node = figma.getNodeById(params.nodeId);
+  if (!node || !('fills' in node)) throw new Error('Node does not support fills');
+  node.fills = params.fills;
+  return { id: node.id, name: node.name, fills: node.fills };
+}
+
+function setStrokes(params) {
+  const node = figma.getNodeById(params.nodeId);
+  if (!node || !('strokes' in node)) throw new Error('Node does not support strokes');
+  node.strokes = params.strokes;
+  if (params.strokeWeight !== undefined) node.strokeWeight = params.strokeWeight;
+  if (params.strokeAlign !== undefined) node.strokeAlign = params.strokeAlign;
+  return { id: node.id, name: node.name, strokes: node.strokes };
+}
+
+function setOpacity(params) {
+  const node = figma.getNodeById(params.nodeId);
+  if (!('opacity' in node)) throw new Error('Node does not support opacity');
+  node.opacity = params.opacity;
+  return { id: node.id, name: node.name, opacity: node.opacity };
+}
+
+function setVisibility(params) {
+  const node = figma.getNodeById(params.nodeId);
+  if (!('visible' in node)) throw new Error('Node does not support visibility');
+  node.visible = params.visible;
+  return { id: node.id, name: node.name, visible: node.visible };
+}
+
+function setDimensions(params) {
+  const node = figma.getNodeById(params.nodeId);
+  if (!('resize' in node)) throw new Error('Node does not support resizing');
+  const w = params.width !== undefined ? params.width : node.width;
+  const h = params.height !== undefined ? params.height : node.height;
+  node.resize(w, h);
+  if (params.x !== undefined) node.x = params.x;
+  if (params.y !== undefined) node.y = params.y;
+  return { id: node.id, name: node.name, width: node.width, height: node.height, x: node.x, y: node.y };
+}
+
+function setRotation(params) {
+  const node = figma.getNodeById(params.nodeId);
+  if (!('rotation' in node)) throw new Error('Node does not support rotation');
+  node.rotation = params.rotation;
+  return { id: node.id, name: node.name, rotation: node.rotation };
+}
+
+// Style handlers
+function createPaintStyle(params) {
+  const style = figma.createPaintStyle();
+  style.name = params.name;
+  style.paints = params.paints;
+  return { id: style.id, name: style.name, paints: style.paints };
+}
+
+async function createTextStyle(params) {
+  const font = params.fontName || { family: 'Inter', style: 'Regular' };
+  await figma.loadFontAsync({ family: font.family, style: 'Regular' });
+  await figma.loadFontAsync(font);
+  const style = figma.createTextStyle();
+  style.name = params.name;
+  if (params.fontName) style.fontName = params.fontName;
+  if (params.fontSize) style.fontSize = params.fontSize;
+  return { id: style.id, name: style.name, fontSize: style.fontSize, fontName: style.fontName };
+}
+
+function createEffectStyle(params) {
+  const style = figma.createEffectStyle();
+  style.name = params.name;
+  style.effects = params.effects;
+  return { id: style.id, name: style.name, effects: style.effects };
+}
+
+function createGridStyle(params) {
+  const style = figma.createGridStyle();
+  style.name = params.name;
+  style.layoutGrids = params.layoutGrids;
+  return { id: style.id, name: style.name, grids: style.layoutGrids };
+}
+
+function applyStyle(params) {
+  const node = figma.getNodeById(params.nodeId);
+  if (!node) throw new Error('Node not found');
+  const style = figma.getStyleById(params.styleId);
+  if (!style) throw new Error('Style not found');
+  if (style.type === 'PAINT' && 'fillStyleId' in node) node.fillStyleId = style.id;
+  if (style.type === 'TEXT' && 'textStyleId' in node) node.textStyleId = style.id;
+  if (style.type === 'EFFECT' && 'effectStyleId' in node) node.effectStyleId = style.id;
+  if (style.type === 'GRID' && 'gridStyleId' in node) node.gridStyleId = style.id;
+  return { id: node.id, name: node.name, appliedStyleId: style.id };
+}
+
+// Variable handlers
+function createVariable(params) {
+  const collection = figma.variables.getVariableCollectionById(params.collectionId);
+  if (!collection) throw new Error('Collection not found');
+  const variable = figma.variables.createVariable(params.name, collection.id, params.resolvedType);
+  const firstMode = collection.modes[0] ? collection.modes[0].modeId : undefined;
+  if (firstMode && params.defaultValue !== undefined) {
+    figma.variables.setVariableValue(variable, { [firstMode]: params.defaultValue });
+  }
+  return { id: variable.id, name: variable.name, resolvedType: variable.resolvedType };
+}
+
+function setVariableValue(params) {
+  const variable = figma.variables.getVariableById(params.variableId);
+  if (!variable) throw new Error('Variable not found: ' + params.variableId);
+  let value = params.value;
+  if (typeof value === 'string') {
+    try { value = JSON.parse(value); } catch(e) {}
+  }
+  variable.setValueForMode(params.modeId, value);
+  return { variableId: variable.id, modeId: params.modeId };
+}
+
+function switchVariableCollection(params) {
+  const collections = figma.variables.getLocalVariableCollections();
+  const target = collections.find(c => c.id === params.collectionId);
+  if (!target) throw new Error('Collection not found');
+  return { id: target.id, name: target.name, modes: target.modes, variableCount: target.variableIds.length };
+}
+
+// Prototype reaction handlers
+function addReaction(params) {
+  const node = figma.getNodeById(params.nodeId);
+  if (!node || !('reactions' in node)) throw new Error('Node does not support reactions');
+  const reactions = node.reactions || [];
+  reactions.push({ trigger: params.trigger, action: params.action });
+  node.reactions = reactions;
+  return { id: node.id, reactionCount: reactions.length };
+}
+
+function setNavigation(params) {
+  const node = figma.getNodeById(params.nodeId);
+  if (!node) throw new Error('Node not found');
+  const destination = figma.getNodeById(params.destinationId);
+  if (!destination) throw new Error('Destination not found');
+  node.reactions = [{
+    trigger: { type: params.triggerType || 'ON_CLICK' },
+    action: { type: 'NAVIGATE', destination, navigation: params.navigation || 'NAVIGATE' },
+  }];
+  return { id: node.id, name: node.name, destinationId: destination.id };
+}
+
+function setOverlay(params) {
+  const node = figma.getNodeById(params.nodeId);
+  if (!node) throw new Error('Node not found');
+  node.reactions = [{
+    trigger: { type: params.triggerType || 'ON_CLICK' },
+    action: { type: 'OPEN_OVERLAY', overlay: node, overlayBackground: params.overlayBackground || { type: 'BACKGROUND_BLUR', color: { r: 0, g: 0, b: 0, a: 0.2 } } },
+  }];
+  return { id: node.id, name: node.name };
+}
+
+// Page handlers
+function createPage(params) {
+  const page = figma.createPage();
+  page.name = params.name || 'New Page';
+  return { id: page.id, name: page.name };
+}
+
+function reorderPages(params) {
+  const root = figma.root;
+  const newOrder = params.pageIds.map(id => figma.getNodeById(id)).filter(Boolean);
+  root.children = newOrder;
+  return root.children.map(p => ({ id: p.id, name: p.name }));
+}
+
+function navigateToPage(params) {
+  const page = figma.getNodeById(params.pageId);
+  if (!page || page.type !== 'PAGE') throw new Error('Invalid page ID');
+  figma.currentPage = page;
+  return { id: page.id, name: page.name };
+}
+
+// Component handlers
+function groupNodes(params) {
+  const nodes = params.nodeIds.map(id => figma.getNodeById(id)).filter(Boolean);
+  if (nodes.length === 0) throw new Error('No valid nodes provided');
+  const frame = figma.group(nodes, nodes[0].parent || figma.currentPage);
+  if (params.name) frame.name = params.name;
+  return { id: frame.id, name: frame.name, childCount: frame.children.length };
+}
+
+function ungroupNode(params) {
+  const node = figma.getNodeById(params.nodeId);
+  if (!node || !('children' in node)) throw new Error('Node is not a group');
+  const parent = node.parent;
+  const idx = parent ? parent.children.indexOf(node) : 0;
+  const children = node.children.slice();
+  for (const child of children) {
+    if (parent) parent.insertChild(idx, child);
+  }
+  node.remove();
+  return { ungrouped: children.map(c => ({ id: c.id, name: c.name })) };
+}
+
+function swapComponent(params) {
+  const instance = figma.getNodeById(params.nodeId);
+  if (!instance || instance.type !== 'INSTANCE') throw new Error('Node is not a component instance');
+  const newComponent = figma.getNodeById(params.newComponentId);
+  if (!newComponent || newComponent.type !== 'COMPONENT') throw new Error('Invalid component ID');
+  instance.swapComponent(newComponent);
+  return { id: instance.id, name: instance.name, componentId: newComponent.id };
+}
+
+function detachInstance(params) {
+  const instance = figma.getNodeById(params.nodeId);
+  if (!instance || instance.type !== 'INSTANCE') throw new Error('Node is not a component instance');
+  instance.detachInstance();
+  return { id: instance.id, name: instance.name, type: instance.type };
+}
+
+function deleteNode(params) {
+  const node = figma.getNodeById(params.nodeId);
+  if (!node) throw new Error('Node not found');
+  const name = node.name;
+  node.remove();
+  return { deleted: name };
+}
+
+function moveNode(params) {
+  const node = figma.getNodeById(params.nodeId);
+  if (!node) throw new Error('Node not found');
+  const parent = figma.getNodeById(params.parentId);
+  if (!parent || !('appendChild' in parent)) throw new Error('Invalid parent');
+  parent.appendChild(node);
+  if (params.x !== undefined) node.x = params.x;
+  if (params.y !== undefined) node.y = params.y;
+  return { id: node.id, name: node.name, parentId: parent.id };
+}

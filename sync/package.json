@@ -1,0 +1,16 @@
+{
+  "name": "design-sync",
+  "version": "1.0.0",
+  "description": "Синхронизация design workspace с Notion",
+  "type": "module",
+  "scripts": {
+    "push": "node push.js",
+    "pull": "node pull.js",
+    "setup": "node setup-notion.js"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.2.15",
+    "dotenv": "^16.4.5",
+    "marked": "^12.0.0"
+  }
+}

@@ -1,0 +1,11 @@
+# Токены и секреты — никогда не в git
+.env
+.env.*
+
+# Зависимости
+node_modules/
+sync/node_modules/
+
+# Системное
+.DS_Store
+*.log
