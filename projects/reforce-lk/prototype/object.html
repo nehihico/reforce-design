@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Reforce ЛК — Карточка объекта + ARM</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    body { background: #F2F2F7; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif; }
+
+    .phone-frame { width: 390px; min-height: 844px; background: #F2F2F7; overflow: hidden; position: relative; }
+
+    .screen { display: none; flex-direction: column; min-height: 844px; }
+    .screen.active { display: flex; }
+
+    .statusbar { height: 44px; display: flex; align-items: flex-end; padding: 0 24px 8px; justify-content: space-between; flex-shrink: 0; }
+
+    /* Таббар */
+    .tab-bar { height: 83px; background: #fff; border-top: 0.5px solid #C7C7CC; display: flex; padding: 0 4px 20px; flex-shrink: 0; }
+    .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 3px; cursor: pointer; padding-top: 10px; }
+    .tab-label { font-size: 10px; font-weight: 500; line-height: 1; }
+    .tab-item.active .tab-label { color: #D42B2B; }
+    .tab-item:not(.active) .tab-label { color: #8E8E93; }
+
+    /* Навбар объекта */
+    .obj-nav { display: flex; align-items: center; padding: 4px 16px 0; gap: 8px; flex-shrink: 0; background: #fff; }
+    .back-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%; transition: background 140ms; flex-shrink: 0; }
+    .back-btn:active { background: #F2F2F7; }
+    .obj-name-title { flex: 1; font-size: 17px; font-weight: 600; color: #1C1C1E; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .settings-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; border-radius: 50%; transition: background 140ms; flex-shrink: 0; }
+    .settings-btn:active { background: #F2F2F7; }
+
+    /* Вкладки Инфо / События */
+    .tab-underline { display: flex; border-bottom: 1px solid #E5E5EA; background: #fff; padding: 0 16px; flex-shrink: 0; }
+    .tab-underline-item { flex: 1; padding: 12px 0; text-align: center; font-size: 15px; font-weight: 500; color: #8E8E93; cursor: pointer; position: relative; }
+    .tab-underline-item.active { color: #1C1C1E; }
+    .tab-underline-item.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: #1C1C1E; border-radius: 1px; }
+
+    /* Скролл */
+    .scroll-content { flex: 1; overflow-y: auto; }
+    .scroll-content::-webkit-scrollbar { display: none; }
+
+    /* Статус-бейджи */
+    .sbadge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px 5px 10px; border-radius: 9999px; font-size: 14px; font-weight: 600; }
+    .sbadge.armed    { background: #E8F9ED; color: #1A7F37; }
+    .sbadge.disarmed { background: #F0F0F5; color: #636366; }
+    .sbadge.alarm    { background: #FFF0EF; color: #D70015; }
+    .sbadge.warning  { background: #FFF8EC; color: #B25000; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .alarm-pulse { animation: pulse 1s ease-in-out infinite; }
+
+    /* Кнопки */
+    .btn-primary { width: 100%; height: 56px; background: #D42B2B; color: #fff; border-radius: 16px; border: none; font-size: 17px; font-weight: 600; cursor: pointer; transition: background 140ms, transform 100ms; font-family: inherit; }
+    .btn-primary:hover:not(:disabled) { background: #BC2525; }
+    .btn-primary:active:not(:disabled) { transform: scale(.98); }
+    .btn-primary:disabled { background: #C7C7CC; cursor: default; }
+    .btn-secondary { width: 100%; height: 56px; background: #F2F2F7; color: #1C1C1E; border-radius: 16px; border: none; font-size: 17px; font-weight: 600; cursor: pointer; transition: background 140ms; font-family: inherit; }
+    .btn-secondary:active { background: #E5E5EA; }
+    .btn-ghost-red { background: none; border: none; color: #D42B2B; font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; padding: 0; }
+
+    /* Системные индикаторы */
+    .sys-indicators { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .sys-ind-item { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; }
+    .sys-ind-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+    .sys-ind-icon.ok { background: #F2F2F7; }
+    .sys-ind-icon.warn { background: #FFF8EC; }
+    .sys-ind-icon.error { background: #FFF0EF; }
+    .sys-ind-label { font-size: 11px; color: #636366; text-align: center; line-height: 1.3; }
+
+    /* Разделы */
+    .section-card { background: #fff; border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 140ms; }
+    .section-card:active { background: #F9F9FB; }
+    .section-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    /* Лента событий */
+    .event-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; }
+    .event-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .event-date-group { font-size: 13px; font-weight: 600; color: #8E8E93; padding: 8px 0 4px; letter-spacing: .2px; }
+
+    /* Боттомшит оверлей */
+    .sheet-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0); transition: background 320ms; pointer-events: none; z-index: 50; }
+    .sheet-backdrop.open { background: rgba(0,0,0,.32); pointer-events: all; }
+    .bottom-sheet { position: absolute; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 24px 24px 0 0; padding: 0 24px 40px; transform: translateY(100%); transition: transform 340ms cubic-bezier(.4,0,.2,1); z-index: 51; }
+    .bottom-sheet.open { transform: translateY(0); }
+    .sheet-handle { width: 36px; height: 4px; background: #C7C7CC; border-radius: 2px; margin: 12px auto 0; }
+
+    /* PIN-пад */
+    .pin-dots { display: flex; gap: 16px; justify-content: center; margin: 24px 0 28px; }
+    .pin-dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #C7C7CC; transition: background 120ms, border-color 120ms, transform 120ms; }
+    .pin-dot.filled { background: #1C1C1E; border-color: #1C1C1E; transform: scale(1.1); }
+    .pin-dot.error  { background: #FF3B30; border-color: #FF3B30; }
+    .pin-dot.success{ background: #34C759; border-color: #34C759; }
+
+    .pin-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .pin-key {
+      height: 72px; border-radius: 18px; background: #F2F2F7;
+      border: none; cursor: pointer; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 1px;
+      transition: background 100ms, transform 80ms;
+      font-family: inherit;
+    }
+    .pin-key:active:not(:disabled) { background: #E0E0E5; transform: scale(.95); }
+    .pin-key:disabled { opacity: .4; cursor: default; }
+    .pin-key .pin-num { font-size: 26px; font-weight: 400; color: #1C1C1E; line-height: 1; }
+    .pin-key .pin-letters { font-size: 9px; font-weight: 500; color: #8E8E93; letter-spacing: 1px; text-transform: uppercase; }
+    .pin-key.backspace { background: transparent; }
+    .pin-key.backspace:active { background: #E5E5EA; }
+
+    /* Shake анимация */
+    @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }
+    .shake { animation: shake 360ms ease; }
+
+    /* Успех оверлей */
+    .success-overlay { position: absolute; inset: 0; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 60; opacity: 0; pointer-events: none; transition: opacity 200ms; }
+    .success-overlay.show { opacity: 1; pointer-events: all; }
+    @keyframes popIn { 0%{transform:scale(.5);opacity:0} 70%{transform:scale(1.15)} 100%{transform:scale(1);opacity:1} }
+    .pop-in { animation: popIn 500ms cubic-bezier(.34,1.56,.64,1) forwards; }
+
+    /* Чекбокс раздела */
+    .section-check { width: 22px; height: 22px; min-width: 22px; border: 1.5px solid #C7C7CC; border-radius: 6px; background: #fff; display: flex; align-items: center; justify-content: center; transition: all 140ms; }
+    .section-check.checked { background: #D42B2B; border-color: #D42B2B; }
+
+    /* Попап параметров */
+    .params-screen { position: absolute; inset: 0; background: #F2F2F7; transform: translateX(100%); transition: transform 320ms cubic-bezier(.4,0,.2,1); z-index: 40; display: flex; flex-direction: column; }
+    .params-screen.open { transform: translateX(0); }
+
+    /* Toast */
+    .toast { position: absolute; top: 64px; left: 50%; transform: translateX(-50%) translateY(-80px); background: #1C1C1E; color: #fff; font-size: 14px; font-weight: 500; padding: 10px 20px; border-radius: 20px; white-space: nowrap; z-index: 70; transition: transform 280ms cubic-bezier(.4,0,.2,1), opacity 280ms; opacity: 0; }
+    .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  </style>
+</head>
+
+<body class="flex items-center justify-center min-h-screen gap-10 p-6">
+
+  <!-- ───── Сайдбар ───── -->
+  <div class="hidden lg:flex flex-col w-60 gap-3 shrink-0">
+    <p class="text-sm font-semibold" style="color:#1C1C1E">reforce-lk / Объект + ARM</p>
+
+    <div class="bg-white rounded-2xl p-4 flex flex-col gap-2 shadow-sm border" style="border-color:#F2F2F7">
+      <p class="text-xs font-semibold mb-1" style="color:#1C1C1E">OBJ — статус объекта</p>
+      <button onclick="setStatus('disarmed')" class="sidebar-btn text-left text-xs px-3 py-2 rounded-xl" id="btn-disarmed">OBJ-02 · Снят с охраны</button>
+      <button onclick="setStatus('armed')"    class="sidebar-btn text-left text-xs px-3 py-2 rounded-xl" id="btn-armed">OBJ-01 · Под охраной</button>
+      <button onclick="setStatus('alarm')"    class="sidebar-btn text-left text-xs px-3 py-2 rounded-xl" id="btn-alarm">OBJ-03 · Тревога</button>
+      <button onclick="setStatus('warning')"  class="sidebar-btn text-left text-xs px-3 py-2 rounded-xl" id="btn-warning">OBJ-04 · Предупреждение</button>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 flex flex-col gap-2 shadow-sm border" style="border-color:#F2F2F7">
+      <p class="text-xs font-semibold mb-1" style="color:#1C1C1E">ARM — сценарии постановки</p>
+      <button onclick="openArm('disarm','full')" class="text-left text-xs px-3 py-2 rounded-xl" style="color:#636366;cursor:pointer">ARM-01/02 · PIN-пад (снять/поставить)</button>
+      <button onclick="openArm('arm','sections')" class="text-left text-xs px-3 py-2 rounded-xl" style="color:#636366;cursor:pointer">ARM-03 · Частичная (разделы)</button>
+      <button onclick="simulateError('wrong')" class="text-left text-xs px-3 py-2 rounded-xl" style="color:#636366;cursor:pointer">ARM-06 · Неверный PIN (шейк)</button>
+      <button onclick="simulateError('api')" class="text-left text-xs px-3 py-2 rounded-xl" style="color:#636366;cursor:pointer">ARM-07 · Ошибка API</button>
+      <button onclick="simulateError('offline')" class="text-left text-xs px-3 py-2 rounded-xl" style="color:#636366;cursor:pointer">ARM-08 · Offline очередь</button>
+      <button onclick="simulateError('noperm')" class="text-left text-xs px-3 py-2 rounded-xl" style="color:#636366;cursor:pointer">ARM-09 · Нет прав</button>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 flex flex-col gap-2 shadow-sm border" style="border-color:#F2F2F7">
+      <p class="text-xs font-semibold mb-1" style="color:#1C1C1E">INC — события</p>
+      <button onclick="showTab('events')" class="text-left text-xs px-3 py-2 rounded-xl" style="color:#636366">INC-01 · Лента событий</button>
+    </div>
+
+    <div class="bg-white rounded-2xl p-4 flex flex-col gap-1 shadow-sm border" style="border-color:#F2F2F7">
+      <p class="text-xs font-semibold mb-1" style="color:#1C1C1E">Подсказка</p>
+      <p class="text-xs" style="color:#636366">Верный PIN: <b style="color:#1C1C1E">1234</b></p>
+      <p class="text-xs" style="color:#636366">← назад: main.html</p>
+    </div>
+
+    <p class="text-xs" style="color:#C7C7CC">v0.1 · 19.05.2026</p>
+  </div>
+
+  <!-- ───── Телефонный фрейм ───── -->
+  <div class="phone-frame rounded-[44px] shadow-2xl" style="border:1px solid #E5E5EA">
+
+    <!-- ════════════════════════════════════════════
+         OBJ — Карточка объекта (динамичная)
+    ════════════════════════════════════════════ -->
+    <div id="screen-obj" class="screen active" style="background:#F2F2F7">
+      <!-- Toast -->
+      <div class="toast" id="toast"></div>
+
+      <!-- Статусбар -->
+      <div class="statusbar" style="background:#fff">
+        <span style="font-size:15px;font-weight:600;color:#1C1C1E">9:41</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="#1C1C1E"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#1C1C1E"/><rect x="9" y="0" width="3" height="12" rx="1" fill="#1C1C1E"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 2.4C10.1 2.4 12 3.3 13.4 4.7L14.9 3.2C13.2 1.2 10.7 0 8 0S2.8 1.2 1.1 3.2L2.6 4.7C4 3.3 5.9 2.4 8 2.4Z" fill="#1C1C1E"/><path d="M8 5.6c1.3 0 2.5.6 3.4 1.5L12.9 5.5C11.7 4.2 9.9 3.4 8 3.4S4.3 4.2 3.1 5.5l1.5 1.6C5.5 6.2 6.7 5.6 8 5.6Z" fill="#1C1C1E"/><circle cx="8" cy="10" r="2" fill="#1C1C1E"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3.5" stroke="#1C1C1E" stroke-opacity=".35"/><rect x="2" y="2" width="16" height="8" rx="2" fill="#1C1C1E"/><path d="M23 4.5a2 2 0 010 3" stroke="#1C1C1E" stroke-opacity=".4" stroke-width="1.2" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+
+      <!-- Навбар -->
+      <div class="obj-nav" style="background:#fff; padding-bottom:8px">
+        <a href="main.html" class="back-btn">
+          <svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8l6 6" stroke="#D42B2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <span class="obj-name-title">Лаборатория Стенд</span>
+        <button class="settings-btn" onclick="openSettings()">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 12.5a2.5 2.5 0 100-5 2.5 2.5 0 000 5z" stroke="#636366" stroke-width="1.5"/><path d="M10 1v2M10 17v2M1 10h2M17 10h2M3.1 3.1l1.4 1.4M15.5 15.5l1.4 1.4M16.9 3.1l-1.4 1.4M4.5 15.5l-1.4 1.4" stroke="#636366" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <!-- Вкладки -->
+      <div class="tab-underline">
+        <div class="tab-underline-item active" id="tab-info-btn" onclick="showTab('info')">Информация</div>
+        <div class="tab-underline-item" id="tab-events-btn" onclick="showTab('events')">События</div>
+      </div>
+
+      <!-- ── Вкладка ИНФОРМАЦИЯ ── -->
+      <div id="tab-info" class="scroll-content" style="background:#F2F2F7">
+        <div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+
+          <!-- Статус-карточка (главный герой) -->
+          <div style="background:#fff;border-radius:20px;padding:16px" id="status-card">
+            <!-- Статус бейдж + настройки -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+              <span class="sbadge disarmed" id="main-status-badge">
+                <svg id="status-icon-svg" width="15" height="16" viewBox="0 0 15 16" fill="none"><path d="M7.5 1L1.5 4v4.5C1.5 12 4.2 15 7.5 15S13.5 12 13.5 8.5V4L7.5 1z" stroke="#636366" stroke-width="1.3" stroke-linejoin="round"/><path d="M4.5 8.5h6" stroke="#636366" stroke-width="1.4" stroke-linecap="round"/></svg>
+                <span id="status-text">Снят с охраны</span>
+              </span>
+            </div>
+
+            <!-- Инфо объекта -->
+            <p style="font-size:18px;font-weight:700;color:#1C1C1E;margin-bottom:2px">Лаборатория Стенд</p>
+            <p style="font-size:13px;color:#636366;margin-bottom:16px">№ объекта 6513 · адрес не указан</p>
+
+            <!-- Системные индикаторы -->
+            <div class="sys-indicators" id="sys-indicators">
+              <!-- Пожарная -->
+              <div class="sys-ind-item">
+                <div class="sys-ind-icon ok">
+                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3c-2.5 3-4 5.5-4 8a4 4 0 008 0c0-2.5-1.5-5-4-8z" stroke="#636366" stroke-width="1.4" stroke-linejoin="round"/><path d="M11 11c-1 1.5-1.5 2.5-1.5 3.5a1.5 1.5 0 003 0C12.5 13.5 12 12.5 11 11z" fill="#636366" opacity=".4"/></svg>
+                </div>
+                <span class="sys-ind-label">Пожарная<br>система</span>
+              </div>
+              <!-- Контроль взлома -->
+              <div class="sys-ind-item">
+                <div class="sys-ind-icon ok">
+                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="5" y="10" width="12" height="9" rx="2.5" stroke="#636366" stroke-width="1.4"/><path d="M8 10V7a3 3 0 016 0v3" stroke="#636366" stroke-width="1.4" stroke-linecap="round"/><circle cx="11" cy="14.5" r="1.5" fill="#636366" opacity=".5"/></svg>
+                </div>
+                <span class="sys-ind-label">Контроль<br>взлома</span>
+              </div>
+              <!-- Техсистема -->
+              <div class="sys-ind-item">
+                <div class="sys-ind-icon ok">
+                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="3" stroke="#636366" stroke-width="1.4"/><path d="M11 3v2M11 17v2M3 11h2M17 11h2M5.6 5.6l1.4 1.4M15 15l1.4 1.4M16.4 5.6l-1.4 1.4M7 15l-1.4 1.4" stroke="#636366" stroke-width="1.4" stroke-linecap="round"/></svg>
+                </div>
+                <span class="sys-ind-label">Техсистема</span>
+              </div>
+              <!-- Батарея — предупреждение по умолчанию для OBJ-04 -->
+              <div class="sys-ind-item" id="battery-indicator" onclick="showBatteryDetail()">
+                <div class="sys-ind-icon warn" id="battery-icon-wrap">
+                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="7" width="15" height="8" rx="2" stroke="#FF9500" stroke-width="1.4"/><path d="M17 10v2" stroke="#FF9500" stroke-width="1.4" stroke-linecap="round"/><path d="M7.5 11l2-3h3l-2 3h3l-3.5 4 1-4H7.5z" fill="#FF9500" opacity=".7"/></svg>
+                </div>
+                <span class="sys-ind-label" id="battery-label" style="color:#B25000">Батарея<br>⚠</span>
+              </div>
+              <!-- Сеть 220 — ошибка по умолчанию -->
+              <div class="sys-ind-item" id="power-indicator" onclick="showPowerDetail()">
+                <div class="sys-ind-icon error" id="power-icon-wrap">
+                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M12 2L5 12h6l-1 8 8-10h-5l2-8z" fill="#FF3B30" opacity=".15"/><path d="M12 2L5 12h6l-1 8 8-10h-5l2-8z" stroke="#FF3B30" stroke-width="1.4" stroke-linejoin="round"/></svg>
+                </div>
+                <span class="sys-ind-label" id="power-label" style="color:#D70015">Сеть 220<br>⛔</span>
+              </div>
+              <!-- Связь -->
+              <div class="sys-ind-item">
+                <div class="sys-ind-icon ok">
+                  <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M2 7C4.7 4 7.6 2.5 11 2.5S17.3 4 20 7" stroke="#636366" stroke-width="1.4" stroke-linecap="round"/><path d="M5 10.5C6.8 8.5 8.8 7.5 11 7.5s4.2 1 6 3" stroke="#636366" stroke-width="1.4" stroke-linecap="round"/><circle cx="11" cy="14" r="1.8" fill="#636366" opacity=".6"/></svg>
+                </div>
+                <span class="sys-ind-label">Связь</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Управление охраной -->
+          <div>
+            <p style="font-size:13px;font-weight:600;color:#8E8E93;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;padding:0 4px">Управление охраной</p>
+            <div id="arm-action-area"></div>
+          </div>
+
+          <!-- Разделы -->
+          <div>
+            <p style="font-size:13px;font-weight:600;color:#8E8E93;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;padding:0 4px">Разделы</p>
+            <div style="display:flex;flex-direction:column;gap:8px" id="sections-list"></div>
+          </div>
+
+          <!-- Кнопка ГБР (показывается всегда для демо) -->
+          <div id="gbr-section">
+            <p style="font-size:13px;font-weight:600;color:#8E8E93;letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px;padding:0 4px">Экстренный вызов</p>
+            <button onclick="openGBR()" style="width:100%;padding:18px;background:#fff;border-radius:16px;border:1.5px solid #FFD5D3;display:flex;align-items:center;gap:14px;cursor:pointer;text-align:left;font-family:inherit;transition:background 140ms" id="gbr-btn">
+              <div style="width:44px;height:44px;background:#FFF0EF;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M11 3a7 7 0 00-7 7v3.5L2 16h18l-2-2.5V10a7 7 0 00-7-7z" fill="#D70015" opacity=".12"/><path d="M11 3a7 7 0 00-7 7v3.5L2 16h18l-2-2.5V10a7 7 0 00-7-7z" stroke="#D70015" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 18a2 2 0 004 0" stroke="#D70015" stroke-width="1.4" stroke-linecap="round"/></svg>
+              </div>
+              <div>
+                <p style="font-size:15px;font-weight:600;color:#D70015;margin-bottom:2px">Вызвать группу реагирования</p>
+                <p style="font-size:13px;color:#636366">Удержите для подтверждения вызова</p>
+              </div>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ── Вкладка СОБЫТИЯ ── -->
+      <div id="tab-events" class="scroll-content" style="display:none;background:#F2F2F7">
+        <div style="padding:12px 16px;display:flex;align-items:center;gap:8px">
+          <button style="display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid #E5E5EA;border-radius:20px;padding:7px 14px;font-size:14px;font-weight:500;color:#1C1C1E;cursor:pointer;font-family:inherit;box-shadow:0 1px 2px rgba(0,0,0,.06)">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 3h12M3 7h8M5 11h4" stroke="#1C1C1E" stroke-width="1.4" stroke-linecap="round"/></svg>
+            Тип события
+          </button>
+        </div>
+        <div style="padding:0 16px 16px">
+
+          <!-- Группа: Сб 09.05 -->
+          <p class="event-date-group">Сб 09.05</p>
+          <div style="background:#fff;border-radius:16px;padding:8px 12px;display:flex;flex-direction:column;gap:0">
+            <div class="event-item" style="border-bottom:1px solid #F2F2F7">
+              <div class="event-icon" style="background:#FFF8EC">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#B25000" stroke-width="1.3"/><path d="M8 4v4M8 10v1.5" stroke="#B25000" stroke-width="1.4" stroke-linecap="round"/></svg>
+              </div>
+              <div style="flex:1;min-width:0">
+                <p style="font-size:14px;color:#1C1C1E;line-height:1.4">Питание сети отключено</p>
+                <p style="font-size:12px;color:#8E8E93;margin-top:1px">Сеть 220В — резервное питание включено</p>
+              </div>
+              <span style="font-size:13px;color:#8E8E93;flex-shrink:0;margin-left:8px">20:04</span>
+            </div>
+            <div class="event-item" style="border-bottom:1px solid #F2F2F7">
+              <div class="event-icon" style="background:#E8F9ED">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2L4 8h4l-1 6 7-8h-4L8 2z" fill="#1A7F37" opacity=".15"/><path d="M8 2L4 8h4l-1 6 7-8h-4L8 2z" stroke="#1A7F37" stroke-width="1.3" stroke-linejoin="round"/></svg>
+              </div>
+              <div style="flex:1;min-width:0">
+                <p style="font-size:14px;color:#1C1C1E;line-height:1.4">Питание сети восстановлено</p>
+                <p style="font-size:12px;color:#8E8E93;margin-top:1px">Сеть 220В</p>
+              </div>
+              <span style="font-size:13px;color:#8E8E93;flex-shrink:0;margin-left:8px">19:04</span>
+            </div>
+            <div class="event-item">
+              <div class="event-icon" style="background:#F2F2F7">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#8E8E93" stroke-width="1.3"/><path d="M5 8l2 2 4-4" stroke="#8E8E93" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div style="flex:1"><p style="font-size:14px;color:#1C1C1E">Система включена</p></div>
+              <span style="font-size:13px;color:#8E8E93;flex-shrink:0;margin-left:8px">19:04</span>
+            </div>
+          </div>
+
+          <!-- Группа: Сб 02.05 -->
+          <p class="event-date-group">Сб 02.05</p>
+          <div style="background:#fff;border-radius:16px;padding:8px 12px;display:flex;flex-direction:column;gap:0">
+            <div class="event-item" style="border-bottom:1px solid #F2F2F7">
+              <div class="event-icon" style="background:#FFF8EC"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#B25000" stroke-width="1.3"/><path d="M8 4v4M8 10v1.5" stroke="#B25000" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+              <div style="flex:1;min-width:0"><p style="font-size:14px;color:#1C1C1E">Питание сети отключено</p><p style="font-size:12px;color:#8E8E93">Сеть 220В</p></div>
+              <span style="font-size:13px;color:#8E8E93;flex-shrink:0;margin-left:8px">15:08</span>
+            </div>
+            <div class="event-item" style="border-bottom:1px solid #F2F2F7">
+              <div class="event-icon" style="background:#E8F9ED"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2L4 8h4l-1 6 7-8h-4L8 2z" stroke="#1A7F37" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
+              <div style="flex:1"><p style="font-size:14px;color:#1C1C1E">Питание сети восстановлено</p></div>
+              <span style="font-size:13px;color:#8E8E93;flex-shrink:0;margin-left:8px">14:09</span>
+            </div>
+            <div class="event-item">
+              <div class="event-icon" style="background:#FFF8EC"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#B25000" stroke-width="1.3"/><path d="M8 4v4M8 10v1.5" stroke="#B25000" stroke-width="1.4" stroke-linecap="round"/></svg></div>
+              <div style="flex:1;min-width:0"><p style="font-size:14px;color:#1C1C1E">Неисправность резервного питания</p><p style="font-size:12px;color:#8E8E93">Батарея разряжена</p></div>
+              <span style="font-size:13px;color:#8E8E93;flex-shrink:0;margin-left:8px">14:08</span>
+            </div>
+          </div>
+
+          <!-- Группа: Ср 15.04 -->
+          <p class="event-date-group">Ср 15.04</p>
+          <div style="background:#fff;border-radius:16px;padding:8px 12px;display:flex;flex-direction:column;gap:0">
+            <div class="event-item" style="border-bottom:1px solid #F2F2F7">
+              <div class="event-icon" style="background:#E8F0FF">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1L3 4v4c0 3.3 2.2 6.4 5 7 2.8-.6 5-3.7 5-7V4L8 1z" stroke="#007AFF" stroke-width="1.3" stroke-linejoin="round"/><path d="M5 8l2 2 4-4" stroke="#007AFF" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+              <div style="flex:1;min-width:0"><p style="font-size:14px;color:#1C1C1E">Объект снят с охраны</p><p style="font-size:12px;color:#8E8E93">Пользователь: Лопатина А. Д.</p></div>
+              <span style="font-size:13px;color:#8E8E93;flex-shrink:0;margin-left:8px">21:43</span>
+            </div>
+            <div class="event-item">
+              <div class="event-icon" style="background:#E8F9ED">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1L3 4v4c0 3.3 2.2 6.4 5 7 2.8-.6 5-3.7 5-7V4L8 1z" fill="#1A7F37" opacity=".12"/><path d="M8 1L3 4v4c0 3.3 2.2 6.4 5 7 2.8-.6 5-3.7 5-7V4L8 1z" stroke="#1A7F37" stroke-width="1.3" stroke-linejoin="round"/><path d="M5 8l2 2 4-4" stroke="#1A7F37" stroke-width="1.3" stroke-linecap="round"/></svg>
+              </div>
+              <div style="flex:1;min-width:0"><p style="font-size:14px;color:#1C1C1E">Объект поставлен на охрану</p><p style="font-size:12px;color:#8E8E93">Пользователь: Лопатина А. Д.</p></div>
+              <span style="font-size:13px;color:#8E8E93;flex-shrink:0;margin-left:8px">20:44</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Таббар -->
+      <div class="tab-bar">
+        <div class="tab-item active">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 9.5L11 2l8 7.5V19a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" fill="#D42B2B"/><path d="M8 20v-6h6v6" stroke="#D42B2B" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span class="tab-label" style="color:#D42B2B">Объекты</span>
+        </div>
+        <div class="tab-item"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="5" width="18" height="14" rx="3" stroke="#8E8E93" stroke-width="1.5"/><path d="M2 9h18" stroke="#8E8E93" stroke-width="1.5"/><rect x="5" y="13" width="4" height="2" rx="1" fill="#8E8E93"/></svg><span class="tab-label">Платежи</span></div>
+        <div class="tab-item"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 3h14a2 2 0 012 2v9a2 2 0 01-2 2H8l-5 4V5a2 2 0 012-2z" stroke="#8E8E93" stroke-width="1.5" stroke-linejoin="round"/></svg><span class="tab-label">Поддержка</span></div>
+        <div class="tab-item"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="7" r="4" stroke="#8E8E93" stroke-width="1.5"/><path d="M3 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#8E8E93" stroke-width="1.5" stroke-linecap="round"/></svg><span class="tab-label">Профиль</span></div>
+      </div>
+
+      <!-- ───────────── ARM BOTTOM SHEET ───────────── -->
+      <div class="sheet-backdrop" id="arm-backdrop" onclick="closeArm()"></div>
+      <div class="bottom-sheet" id="arm-sheet">
+        <div class="sheet-handle"></div>
+        <div style="padding-top:20px">
+          <p style="font-size:20px;font-weight:700;color:#1C1C1E;margin-bottom:4px" id="arm-title">Снять с охраны</p>
+          <p style="font-size:14px;color:#636366;margin-bottom:0" id="arm-subtitle">Введите код доступа</p>
+
+          <!-- PIN-точки -->
+          <div class="pin-dots" id="pin-dots">
+            <div class="pin-dot" id="dot-0"></div>
+            <div class="pin-dot" id="dot-1"></div>
+            <div class="pin-dot" id="dot-2"></div>
+            <div class="pin-dot" id="dot-3"></div>
+          </div>
+
+          <!-- Попытки -->
+          <p style="font-size:13px;color:#8E8E93;text-align:center;margin-bottom:16px;min-height:18px" id="pin-hint"></p>
+
+          <!-- Выбор разделов (для ARM-03) -->
+          <div id="sections-selector" style="display:none;background:#F2F2F7;border-radius:16px;padding:12px;margin-bottom:16px">
+            <p style="font-size:13px;font-weight:600;color:#8E8E93;margin-bottom:10px">Что поставить на охрану</p>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div onclick="toggleSection(this)" style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:12px;cursor:pointer" data-checked="true">
+                <div class="section-check checked"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5l3 3 7-7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div>
+                  <p style="font-size:15px;font-weight:500;color:#1C1C1E">Весь объект</p>
+                  <p style="font-size:13px;color:#8E8E93">Раздел 1 + Раздел 2</p>
+                </div>
+              </div>
+              <div onclick="toggleSection(this)" style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:12px;cursor:pointer" data-checked="false">
+                <div class="section-check"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5l3 3 7-7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div>
+                  <p style="font-size:15px;font-weight:500;color:#1C1C1E">Раздел 1</p>
+                  <p style="font-size:13px;color:#8E8E93">Снят с охраны</p>
+                </div>
+              </div>
+              <div onclick="toggleSection(this)" style="display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:12px;cursor:pointer" data-checked="false">
+                <div class="section-check"><svg width="12" height="9" viewBox="0 0 12 9" fill="none"><path d="M1 4.5l3 3 7-7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                <div>
+                  <p style="font-size:15px;font-weight:500;color:#1C1C1E">Раздел 2</p>
+                  <p style="font-size:13px;color:#8E8E93">Снят с охраны</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PIN-пад -->
+          <div class="pin-grid" id="pin-grid">
+            <!-- Ряд 1 -->
+            <button class="pin-key" onclick="pinPress('1')"><span class="pin-num">1</span><span class="pin-letters"> </span></button>
+            <button class="pin-key" onclick="pinPress('2')"><span class="pin-num">2</span><span class="pin-letters">АБВ</span></button>
+            <button class="pin-key" onclick="pinPress('3')"><span class="pin-num">3</span><span class="pin-letters">ГДЕ</span></button>
+            <!-- Ряд 2 -->
+            <button class="pin-key" onclick="pinPress('4')"><span class="pin-num">4</span><span class="pin-letters">ЖЗИ</span></button>
+            <button class="pin-key" onclick="pinPress('5')"><span class="pin-num">5</span><span class="pin-letters">КЛМ</span></button>
+            <button class="pin-key" onclick="pinPress('6')"><span class="pin-num">6</span><span class="pin-letters">НОП</span></button>
+            <!-- Ряд 3 -->
+            <button class="pin-key" onclick="pinPress('7')"><span class="pin-num">7</span><span class="pin-letters">РСТ</span></button>
+            <button class="pin-key" onclick="pinPress('8')"><span class="pin-num">8</span><span class="pin-letters">УФХ</span></button>
+            <button class="pin-key" onclick="pinPress('9')"><span class="pin-num">9</span><span class="pin-letters">ЦЧШ</span></button>
+            <!-- Ряд 4 -->
+            <button class="pin-key" style="background:transparent"></button>
+            <button class="pin-key" onclick="pinPress('0')"><span class="pin-num">0</span><span class="pin-letters"> </span></button>
+            <button class="pin-key backspace" onclick="pinDelete()" aria-label="Удалить">
+              <svg width="24" height="18" viewBox="0 0 24 18" fill="none"><path d="M9 1H22a1 1 0 011 1v14a1 1 0 01-1 1H9L2 9l7-8z" stroke="#1C1C1E" stroke-width="1.5" stroke-linejoin="round"/><path d="M15 6l-4 6M11 6l4 6" stroke="#1C1C1E" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+
+          <!-- Отмена -->
+          <div style="margin-top:16px;text-align:center">
+            <button class="btn-ghost-red" onclick="closeArm()">Отмена</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Экран ошибки API (ARM-07) ── -->
+      <div class="sheet-backdrop" id="error-backdrop" onclick="closeError()"></div>
+      <div class="bottom-sheet" id="error-sheet">
+        <div class="sheet-handle"></div>
+        <div style="padding-top:20px;text-align:center">
+          <div style="width:64px;height:64px;background:#FFF0EF;border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="14" stroke="#FF3B30" stroke-width="1.8"/><path d="M16 9v8M16 20v2" stroke="#FF3B30" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <p style="font-size:18px;font-weight:700;color:#1C1C1E;margin-bottom:8px" id="error-title">Не удалось связаться с объектом</p>
+          <p style="font-size:14px;color:#636366;margin-bottom:24px;line-height:1.5" id="error-body">Сервер не отвечает. Проверьте соединение или попробуйте позже.</p>
+          <button class="btn-primary" onclick="closeError()">Попробовать снова</button>
+          <div style="margin-top:12px"><button class="btn-ghost-red" onclick="closeError()">Отмена</button></div>
+        </div>
+      </div>
+
+      <!-- ── Успех-оверлей (ARM-04/05) ── -->
+      <div class="success-overlay" id="success-overlay">
+        <div id="success-icon-wrap">
+          <div style="width:80px;height:80px;border-radius:24px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px" id="success-icon-bg" class="pop-in">
+            <svg width="44" height="44" viewBox="0 0 44 44" fill="none" id="success-svg">
+              <path d="M22 4L5 11v12c0 10.5 7 20 17 23 10-3 17-12.5 17-23V11L22 4z" fill="#1A7F37" opacity=".15"/>
+              <path d="M22 4L5 11v12c0 10.5 7 20 17 23 10-3 17-12.5 17-23V11L22 4z" stroke="#1A7F37" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M13 22l6 6 12-12" stroke="#1A7F37" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+        <p style="font-size:22px;font-weight:700;color:#1C1C1E;margin-bottom:8px" id="success-title">Объект под охраной</p>
+        <p style="font-size:15px;color:#636366" id="success-sub">Охрана активирована</p>
+      </div>
+
+    </div><!-- /screen-obj -->
+
+    <!-- ════════════════════════════════════════════
+         Экран параметров объекта
+    ════════════════════════════════════════════ -->
+    <div class="params-screen" id="params-screen">
+      <!-- Статусбар -->
+      <div class="statusbar" style="background:#F2F2F7">
+        <span style="font-size:15px;font-weight:600;color:#1C1C1E">9:41</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="#1C1C1E"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#1C1C1E"/><rect x="9" y="0" width="3" height="12" rx="1" fill="#1C1C1E"/></svg>
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 2.4C10.1 2.4 12 3.3 13.4 4.7L14.9 3.2C13.2 1.2 10.7 0 8 0S2.8 1.2 1.1 3.2L2.6 4.7C4 3.3 5.9 2.4 8 2.4Z" fill="#1C1C1E"/><circle cx="8" cy="10" r="2" fill="#1C1C1E"/></svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".5" y=".5" width="21" height="11" rx="3.5" stroke="#1C1C1E" stroke-opacity=".35"/><rect x="2" y="2" width="16" height="8" rx="2" fill="#1C1C1E"/></svg>
+        </div>
+      </div>
+
+      <!-- Навбар -->
+      <div style="display:flex;align-items:center;padding:4px 16px 12px;background:#F2F2F7">
+        <button onclick="closeSettings()" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:50%;background:none;border:none">
+          <svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8l6 6" stroke="#D42B2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <span style="flex:1;text-align:center;font-size:17px;font-weight:600;color:#1C1C1E">Параметры объекта</span>
+        <div style="width:36px"></div>
+      </div>
+
+      <!-- Список параметров -->
+      <div style="flex:1;overflow-y:auto;padding:0 16px;display:flex;flex-direction:column;gap:10px">
+        <div style="background:#fff;border-radius:20px;overflow:hidden">
+          <div style="padding:16px;display:flex;align-items:center;gap:14px;border-bottom:1px solid #F2F2F7;cursor:pointer">
+            <div style="width:44px;height:44px;background:#F2F2F7;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M14.5 2.5l3 3L6 17H3v-3L14.5 2.5z" stroke="#1C1C1E" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="flex:1">
+              <p style="font-size:15px;font-weight:500;color:#1C1C1E">Редактирование объекта</p>
+              <p style="font-size:13px;color:#8E8E93">Название, адрес, разделы</p>
+            </div>
+            <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C7C7CC" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div style="padding:16px;display:flex;align-items:center;gap:14px;border-bottom:1px solid #F2F2F7;cursor:pointer">
+            <div style="width:44px;height:44px;background:#F2F2F7;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M11 3a7 7 0 00-7 7v3.5L2 16h16l-2-2.5V10A7 7 0 0011 3z" stroke="#1C1C1E" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 17a2 2 0 004 0" stroke="#1C1C1E" stroke-width="1.4"/></svg>
+            </div>
+            <div style="flex:1">
+              <p style="font-size:15px;font-weight:500;color:#1C1C1E">Уведомления о событиях</p>
+              <p style="font-size:13px;color:#8E8E93">9 категорий включено</p>
+            </div>
+            <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C7C7CC" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div style="padding:16px;display:flex;align-items:center;gap:14px;border-bottom:1px solid #F2F2F7;cursor:pointer">
+            <div style="width:44px;height:44px;background:#F2F2F7;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><rect x="3" y="4" width="14" height="14" rx="2" stroke="#1C1C1E" stroke-width="1.5"/><path d="M7 4V2M13 4V2M3 9h14" stroke="#1C1C1E" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <div style="flex:1">
+              <p style="font-size:15px;font-weight:500;color:#1C1C1E">Отчёты по событиям</p>
+              <p style="font-size:13px;color:#8E8E93">Настройка email-отчётов</p>
+            </div>
+            <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C7C7CC" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div style="padding:16px;display:flex;align-items:center;gap:14px;border-bottom:1px solid #F2F2F7;cursor:pointer">
+            <div style="width:44px;height:44px;background:#F2F2F7;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="7" r="4" stroke="#1C1C1E" stroke-width="1.5"/><path d="M2 18c0-4 3.6-6 8-6s8 2 8 6" stroke="#1C1C1E" stroke-width="1.4" stroke-linecap="round"/></svg>
+            </div>
+            <div style="flex:1">
+              <p style="font-size:15px;font-weight:500;color:#1C1C1E">Пользователи</p>
+              <p style="font-size:13px;color:#8E8E93">8 человек имеют доступ</p>
+            </div>
+            <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C7C7CC" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <div style="padding:16px;display:flex;align-items:center;gap:14px;cursor:pointer">
+            <div style="width:44px;height:44px;background:#F2F2F7;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2a6 6 0 00-6 6v3L2 14h16l-2-3V8a6 6 0 00-6-6z" stroke="#1C1C1E" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 16a2 2 0 004 0" stroke="#1C1C1E" stroke-width="1.4"/></svg>
+            </div>
+            <div style="flex:1">
+              <p style="font-size:15px;font-weight:500;color:#1C1C1E">Проверка тревожных кнопок</p>
+              <p style="font-size:13px;color:#8E8E93">1 кнопка готова к тесту</p>
+            </div>
+            <svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C7C7CC" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Таббар -->
+      <div class="tab-bar">
+        <div class="tab-item active"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M3 9.5L11 2l8 7.5V19a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" fill="#D42B2B"/><path d="M8 20v-6h6v6" stroke="#D42B2B" stroke-width="1.5" stroke-linecap="round"/></svg><span class="tab-label" style="color:#D42B2B">Объекты</span></div>
+        <div class="tab-item"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="2" y="5" width="18" height="14" rx="3" stroke="#8E8E93" stroke-width="1.5"/><path d="M2 9h18" stroke="#8E8E93" stroke-width="1.5"/><rect x="5" y="13" width="4" height="2" rx="1" fill="#8E8E93"/></svg><span class="tab-label">Платежи</span></div>
+        <div class="tab-item"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><path d="M4 3h14a2 2 0 012 2v9a2 2 0 01-2 2H8l-5 4V5a2 2 0 012-2z" stroke="#8E8E93" stroke-width="1.5" stroke-linejoin="round"/></svg><span class="tab-label">Поддержка</span></div>
+        <div class="tab-item"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="7" r="4" stroke="#8E8E93" stroke-width="1.5"/><path d="M3 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#8E8E93" stroke-width="1.5" stroke-linecap="round"/></svg><span class="tab-label">Профиль</span></div>
+      </div>
+    </div>
+
+  </div><!-- /phone-frame -->
+
+</body>
+
+<script>
+  // ─── Состояние ───
+  let currentStatus = 'disarmed';
+  let currentArmAction = 'disarm';
+  let pinValue = '';
+  let attempts = 3;
+  const CORRECT_PIN = '1234';
+
+  const statusConfig = {
+    disarmed: {
+      badgeClass: 'disarmed',
+      text: 'Снят с охраны',
+      iconSvg: `<path d="M7.5 1L1.5 4v4.5C1.5 12 4.2 15 7.5 15S13.5 12 13.5 8.5V4L7.5 1z" stroke="#636366" stroke-width="1.3" stroke-linejoin="round"/><path d="M4.5 8.5h6" stroke="#636366" stroke-width="1.4" stroke-linecap="round"/>`,
+      sec: { color:'#8E8E93', text:'Снят с охраны' },
+    },
+    armed: {
+      badgeClass: 'armed',
+      text: 'Под охраной',
+      iconSvg: `<path d="M7.5 1L1.5 4v4.5C1.5 12 4.2 15 7.5 15S13.5 12 13.5 8.5V4L7.5 1z" fill="#1A7F37" opacity=".15"/><path d="M7.5 1L1.5 4v4.5C1.5 12 4.2 15 7.5 15S13.5 12 13.5 8.5V4L7.5 1z" stroke="#1A7F37" stroke-width="1.3" stroke-linejoin="round"/><path d="M4.5 8l2 2 3.5-3.5" stroke="#1A7F37" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>`,
+      sec: { color:'#34C759', text:'Под охраной' },
+    },
+    alarm: {
+      badgeClass: 'alarm alarm-pulse',
+      text: 'Тревога',
+      iconSvg: `<path d="M7.5 1.5a5.5 5.5 0 00-5.5 5.5v2.5L1 12h13l-1-2.5V7A5.5 5.5 0 007.5 1.5z" fill="#D70015" opacity=".12"/><path d="M7.5 1.5a5.5 5.5 0 00-5.5 5.5v2.5L1 12h13l-1-2.5V7A5.5 5.5 0 007.5 1.5z" stroke="#D70015" stroke-width="1.3" stroke-linejoin="round"/><path d="M6 13a1.5 1.5 0 003 0" stroke="#D70015" stroke-width="1.2"/>`,
+      sec: { color:'#FF3B30', text:'Тревога' },
+    },
+    warning: {
+      badgeClass: 'disarmed',
+      text: 'Снят с охраны',
+      iconSvg: `<path d="M7.5 1L1.5 4v4.5C1.5 12 4.2 15 7.5 15S13.5 12 13.5 8.5V4L7.5 1z" stroke="#636366" stroke-width="1.3" stroke-linejoin="round"/><path d="M4.5 8.5h6" stroke="#636366" stroke-width="1.4" stroke-linecap="round"/>`,
+      sec: { color:'#8E8E93', text:'Снят с охраны' },
+    }
+  };
+
+  function setStatus(status) {
+    currentStatus = status;
+    const cfg = statusConfig[status];
+
+    // Обновить бейдж
+    const badge = document.getElementById('main-status-badge');
+    badge.className = 'sbadge ' + cfg.badgeClass;
+
+    const svg = document.getElementById('status-icon-svg');
+    svg.innerHTML = cfg.iconSvg;
+    // Update svg stroke color
+    document.getElementById('status-text').textContent = cfg.text;
+
+    // Системные индикаторы — warning показывает иконки ошибок, остальные OK
+    const battIcon = document.getElementById('battery-icon-wrap');
+    const powIcon = document.getElementById('power-icon-wrap');
+    const battLabel = document.getElementById('battery-label');
+    const powLabel = document.getElementById('power-label');
+    if (status === 'warning') {
+      battIcon.className = 'sys-ind-icon warn'; battLabel.textContent = 'Батарея ⚠'; battLabel.style.color = '#B25000';
+      powIcon.className = 'sys-ind-icon error'; powLabel.textContent = 'Сеть 220 ⛔'; powLabel.style.color = '#D70015';
+    } else {
+      battIcon.className = 'sys-ind-icon ok'; battLabel.textContent = 'Батарея'; battLabel.style.color = '#636366';
+      powIcon.className = 'sys-ind-icon ok'; powLabel.textContent = 'Сеть 220'; powLabel.style.color = '#636366';
+    }
+
+    // Обновить зону управления и разделы
+    renderArmAction();
+    renderSections();
+
+    // Обновить активную кнопку сайдбара
+    document.querySelectorAll('.sidebar-btn').forEach(b => { b.style.background = 'transparent'; b.style.color = '#636366'; });
+    const btn = document.getElementById('btn-' + status);
+    if (btn) { btn.style.background = '#F2F2F7'; btn.style.color = '#1C1C1E'; }
+  }
+
+  function renderSections() {
+    const isArmed   = currentStatus === 'armed';
+    const isAlarm   = currentStatus === 'alarm';
+    const dotColor  = isArmed ? '#34C759' : isAlarm ? '#FF3B30' : '#8E8E93';
+    const statusTxt = isArmed ? 'Под охраной' : isAlarm ? 'Тревога' : 'Снят с охраны';
+
+    // Кнопка: для armed/alarm — «Снять», для disarmed/warning — «Поставить»
+    const btnAction  = (isArmed || isAlarm) ? 'disarm' : 'arm';
+    const btnLabel   = (isArmed || isAlarm) ? 'Снять' : 'Поставить';
+    const btnBg      = (isArmed || isAlarm) ? '#F2F2F7' : '#EDF7EE';
+    const btnColor   = (isArmed || isAlarm) ? '#1C1C1E'  : '#1A7F37';
+
+    const sections = ['Раздел 1', 'Раздел 2'];
+    const list = document.getElementById('sections-list');
+    list.innerHTML = sections.map((name, i) => `
+      <div style="background:#fff;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px">
+        <div style="width:10px;height:10px;border-radius:50%;background:${dotColor};flex-shrink:0"></div>
+        <div style="flex:1">
+          <p style="font-size:15px;font-weight:500;color:#1C1C1E;margin:0">${name}</p>
+          <p style="font-size:13px;color:#8E8E93;margin:2px 0 0">${statusTxt}</p>
+        </div>
+        <button
+          onclick="openArmSection('${btnAction}', '${name}')"
+          style="
+            padding:7px 14px;
+            background:${btnBg};
+            color:${btnColor};
+            border:none;border-radius:20px;
+            font-size:13px;font-weight:600;
+            cursor:pointer;font-family:inherit;
+            white-space:nowrap;
+            transition:opacity 120ms;
+          "
+          onmousedown="this.style.opacity='.7'" onmouseup="this.style.opacity='1'" onmouseleave="this.style.opacity='1'"
+        >${btnLabel}</button>
+      </div>
+    `).join('');
+  }
+
+  function openArmSection(action, sectionName) {
+    currentArmAction = action;
+    pinValue = '';
+    attempts = 3;
+    updateDots();
+    document.getElementById('pin-hint').textContent = '';
+
+    const isArm = action === 'arm';
+    document.getElementById('arm-title').textContent = isArm
+      ? `Поставить: ${sectionName}`
+      : `Снять: ${sectionName}`;
+    document.getElementById('arm-subtitle').textContent = 'Введите код доступа';
+    document.getElementById('sections-selector').style.display = 'none';
+    document.querySelectorAll('.pin-key').forEach(k => k.disabled = false);
+
+    document.getElementById('arm-backdrop').classList.add('open');
+    document.getElementById('arm-sheet').classList.add('open');
+    showTab('info');
+  }
+
+  function renderArmAction() {
+    const area = document.getElementById('arm-action-area');
+    const isArmed = currentStatus === 'armed';
+    const isAlarm = currentStatus === 'alarm';
+
+    // Активная кнопка: при тревоге оба действия доступны, иначе подсвечиваем нужную
+    const disarmActive = isArmed || isAlarm;
+    const armActive    = !isArmed && !isAlarm;
+
+    area.innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <!-- Снять с охраны -->
+        <button onclick="openArm('disarm','full')" style="
+          padding:16px 12px;
+          background:${disarmActive ? '#1C1C1E' : '#fff'};
+          border:1.5px solid ${disarmActive ? '#1C1C1E' : '#E5E5EA'};
+          border-radius:18px;
+          display:flex;flex-direction:column;align-items:flex-start;gap:10px;
+          cursor:pointer;font-family:inherit;
+          transition:background 140ms,transform 100ms;
+          text-align:left;
+        " onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''" onmouseleave="this.style.transform=''">
+          <div style="width:36px;height:36px;border-radius:10px;background:${disarmActive ? 'rgba(255,255,255,.15)' : '#F2F2F7'};display:flex;align-items:center;justify-content:center">
+            <svg width="18" height="20" viewBox="0 0 18 20" fill="none">
+              <path d="M9 1L1 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5L9 1z" stroke="${disarmActive ? '#fff' : '#636366'}" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M5.5 10h7" stroke="${disarmActive ? '#fff' : '#636366'}" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span style="font-size:14px;font-weight:600;color:${disarmActive ? '#fff' : '#636366'};line-height:1.3">Снять с охраны</span>
+        </button>
+
+        <!-- Поставить на охрану -->
+        <button onclick="openArm('arm','full')" style="
+          padding:16px 12px;
+          background:${armActive ? '#D42B2B' : '#fff'};
+          border:1.5px solid ${armActive ? '#D42B2B' : '#E5E5EA'};
+          border-radius:18px;
+          display:flex;flex-direction:column;align-items:flex-start;gap:10px;
+          cursor:pointer;font-family:inherit;
+          transition:background 140ms,transform 100ms;
+          text-align:left;
+        " onmousedown="this.style.transform='scale(.97)'" onmouseup="this.style.transform=''" onmouseleave="this.style.transform=''">
+          <div style="width:36px;height:36px;border-radius:10px;background:${armActive ? 'rgba(255,255,255,.2)' : '#F2F2F7'};display:flex;align-items:center;justify-content:center">
+            <svg width="18" height="20" viewBox="0 0 18 20" fill="none">
+              <path d="M9 1L1 5v6c0 5 3.5 9.7 8 11 4.5-1.3 8-6 8-11V5L9 1z" fill="${armActive ? '#fff' : 'none'}" fill-opacity="${armActive ? '.2' : '0'}" stroke="${armActive ? '#fff' : '#636366'}" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M5.5 10.5l2.5 2.5 4.5-4.5" stroke="${armActive ? '#fff' : '#636366'}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span style="font-size:14px;font-weight:600;color:${armActive ? '#fff' : '#636366'};line-height:1.3">Поставить на охрану</span>
+        </button>
+      </div>`;
+  }
+
+  // ─── PIN логика ───
+  function openArm(action, mode) {
+    currentArmAction = action;
+    pinValue = '';
+    attempts = 3;
+    updateDots();
+    document.getElementById('pin-hint').textContent = '';
+
+    const isArm = action === 'arm';
+    document.getElementById('arm-title').textContent = isArm ? 'Поставить на охрану' : 'Снять с охраны';
+    document.getElementById('arm-subtitle').textContent = 'Введите код доступа';
+    document.getElementById('sections-selector').style.display = mode === 'sections' ? 'block' : 'none';
+
+    // Разблокировать кнопки
+    document.querySelectorAll('.pin-key').forEach(k => k.disabled = false);
+
+    document.getElementById('arm-backdrop').classList.add('open');
+    document.getElementById('arm-sheet').classList.add('open');
+    showTab('info');
+  }
+
+  function closeArm() {
+    document.getElementById('arm-backdrop').classList.remove('open');
+    document.getElementById('arm-sheet').classList.remove('open');
+    pinValue = '';
+    updateDots();
+  }
+
+  function pinPress(digit) {
+    if (pinValue.length >= 4) return;
+    pinValue += digit;
+    updateDots();
+    if (pinValue.length === 4) {
+      setTimeout(submitPin, 180);
+    }
+  }
+
+  function pinDelete() {
+    pinValue = pinValue.slice(0, -1);
+    updateDots();
+    document.getElementById('pin-hint').textContent = '';
+  }
+
+  function updateDots() {
+    for (let i = 0; i < 4; i++) {
+      const dot = document.getElementById('dot-' + i);
+      dot.className = 'pin-dot' + (i < pinValue.length ? ' filled' : '');
+    }
+  }
+
+  function submitPin() {
+    if (pinValue === CORRECT_PIN) {
+      // Успех — зелёные точки
+      for (let i = 0; i < 4; i++) {
+        document.getElementById('dot-' + i).className = 'pin-dot success';
+      }
+      // Блокируем кнопки
+      document.querySelectorAll('.pin-key').forEach(k => k.disabled = true);
+      setTimeout(() => {
+        closeArm();
+        showSuccess(currentArmAction);
+      }, 600);
+    } else {
+      // Ошибка
+      attempts--;
+      for (let i = 0; i < 4; i++) {
+        document.getElementById('dot-' + i).className = 'pin-dot error';
+      }
+      const dotsEl = document.getElementById('pin-dots');
+      dotsEl.classList.add('shake');
+      setTimeout(() => dotsEl.classList.remove('shake'), 400);
+
+      document.getElementById('pin-hint').textContent = attempts > 0
+        ? `Неверный код · осталось ${attempts} ${attempts === 1 ? 'попытка' : 'попытки'}`
+        : 'Слишком много попыток · обратитесь в поддержку';
+
+      setTimeout(() => {
+        pinValue = '';
+        updateDots();
+        if (attempts <= 0) {
+          document.querySelectorAll('.pin-key').forEach(k => k.disabled = true);
+        }
+      }, 800);
+    }
+  }
+
+  function showSuccess(action) {
+    const isArm = action === 'arm';
+    const newStatus = isArm ? 'armed' : 'disarmed';
+    document.getElementById('success-title').textContent = isArm ? 'Объект под охраной' : 'Объект снят с охраны';
+    document.getElementById('success-sub').textContent = isArm ? 'Охрана активирована' : 'Охрана деактивирована';
+    const bg = document.getElementById('success-icon-bg');
+    bg.style.background = isArm ? '#E8F9ED' : '#F0F0F5';
+    document.getElementById('success-svg').style.opacity = '1';
+
+    const overlay = document.getElementById('success-overlay');
+    overlay.classList.add('show');
+
+    setTimeout(() => {
+      overlay.classList.remove('show');
+      setStatus(newStatus);
+    }, 1600);
+  }
+
+  // ─── Ошибки ARM (ARM-07, 08, 09) ───
+  function simulateError(type) {
+    showTab('info');
+    if (type === 'wrong') {
+      openArm('disarm', 'full');
+      setTimeout(() => {
+        // Ввести неверный код и показать ошибку
+        pinValue = '9999';
+        updateDots();
+        setTimeout(submitPin, 200);
+      }, 500);
+      return;
+    }
+    let title = '', body = '';
+    if (type === 'api') {
+      title = 'Не удалось связаться с объектом';
+      body = 'Сервер охраны не отвечает. Попробуйте ещё раз через несколько секунд.';
+    } else if (type === 'offline') {
+      title = 'Нет соединения';
+      body = 'Команда поставлена в очередь. Выполним автоматически, когда соединение восстановится.';
+    } else if (type === 'noperm') {
+      title = 'Нет прав на это действие';
+      body = 'Ваша роль не позволяет изменять статус охраны. Обратитесь к владельцу объекта.';
+    }
+    document.getElementById('error-title').textContent = title;
+    document.getElementById('error-body').textContent = body;
+    document.getElementById('error-backdrop').classList.add('open');
+    document.getElementById('error-sheet').classList.add('open');
+  }
+
+  function closeError() {
+    document.getElementById('error-backdrop').classList.remove('open');
+    document.getElementById('error-sheet').classList.remove('open');
+  }
+
+  // ─── Вкладки ───
+  function showTab(tab) {
+    const isInfo = tab === 'info';
+    document.getElementById('tab-info').style.display = isInfo ? 'block' : 'none';
+    document.getElementById('tab-events').style.display = isInfo ? 'none' : 'block';
+    document.getElementById('tab-info-btn').className = 'tab-underline-item' + (isInfo ? ' active' : '');
+    document.getElementById('tab-events-btn').className = 'tab-underline-item' + (!isInfo ? ' active' : '');
+  }
+
+  // ─── Настройки объекта ───
+  function openSettings() {
+    document.getElementById('params-screen').classList.add('open');
+  }
+  function closeSettings() {
+    document.getElementById('params-screen').classList.remove('open');
+  }
+
+  // ─── ГБР ───
+  function openGBR() {
+    showToast('Удержите кнопку для вызова группы реагирования');
+  }
+
+  // ─── Детали индикаторов ───
+  function showBatteryDetail() {
+    showToast('Батарея: заряд ниже 20% · Подзарядите или замените');
+  }
+  function showPowerDetail() {
+    showToast('Сеть 220В отключена · Работает от резервного питания');
+  }
+
+  // ─── Тогл разделов ───
+  function toggleSection(el) {
+    const isChecked = el.dataset.checked === 'true';
+    el.dataset.checked = isChecked ? 'false' : 'true';
+    const box = el.querySelector('.section-check');
+    if (isChecked) { box.classList.remove('checked'); } else { box.classList.add('checked'); }
+  }
+
+  // ─── Toast ───
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  // ─── Init ───
+  setStatus('disarmed');
+  renderSections();
+  document.getElementById('btn-disarmed').style.background = '#F2F2F7';
+  document.getElementById('btn-disarmed').style.color = '#1C1C1E';
+</script>
+</html>
