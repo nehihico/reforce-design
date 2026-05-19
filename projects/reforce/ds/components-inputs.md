@@ -1,8 +1,10 @@
 # DS: Поля ввода — Reforce × Preline UI
 
+> **[MOB]** = мобайл · **[WEB]** = веб 1440px · **[DSK]** = десктоп 1920px
+
 ---
 
-## Базовый инпут
+## [MOB] Базовый инпут — 56px
 
 ```html
 <div class="flex flex-col gap-1.5">
@@ -86,10 +88,68 @@
 
 ---
 
-## Правила
+## [WEB] / [DSK] Базовый инпут — 48px
 
-- Минимальная высота инпута: **56px** (tap zone)
-- Радиус скругления: **16px** (`rounded-2xl`)
-- Граница в фокусе: **#D42B2B** (brand primary)
-- Ошибка: граница + фон `#FFF5F5` + текст `#FF3B30`
-- Placeholder: `#C7C7CC`
+```html
+<!-- Веб: меньше высота, компактнее шрифт, меньше скругление -->
+<div class="flex flex-col gap-1.5">
+  <label class="text-[13px] font-medium text-[#636366]">Подпись поля</label>
+  <input type="text" placeholder="Placeholder"
+    class="w-full h-[48px] px-4 rounded-xl border-[1.5px] border-[#C7C7CC] bg-white text-[15px] text-[#1C1C1E] placeholder:text-[#C7C7CC] focus:outline-none focus:border-[#D42B2B] hover:border-[#8E8E93] transition-colors duration-150" />
+</div>
+```
+
+## [WEB] / [DSK] Инпут с ошибкой
+
+```html
+<div class="flex flex-col gap-1.5">
+  <label class="text-[13px] font-medium text-[#636366]">Подпись поля</label>
+  <input type="text" value="неверное значение"
+    class="w-full h-[48px] px-4 rounded-xl border-[1.5px] border-[#FF3B30] bg-[#FFF5F5] text-[15px] text-[#1C1C1E] focus:outline-none focus:border-[#FF3B30] transition-colors" />
+  <p class="flex items-center gap-1.5 text-[13px] text-[#FF3B30]">
+    <svg class="size-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+    Текст ошибки
+  </p>
+</div>
+```
+
+## [WEB] / [DSK] Select — 48px
+
+```html
+<div class="relative">
+  <select class="w-full h-[48px] px-4 pr-10 rounded-xl border-[1.5px] border-[#C7C7CC] bg-white text-[15px] text-[#1C1C1E] appearance-none focus:outline-none focus:border-[#D42B2B] hover:border-[#8E8E93] cursor-pointer transition-colors">
+    <option value="" disabled selected>Выберите вариант</option>
+    <option>Квартира</option>
+    <option>Офис</option>
+  </select>
+  <div class="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-[#8E8E93]">
+    <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+</div>
+```
+
+## [WEB] / [DSK] Textarea
+
+```html
+<div class="flex flex-col gap-1.5">
+  <label class="text-[13px] font-medium text-[#636366]">Комментарий</label>
+  <textarea rows="4" placeholder="Введите текст..."
+    class="w-full px-4 py-3 rounded-xl border-[1.5px] border-[#C7C7CC] bg-white text-[15px] text-[#1C1C1E] placeholder:text-[#C7C7CC] focus:outline-none focus:border-[#D42B2B] hover:border-[#8E8E93] resize-y transition-colors"></textarea>
+</div>
+```
+
+---
+
+## Сводная таблица по платформам
+
+| Параметр | [MOB] | [WEB] / [DSK] |
+|---|---|---|
+| Высота инпута | 56px | 48px |
+| Высота select | 56px | 48px |
+| Шрифт в инпуте | 17px | 15px |
+| Скругление | 16px (`rounded-2xl`) | 12px (`rounded-xl`) |
+| Hover на border | — | `#8E8E93` |
+| Focus border | `#D42B2B` | `#D42B2B` |
+| Ошибка: border | `#FF3B30` | `#FF3B30` |
+| Ошибка: фон | `#FFF5F5` | `#FFF5F5` |
+| Placeholder | `#C7C7CC` | `#C7C7CC` |
