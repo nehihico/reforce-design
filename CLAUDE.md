@@ -77,10 +77,23 @@ design/
 **Структура папок:**
 ```
 projects/
-├── reforce/          ← shared: personas.md, jtbd.md, ds/tokens.md, ia/, research/
+├── reforce/          ← shared: personas.md, jtbd.md, DS (единая), ia/, research/
+│   └── ds/           ← ЕДИНАЯ ДС для всех продуктов (не дублировать!)
+│       ├── README.md           ← индекс DS
+│       ├── principles.md       ← принципы и ценности
+│       ├── tokens.md           ← цвета, типографика, отступы, тени, z-index
+│       ├── grid.md             ← сетка 8px, брейкпоинты, safe areas
+│       ├── motion.md           ← анимации, длительности, кривые
+│       ├── copywriting.md      ← тон, тексты, ошибки, статусы
+│       ├── icons.md            ← Lucide иконки, размеры, стиль
+│       └── components-*.md    ← кнопки, инпуты, карточки, навигация, фидбек, формы
 ├── reforce-lk/       ← ЛК: prd.md, audit/lk-v3-current.md, ia/, execution/
+│   └── ds/README.md  ← редирект → reforce/ds/
 └── reforce-market/   ← Маркет: prd.md, ia/, execution/
 ```
+
+**Правило DS:** `projects/reforce/ds/` — единственный источник правды.  
+При работе с любым продуктом читаю DS оттуда. Не создавать отдельные DS для reforce-lk и reforce-market.
 
 ---
 
