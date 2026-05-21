@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reforce — Охрана дома</title>
+<style>
+:root {
+  --red: #D42B2B; --red-dark: #BC2525;
+  --dark: #1A1A2E; --white: #FFFFFF;
+  --n900: #1C1C1E; --n600: #636366; --n300: #C7C7CC;
+  --n100: #F2F2F7; --n50: #F9F9FB;
+  --green: #34C759; --blue: #007AFF; --orange: #FF9500;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Roboto',sans-serif;color:var(--n900);background:#fff;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;border:none;font-family:inherit}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.section{padding:80px 0}
+
+/* ─── HEADER — FLOATING PILL ─── */
+.hdr{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:14px 24px;background:transparent;pointer-events:none}
+.hdr-in{pointer-events:all;background:rgba(16,16,24,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:100px;height:52px;padding:0 8px;display:flex;align-items:center;gap:4px;box-shadow:0 4px 32px rgba(0,0,0,.3);width:100%;max-width:860px}
+.logo{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700;flex-shrink:0;color:#fff;margin-right:4px;white-space:nowrap}
+.logo-ic{width:34px;height:34px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:800;flex-shrink:0}
+.nav{display:flex;gap:2px;align-items:center;flex:1;white-space:nowrap}
+.nav-item{position:relative}
+.nav-lnk{display:flex;align-items:center;gap:4px;padding:7px 12px;border-radius:100px;font-size:13.5px;font-weight:500;color:rgba(255,255,255,.6);transition:background .12s,color .12s;background:none;border:none;cursor:pointer;font-family:inherit}
+.nav-lnk:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.9)}
+.nav-lnk.active{color:#fff;background:rgba(255,255,255,.12)}
+.nav-drop{position:absolute;top:calc(100% + 10px);left:-8px;min-width:200px;background:rgba(14,14,22,.97);border:1px solid rgba(255,255,255,.1);border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,.5);padding:6px;display:none;flex-direction:column;z-index:200}
+.nav-item:hover .nav-drop{display:flex}
+.nav-drop a{padding:9px 13px;border-radius:10px;font-size:13px;color:rgba(255,255,255,.7);font-weight:500;display:block;transition:background .12s}
+.nav-drop a:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-sep{width:1px;height:20px;background:rgba(255,255,255,.12);flex-shrink:0;margin:0 4px}
+.hdr-r{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.hdr-login{font-size:13.5px;font-weight:500;color:rgba(255,255,255,.6);padding:7px 12px;border-radius:100px;background:none;border:none;cursor:pointer;font-family:inherit;transition:background .12s,color .12s;white-space:nowrap}
+.hdr-login:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.9)}
+.hdr-in .btn-red{border-radius:100px;font-size:13px;height:36px;white-space:nowrap}
+.city-btn{display:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 24px;height:44px;border-radius:12px;font-size:14px;font-weight:600;transition:all .15s}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:var(--red-dark);transform:translateY(-1px)}
+.btn-ghost{background:var(--n100);color:var(--n900)}.btn-ghost:hover{background:#e5e5ea}
+.btn-lg{height:52px;padding:0 32px;font-size:16px;border-radius:14px}
+.btn-sm{height:36px;padding:0 16px;font-size:13px;border-radius:10px}
+
+/* HERO */
+.hero{background:var(--dark);padding:72px 0 0;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 70% at 80% 40%,rgba(212,43,43,.1) 0%,transparent 65%);pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:1fr 480px;gap:48px;align-items:end;position:relative;z-index:1}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:5px 14px;font-size:12px;color:rgba(255,255,255,.6);margin-bottom:24px}
+.tag-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero h1{font-size:50px;font-weight:700;line-height:1.1;letter-spacing:-.7px;color:#fff;margin-bottom:16px}
+.hero h1 em{color:var(--red);font-style:normal}
+.hero-sub{font-size:17px;line-height:1.65;color:rgba(255,255,255,.55);max-width:460px;margin-bottom:32px}
+.hero-ctas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px}
+.hero-trust{display:flex;gap:28px;padding-top:28px;border-top:1px solid rgba(255,255,255,.07)}
+.trust-item{display:flex;flex-direction:column}
+.trust-num{font-size:24px;font-weight:700;color:#fff}
+.trust-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+
+/* SCENARIO TABS */
+.scenario-bar{background:#fff;padding:0;border-bottom:1px solid var(--n100);position:sticky;top:80px;z-index:15}
+.tabs-inner{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+.tabs-inner::-webkit-scrollbar{display:none}
+.tab-btn{flex-shrink:0;padding:18px 28px;font-size:14px;font-weight:500;color:var(--n600);background:none;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.tab-btn:hover{color:var(--n900);background:var(--n50)}
+.tab-btn.active{color:var(--red);border-bottom-color:var(--red);font-weight:600}
+
+/* SCENARIO PANELS */
+.scenario-panel{display:none}.scenario-panel.active{display:block}
+
+/* SCENARIO HERO BLOCK */
+.sc-hero{padding:56px 0 40px}
+.sc-hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.sc-label{font-size:11px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:var(--n600);margin-bottom:12px}
+.sc-title{font-size:34px;font-weight:700;line-height:1.2;letter-spacing:-.3px;margin-bottom:14px}
+.sc-desc{font-size:16px;color:var(--n600);line-height:1.65;margin-bottom:28px}
+.sc-price-block{background:var(--n50);border:1px solid var(--n100);border-radius:18px;padding:24px}
+.sc-price-label{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--n600);margin-bottom:6px}
+.sc-price-main{font-size:32px;font-weight:700;color:var(--n900)}
+.sc-price-main span{font-size:16px;font-weight:400;color:var(--n600)}
+.sc-price-equip{font-size:13px;color:var(--n600);margin-top:4px;margin-bottom:16px}
+.sc-price-note{font-size:12px;color:var(--green);display:flex;align-items:center;gap:5px;margin-bottom:16px}
+
+/* INCLUDES LIST */
+.includes{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+.include-item{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--n900)}
+.inc-check{width:20px;height:20px;background:rgba(52,199,89,.12);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--green);flex-shrink:0}
+
+/* SCENE CARDS (how it works for this type) */
+.scenes{padding:0 0 56px}
+.scenes-title{font-size:22px;font-weight:700;margin-bottom:28px}
+.scenes-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.scene-card{background:var(--n50);border:1px solid var(--n100);border-radius:18px;padding:24px;transition:all .2s}
+.scene-card:hover{border-color:var(--red);box-shadow:0 4px 16px rgba(0,0,0,.08);transform:translateY(-2px)}
+.scene-emoji{font-size:28px;margin-bottom:14px}
+.scene-time{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--red);font-weight:600;margin-bottom:6px}
+.scene-text{font-size:14px;color:var(--n600);line-height:1.6}
+.scene-text strong{color:var(--n900);font-weight:600}
+
+/* PACKAGES COMPARISON */
+.packages{background:var(--dark);padding:64px 0}
+.packages-title{font-size:28px;font-weight:700;color:#fff;margin-bottom:8px}
+.packages-sub{font-size:15px;color:rgba(255,255,255,.45);margin-bottom:36px}
+.pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.pkg-card{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);border-radius:20px;padding:24px;transition:all .2s}
+.pkg-card.featured{border-color:var(--red);background:rgba(212,43,43,.07)}
+.pkg-badge{display:inline-flex;align-items:center;gap:4px;background:var(--red);color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;margin-bottom:12px}
+.pkg-name{font-size:18px;font-weight:700;color:#fff;margin-bottom:6px}
+.pkg-price{font-size:28px;font-weight:700;color:var(--red);margin-bottom:2px}
+.pkg-price span{font-size:14px;font-weight:400;color:rgba(255,255,255,.4)}
+.pkg-equip{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:16px}
+.pkg-list{list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:20px}
+.pkg-list li{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:rgba(255,255,255,.65)}
+.pkg-list li::before{content:'✓';color:var(--green);font-weight:700;font-size:11px;margin-top:1px;flex-shrink:0}
+.pkg-btns{display:flex;flex-direction:column;gap:8px}
+.btn-pkg{width:100%;height:42px;border-radius:11px;font-size:13px;font-weight:600;transition:all .15s}
+.btn-pkg-primary{background:var(--red);color:#fff}.btn-pkg-primary:hover{background:var(--red-dark)}
+.btn-pkg-sec{background:rgba(255,255,255,.07);color:rgba(255,255,255,.6)}.btn-pkg-sec:hover{background:rgba(255,255,255,.12)}
+
+/* OBJECTIONS */
+.objections{background:#fff;padding:64px 0}
+.obj-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+.obj-title{font-size:28px;font-weight:700;margin-bottom:8px}
+.obj-sub{font-size:15px;color:var(--n600);margin-bottom:32px}
+.obj-list{display:flex;flex-direction:column;gap:16px}
+.obj-item{background:var(--n50);border:1px solid var(--n100);border-radius:16px;padding:20px;cursor:pointer;transition:background .15s}
+.obj-item:hover{background:var(--n100)}
+.obj-item.open{background:#fff;border-color:var(--red)}
+.obj-q{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.obj-q-text{font-size:15px;font-weight:600}
+.obj-icon{width:24px;height:24px;background:var(--n100);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:all .15s}
+.obj-item.open .obj-icon{background:var(--red);color:#fff;transform:rotate(180deg)}
+.obj-a{display:none;font-size:14px;color:var(--n600);line-height:1.65;margin-top:12px}
+.obj-item.open .obj-a{display:block}
+.obj-cta-block{background:var(--n50);border:1px solid var(--n100);border-radius:20px;padding:32px;text-align:center;position:sticky;top:100px}
+.obj-cta-emoji{font-size:40px;margin-bottom:16px}
+.obj-cta-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.obj-cta-desc{font-size:14px;color:var(--n600);line-height:1.6;margin-bottom:24px}
+.obj-cta-phone{font-size:22px;font-weight:700;color:var(--n900);margin-bottom:4px}
+.obj-cta-note{font-size:12px;color:var(--n600)}
+
+/* REVIEWS */
+.reviews{background:var(--n50);padding:64px 0}
+.reviews-header{text-align:center;margin-bottom:40px}
+.reviews-overline{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--n600);margin-bottom:10px}
+.reviews-title{font-size:28px;font-weight:700}
+.reviews-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.rv-card{background:#fff;border-radius:18px;padding:24px;border:1px solid var(--n100)}
+.rv-stars{color:#FFB800;font-size:13px;margin-bottom:10px}
+.rv-text{font-size:14px;color:var(--n900);line-height:1.65;margin-bottom:16px}
+.rv-author{display:flex;align-items:center;gap:10px}
+.rv-ava{width:36px;height:36px;border-radius:50%;background:var(--n100);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;color:var(--n600)}
+.rv-name{font-size:14px;font-weight:600}
+.rv-meta{font-size:12px;color:var(--n600)}
+
+/* STICKY BOTTOM */
+.sticky-bottom{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-top:1px solid var(--n100);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;z-index:100;transform:translateY(100%);transition:transform .3s}
+.sticky-bottom.visible{transform:translateY(0)}
+.sticky-price{display:flex;flex-direction:column}
+.sticky-price-main{font-size:18px;font-weight:700}
+.sticky-price-note{font-size:12px;color:var(--n600)}
+
+/* HERO VISUAL */
+.hero-visual{display:flex;justify-content:center;align-items:flex-end;padding-bottom:0}
+.house-illustration{width:100%;max-width:440px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:24px 24px 0 0;padding:24px;position:relative;overflow:hidden}
+.house-top{background:rgba(255,255,255,.06);border-radius:16px;padding:20px;margin-bottom:12px}
+.house-top-label{font-size:11px;color:rgba(255,255,255,.35);margin-bottom:6px}
+.house-status{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:600;color:#fff;margin-bottom:12px}
+.house-events{display:flex;flex-direction:column;gap:6px}
+.house-ev{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.04);border-radius:10px;padding:8px 12px;font-size:12px;color:rgba(255,255,255,.5)}
+.house-ev-time{margin-left:auto;font-size:10px;color:rgba(255,255,255,.25)}
+.house-zones{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.house-zone{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:12px;text-align:center}
+.hz-icon{font-size:18px;margin-bottom:4px}
+.hz-name{font-size:11px;color:rgba(255,255,255,.5)}
+.hz-status{font-size:10px;color:var(--green);font-weight:600;margin-top:2px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:24px;padding:36px;max-width:480px;width:90%;position:relative}
+.modal-x{position:absolute;top:14px;right:14px;width:30px;height:30px;background:var(--n100);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer}
+.modal h3{font-size:20px;font-weight:700;margin-bottom:8px}
+.modal p{font-size:14px;color:var(--n600);margin-bottom:20px;line-height:1.6}
+.form-row{display:flex;flex-direction:column;gap:10px}
+.inp{width:100%;height:48px;border:1.5px solid var(--n300);border-radius:12px;padding:0 16px;font-size:15px;font-family:inherit;outline:none;transition:border-color .15s}
+.inp:focus{border-color:var(--red)}
+.form-note{font-size:12px;color:var(--n600);text-align:center;line-height:1.5}
+.success-modal{text-align:center;padding:20px 0}
+.success-emoji{font-size:52px;margin-bottom:16px}
+
+/* ─── ANIMATIONS ─── */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.house-illustration{animation:float 4s ease-in-out infinite}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity 260ms cubic-bezier(0,0,.2,1),transform 260ms cubic-bezier(0,0,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.reveal-scale{opacity:0;transform:scale(.96) translateY(12px);transition:opacity 300ms cubic-bezier(0,0,.2,1),transform 300ms cubic-bezier(0,0,.2,1)}
+.reveal-scale.in{opacity:1;transform:none}
+[data-d="1"]{transition-delay:80ms}[data-d="2"]{transition-delay:160ms}[data-d="3"]{transition-delay:240ms}[data-d="4"]{transition-delay:320ms}
+@media(prefers-reduced-motion:reduce){.house-illustration{animation:none}.reveal,.reveal-scale{transition:none!important;opacity:1!important;transform:none!important}}
+
+@media(max-width:960px){
+  .hero-grid{grid-template-columns:1fr}.hero-visual{display:none}
+  .sc-hero-inner{grid-template-columns:1fr}
+  .scenes-grid,.pkg-grid,.reviews-grid{grid-template-columns:1fr 1fr}
+  .obj-grid{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .hero h1{font-size:34px}
+  .scenes-grid,.pkg-grid,.reviews-grid{grid-template-columns:1fr}
+  .tabs-inner{padding:0 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-in">
+    <a href="main.html" class="logo">
+      <div class="logo-ic">R</div>
+      Reforce
+    </a>
+    <nav class="nav">
+      <div class="nav-item">
+        <button class="nav-lnk">О нас <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="nav-drop">
+          <a href="main.html#how">Как это работает</a>
+          <a href="main.html#proof">Отзывы клиентов</a>
+          <a href="main.html#app">Приложение</a>
+          <a href="#">О компании</a>
+        </div>
+      </div>
+      <a href="home.html" class="nav-lnk active">Для дома</a>
+      <a href="business.html" class="nav-lnk">Для бизнеса</a>
+      <a href="partners.html" class="nav-lnk">Партнёрам</a>
+    </nav>
+    <div class="nav-sep"></div>
+    <div class="hdr-r">
+      <button class="hdr-login" onclick="window.location='#'">Войти</button>
+      <button class="btn btn-red btn-sm" onclick="openModal()">Оформить охрану</button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div style="padding-bottom:64px">
+        <div class="hero-tag">
+          <span class="tag-dot"></span>
+          Охрана жилья — с 2018 года
+        </div>
+        <h1>Ушли из дома —<br>квартира<br><em>под контролем</em></h1>
+        <p class="hero-sub">Охранная сигнализация, видеокамеры и экстренное реагирование — всё через одно приложение. Монтаж за 1 день, оформление без офиса.</p>
+        <div class="hero-ctas">
+          <button class="btn btn-red btn-lg" onclick="openModal()">Оформить охрану</button>
+          <a href="#packages" class="btn btn-ghost btn-lg">Смотреть пакеты</a>
+        </div>
+        <div class="hero-trust">
+          <div class="trust-item"><span class="trust-num" data-countup>50К+</span><span class="trust-label">квартир и домов</span></div>
+          <div class="trust-item"><span class="trust-num">1 день</span><span class="trust-label">до охраны</span></div>
+          <div class="trust-item"><span class="trust-num">24/7</span><span class="trust-label">мониторинг пульта</span></div>
+          <div class="trust-item"><span class="trust-num">0 ₽</span><span class="trust-label">вызов менеджера</span></div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="house-illustration">
+          <div class="house-top">
+            <div class="house-top-label">Reforce · Мои объекты</div>
+            <div class="house-status">
+              <span class="tag-dot"></span>
+              Квартира на Тверской · Под охраной
+            </div>
+            <div class="house-events">
+              <div class="house-ev">🔔 Поставлена на охрану — Вы<span class="house-ev-time">08:52</span></div>
+              <div class="house-ev">🚗 ГБР освободилась от вызова<span class="house-ev-time">вчера</span></div>
+            </div>
+          </div>
+          <div class="house-zones">
+            <div class="house-zone"><div class="hz-icon">🚪</div><div class="hz-name">Входная зона</div><div class="hz-status">● Активна</div></div>
+            <div class="house-zone"><div class="hz-icon">🪟</div><div class="hz-name">Периметр</div><div class="hz-status">● Активен</div></div>
+            <div class="house-zone"><div class="hz-icon">📹</div><div class="hz-name">Камера</div><div class="hz-status">● В эфире</div></div>
+            <div class="house-zone"><div class="hz-icon">🌡️</div><div class="hz-name">Датчик дыма</div><div class="hz-status">● Норма</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCENARIO TABS -->
+<div class="scenario-bar">
+  <div class="container">
+    <div class="tabs-inner">
+      <button class="tab-btn active" onclick="switchTab('apt', this)">🏠 Квартира</button>
+      <button class="tab-btn" onclick="switchTab('house', this)">🌲 Загородный дом</button>
+      <button class="tab-btn" onclick="switchTab('dacha', this)">🏡 Дача и гараж</button>
+    </div>
+  </div>
+</div>
+
+<!-- === КВАРТИРА === -->
+<div class="scenario-panel active" id="panel-apt">
+  <div class="container">
+    <div class="sc-hero">
+      <div class="sc-hero-inner">
+        <div>
+          <div class="sc-label">Квартира</div>
+          <h2 class="sc-title">Никаких сюрпризов,<br>когда вас нет дома</h2>
+          <p class="sc-desc">Датчики на дверях и окнах, постоянный мониторинг пульта, моментальный выезд группы реагирования. Вы узнаете о любом событии раньше, чем что-то успеет случиться.</p>
+          <div class="hero-ctas">
+            <button class="btn btn-red" onclick="openModal()">Оформить для квартиры</button>
+            <a href="#packages" class="btn btn-ghost">Смотреть пакеты</a>
+          </div>
+        </div>
+        <div class="sc-price-block">
+          <div class="sc-price-label">Стартовая цена</div>
+          <div class="sc-price-main">от 800 ₽<span>/мес</span></div>
+          <div class="sc-price-equip">+ оборудование от 8 025 ₽ (единоразово)</div>
+          <div class="sc-price-note">✓ Монтаж включён в стоимость оборудования</div>
+          <div class="includes">
+            <div class="include-item"><span class="inc-check">✓</span>Охранная сигнализация (датчики + пульт)</div>
+            <div class="include-item"><span class="inc-check">✓</span>Мониторинг 24/7 на пульте охраны</div>
+            <div class="include-item"><span class="inc-check">✓</span>Экстренный выезд ГБР при сигнале</div>
+            <div class="include-item"><span class="inc-check">✓</span>Push-уведомления на телефон</div>
+            <div class="include-item"><span class="inc-check">✓</span>Управление с приложения Reforce</div>
+          </div>
+          <button class="btn btn-red" style="width:100%;height:48px;font-size:15px" onclick="openModal()">Оформить сейчас</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenes">
+      <div class="scenes-title">Как охрана работает в реальных ситуациях</div>
+      <div class="scenes-grid">
+        <div class="scene-card">
+          <div class="scene-emoji">🔑</div>
+          <div class="scene-time">Утро, вы уходите</div>
+          <p class="scene-text">В приложении нажали <strong>«Поставить на охрану»</strong>. Датчики активированы, пульт получил подтверждение. Выходите спокойно.</p>
+        </div>
+        <div class="scene-card">
+          <div class="scene-emoji">🚨</div>
+          <div class="scene-time">Срабатывание датчика</div>
+          <p class="scene-text">Пульт получил сигнал. <strong>Оператор звонит вам</strong> в течение 1 минуты. Вы отвечаете — принимаете решение, нужен ли выезд ГБР.</p>
+        </div>
+        <div class="scene-card">
+          <div class="scene-emoji">📱</div>
+          <div class="scene-time">Вы в командировке</div>
+          <p class="scene-text">Открыли приложение — статус «Под охраной». <strong>Посмотрели камеры</strong> в режиме онлайн. Всё в порядке, закрыли телефон.</p>
+        </div>
+        <div class="scene-card">
+          <div class="scene-emoji">🧹</div>
+          <div class="scene-time">Пришла уборщица</div>
+          <p class="scene-text">Заранее выдали ей <strong>временный доступ</strong> в приложении на 2 часа. После уборки доступ закрылся автоматически.</p>
+        </div>
+        <div class="scene-card">
+          <div class="scene-emoji">🌙</div>
+          <div class="scene-time">Ночью дома</div>
+          <p class="scene-text">Включили <strong>«Охрана периметра»</strong> — датчики на входе активны, в комнатах выключены. Ходите свободно, попытка взлома будет замечена.</p>
+        </div>
+        <div class="scene-card">
+          <div class="scene-emoji">💳</div>
+          <div class="scene-time">Оплата</div>
+          <p class="scene-text">Абонентская плата списывается <strong>автоматически</strong> раз в месяц. Уведомление приходит за 3 дня. Никаких напоминаний себе.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- === ЗАГОРОДНЫЙ ДОМ === -->
+<div class="scenario-panel" id="panel-house">
+  <div class="container">
+    <div class="sc-hero">
+      <div class="sc-hero-inner">
+        <div>
+          <div class="sc-label">Загородный дом</div>
+          <h2 class="sc-title">Дом под охраной,<br>даже когда вы в городе</h2>
+          <p class="sc-desc">Периметр территории, датчики движения снаружи и внутри, защита от протечек и пожара. Система рассчитана на загородные условия — работает без постоянного интернета через GSM-канал.</p>
+          <div class="hero-ctas">
+            <button class="btn btn-red" onclick="openModal()">Оформить для дома</button>
+            <a href="#packages" class="btn btn-ghost">Смотреть пакеты</a>
+          </div>
+        </div>
+        <div class="sc-price-block">
+          <div class="sc-price-label">Стартовая цена</div>
+          <div class="sc-price-main">от 1 200 ₽<span>/мес</span></div>
+          <div class="sc-price-equip">+ оборудование от 11 500 ₽ (единоразово)</div>
+          <div class="sc-price-note">✓ GSM-резервный канал — работает без wi-fi</div>
+          <div class="includes">
+            <div class="include-item"><span class="inc-check">✓</span>Охрана периметра и внутренних помещений</div>
+            <div class="include-item"><span class="inc-check">✓</span>Датчики движения снаружи и внутри</div>
+            <div class="include-item"><span class="inc-check">✓</span>Защита от протечки и пожара</div>
+            <div class="include-item"><span class="inc-check">✓</span>Резервный GSM-канал (без интернета)</div>
+            <div class="include-item"><span class="inc-check">✓</span>Мониторинг 24/7 + выезд ГБР</div>
+          </div>
+          <button class="btn btn-red" style="width:100%;height:48px;font-size:15px" onclick="openModal()">Оформить сейчас</button>
+        </div>
+      </div>
+    </div>
+    <div class="scenes">
+      <div class="scenes-title">Типичные сценарии для загородного дома</div>
+      <div class="scenes-grid">
+        <div class="scene-card">
+          <div class="scene-emoji">🏠</div>
+          <div class="scene-time">Дом закрыт на зиму</div>
+          <p class="scene-text">Датчики движения и прорыва отопления работают. Если что-то случится зимой — <strong>вы узнаете первым</strong>, а не весной.</p>
+        </div>
+        <div class="scene-card">
+          <div class="scene-emoji">💧</div>
+          <div class="scene-time">Прорыв трубы</div>
+          <p class="scene-text">Датчик протечки сработал — пришёл пуш, пульт позвонил. <strong>Заблокировали подачу воды</strong> дистанционно через умный кран.</p>
+        </div>
+        <div class="scene-card">
+          <div class="scene-emoji">🔦</div>
+          <div class="scene-time">Движение на территории</div>
+          <p class="scene-text">Датчик наружного периметра засёк движение ночью. Оператор посмотрел камеру — <strong>оказалась лиса</strong>. Вас не беспокоили.</p>
+        </div>
+        <div class="scene-card">
+          <div class="scene-emoji">🛜</div>
+          <div class="scene-time">Интернет отключился</div>
+          <p class="scene-text">Система переключилась на GSM-канал автоматически. <strong>Охрана не прервалась</strong> — приложение показывает статус через мобильную сеть.</p>
+        </div>
+        <div class="scene-card">
+          <div class="scene-emoji">👷</div>
+          <div class="scene-time">Строители на участке</div>
+          <p class="scene-text">Выдали прорабу <strong>доступ на 3 недели</strong>. Он снимает и ставит на охрану сам. Каждое действие — в истории событий у вас.</p>
+        </div>
+        <div class="scene-card">
+          <div class="scene-emoji">🌡️</div>
+          <div class="scene-time">Мороз −25°</div>
+          <p class="scene-text">Пришёл пуш: <strong>«температура опустилась ниже 5°»</strong>. Включили отопление дистанционно за 5 минут до того, как трубы могли замёрзнуть.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- === ДАЧА И ГАРАЖ === -->
+<div class="scenario-panel" id="panel-dacha">
+  <div class="container">
+    <div class="sc-hero">
+      <div class="sc-hero-inner">
+        <div>
+          <div class="sc-label">Дача и гараж</div>
+          <h2 class="sc-title">Сезонная охрана<br>без лишних расходов</h2>
+          <p class="sc-desc">Минимальный пакет для дач, гаражей и хозяйственных построек. Компактная сигнализация, датчик открытия, связь через GSM. Можно поставить самостоятельно или вызвать мастера.</p>
+          <div class="hero-ctas">
+            <button class="btn btn-red" onclick="openModal()">Оформить для дачи</button>
+            <a href="#packages" class="btn btn-ghost">Смотреть пакеты</a>
+          </div>
+        </div>
+        <div class="sc-price-block">
+          <div class="sc-price-label">Стартовая цена</div>
+          <div class="sc-price-main">от 500 ₽<span>/мес</span></div>
+          <div class="sc-price-equip">+ оборудование от 5 900 ₽ (единоразово)</div>
+          <div class="sc-price-note">✓ Работает без проводного интернета</div>
+          <div class="includes">
+            <div class="include-item"><span class="inc-check">✓</span>Компактный GSM-прибор</div>
+            <div class="include-item"><span class="inc-check">✓</span>Датчики открытия дверей и окон</div>
+            <div class="include-item"><span class="inc-check">✓</span>Датчик движения внутри</div>
+            <div class="include-item"><span class="inc-check">✓</span>SMS + push-уведомления</div>
+            <div class="include-item"><span class="inc-check">✓</span>Мониторинг 24/7</div>
+          </div>
+          <button class="btn btn-red" style="width:100%;height:48px;font-size:15px" onclick="openModal()">Оформить сейчас</button>
+        </div>
+      </div>
+    </div>
+    <div class="scenes">
+      <div class="scenes-title">Для дач и гаражей — просто и надёжно</div>
+      <div class="scenes-grid">
+        <div class="scene-card">
+          <div class="scene-emoji">🍂</div>
+          <div class="scene-time">Конец дачного сезона</div>
+          <p class="scene-text">Закрыли дачу, поставили на охрану в приложении. Всё лето и зиму <strong>система следит сама</strong> — вы приедете к целому дому.</p>
+        </div>
+        <div class="scene-card">
+          <div class="scene-emoji">🚗</div>
+          <div class="scene-time">Гараж ночью</div>
+          <p class="scene-text">Датчик открытия ворот сработал в 3:00. Push пришёл мгновенно. <strong>Позвонили в пульт</strong> — ГБР выехала через 4 минуты.</p>
+        </div>
+        <div class="scene-card">
+          <div class="scene-emoji">📶</div>
+          <div class="scene-time">Нет wi-fi на даче</div>
+          <p class="scene-text">Прибор работает на <strong>sim-карте</strong> — интернет не нужен. Связь через мобильную сеть, охрана активна всегда.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PACKAGES -->
+<section class="packages" id="packages">
+  <div class="container">
+    <div class="packages-title">Выберите пакет</div>
+    <p class="packages-sub">Все пакеты включают монтаж, первый месяц мониторинга и приложение Reforce</p>
+    <div class="pkg-grid">
+      <div class="pkg-card">
+        <div class="pkg-name">Базовая охрана</div>
+        <div class="pkg-price">800 ₽<span>/мес</span></div>
+        <div class="pkg-equip">+ оборудование от 8 025 ₽</div>
+        <ul class="pkg-list">
+          <li>Охранная сигнализация</li>
+          <li>Мониторинг 24/7</li>
+          <li>Выезд ГБР при сигнале</li>
+          <li>Push-уведомления</li>
+          <li>Приложение Reforce</li>
+        </ul>
+        <div class="pkg-btns">
+          <button class="btn-pkg btn-pkg-primary" onclick="openModal('Базовая охрана', '800 ₽/мес')">Оформить</button>
+          <button class="btn-pkg btn-pkg-sec">Подробнее</button>
+        </div>
+      </div>
+      <div class="pkg-card featured">
+        <div class="pkg-badge">⭐ Популярный выбор</div>
+        <div class="pkg-name">Охрана + видео</div>
+        <div class="pkg-price">1 100 ₽<span>/мес</span></div>
+        <div class="pkg-equip">+ оборудование от 11 500 ₽</div>
+        <ul class="pkg-list">
+          <li>Всё из базового пакета</li>
+          <li>2 камеры с онлайн-просмотром</li>
+          <li>Архив записей 30 дней</li>
+          <li>Видеоверификация сигнала</li>
+          <li>Ночной режим «Охрана периметра»</li>
+        </ul>
+        <div class="pkg-btns">
+          <button class="btn-pkg btn-pkg-primary" onclick="openModal('Охрана + видео', '1 100 ₽/мес')">Оформить</button>
+          <button class="btn-pkg btn-pkg-sec">Подробнее</button>
+        </div>
+      </div>
+      <div class="pkg-card">
+        <div class="pkg-name">Умный дом</div>
+        <div class="pkg-price">1 600 ₽<span>/мес</span></div>
+        <div class="pkg-equip">+ оборудование от 19 900 ₽</div>
+        <ul class="pkg-list">
+          <li>Всё из «Охрана + видео»</li>
+          <li>Управление климатом и светом</li>
+          <li>Датчики протечки и дыма</li>
+          <li>Умные замки и датчики</li>
+          <li>Автоматические сценарии</li>
+        </ul>
+        <div class="pkg-btns">
+          <button class="btn-pkg btn-pkg-primary" onclick="openModal('Умный дом', '1 600 ₽/мес')">Оформить</button>
+          <button class="btn-pkg btn-pkg-sec">Подробнее</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OBJECTIONS + CTA -->
+<section class="objections">
+  <div class="container">
+    <div class="obj-grid">
+      <div>
+        <div class="obj-title">Ответы на частые вопросы</div>
+        <p class="obj-sub">Снимаем возражения честно — без уловок</p>
+        <div class="obj-list">
+          <div class="obj-item" onclick="toggleObj(this)">
+            <div class="obj-q"><span class="obj-q-text">Что если сработает случайно и ГБР приедет зря?</span><span class="obj-icon">▼</span></div>
+            <div class="obj-a">Оператор сначала звонит вам. Если вы ответили и сказали «всё в порядке» — ГБР не едет. Без вашего подтверждения или если вы не берёте трубку — выезжают. За ложный вызов по вашей вине штраф не предусмотрен в стандартном договоре.</div>
+          </div>
+          <div class="obj-item" onclick="toggleObj(this)">
+            <div class="obj-q"><span class="obj-q-text">Нужно ли будет платить за монтаж отдельно?</span><span class="obj-icon">▼</span></div>
+            <div class="obj-a">Монтаж включён в стоимость оборудования. В цену «от 8 025 ₽» входит всё оборудование и его установка мастером. Скрытых платежей нет — итоговая цена фиксируется в договоре до приезда мастера.</div>
+          </div>
+          <div class="obj-item" onclick="toggleObj(this)">
+            <div class="obj-q"><span class="obj-q-text">Что будет, если я перееду на другой адрес?</span><span class="obj-icon">▼</span></div>
+            <div class="obj-a">Оборудование принадлежит вам — можно перевезти на новый адрес. Мастер перемонтирует за отдельную плату. Или можно переоформить договор на нового жильца, если продаёте/сдаёте жильё.</div>
+          </div>
+          <div class="obj-item" onclick="toggleObj(this)">
+            <div class="obj-q"><span class="obj-q-text">Можно ли расторгнуть договор в любое время?</span><span class="obj-icon">▼</span></div>
+            <div class="obj-a">Да. Договор расторгается с уведомлением за 30 дней. Демонтаж оборудования — по согласованию. Оборудование остаётся у вас — можно использовать с другой охранной компанией.</div>
+          </div>
+          <div class="obj-item" onclick="toggleObj(this)">
+            <div class="obj-q"><span class="obj-q-text">Работает ли охрана если отключат электричество?</span><span class="obj-icon">▼</span></div>
+            <div class="obj-a">Приборы оснащены резервным аккумулятором на 4–8 часов. Связь с пультом при пропадании электричества переходит на GSM-канал автоматически. Система продолжает работать.</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="obj-cta-block">
+          <div class="obj-cta-emoji">💬</div>
+          <div class="obj-cta-title">Остались вопросы?</div>
+          <p class="obj-cta-desc">Менеджер перезвонит в течение 15 минут, расскажет о пакетах под ваш объект и ответит на любые вопросы.</p>
+          <div class="obj-cta-phone">8 800 555-75-55</div>
+          <div class="obj-cta-note">Бесплатный звонок · Пн–Вс 9:00–21:00</div>
+          <button class="btn btn-red" style="width:100%;margin-top:20px;height:48px" onclick="openModal()">Заказать звонок</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="reviews">
+  <div class="container">
+    <div class="reviews-header">
+      <div class="reviews-overline">Отзывы</div>
+      <div class="reviews-title">Что говорят клиенты</div>
+    </div>
+    <div class="reviews-grid">
+      <div class="rv-card">
+        <div class="rv-stars">★★★★★</div>
+        <p class="rv-text">«Поставили охрану в квартире 3 года назад. Однажды ночью сработал датчик — оператор позвонил через 40 секунд. Оказалось, кот сбросил вазу. Обошлось без ГБР, но реакция впечатлила.»</p>
+        <div class="rv-author"><div class="rv-ava">В</div><div><div class="rv-name">Виктор, 54 года</div><div class="rv-meta">Квартира · Москва · 3 года с Reforce</div></div></div>
+      </div>
+      <div class="rv-card">
+        <div class="rv-stars">★★★★★</div>
+        <p class="rv-text">«Дача стоит закрытой с октября по май. Каждую зиму за неё беспокоился. Теперь всё в приложении — статус, температура, история событий. Первую зиму спал спокойно.»</p>
+        <div class="rv-author"><div class="rv-ava">С</div><div><div class="rv-name">Сергей, 48 лет</div><div class="rv-meta">Дача · Подмосковье · 1 год с Reforce</div></div></div>
+      </div>
+      <div class="rv-card">
+        <div class="rv-stars">★★★★☆</div>
+        <p class="rv-text">«Оформила онлайн, мастер приехал через день. Установили за 3 часа. Приложение понятное — разобралась без инструкции. Плачу автоматически, не думаю об этом.»</p>
+        <div class="rv-author"><div class="rv-ava">Т</div><div><div class="rv-name">Татьяна, 61 год</div><div class="rv-meta">Квартира · Екатеринбург · 8 месяцев с Reforce</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STICKY BOTTOM -->
+<div class="sticky-bottom" id="stickyBottom">
+  <div class="sticky-price">
+    <div class="sticky-price-main">от 800 ₽/мес</div>
+    <div class="sticky-price-note">+ оборудование от 8 025 ₽ · монтаж включён</div>
+  </div>
+  <div style="display:flex;gap:10px">
+    <button class="btn btn-ghost btn-sm" onclick="document.getElementById('packages').scrollIntoView({behavior:'smooth'})">Пакеты</button>
+    <button class="btn btn-red" onclick="openModal()">Оформить охрану</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" id="modalContent">
+    <button class="modal-x" onclick="closeModal()">✕</button>
+    <h3 id="modalTitle">Оформить охрану дома</h3>
+    <p id="modalDesc">Оставьте контакты — менеджер свяжется в течение 30 минут и согласует дату монтажа.</p>
+    <div class="form-row">
+      <input class="inp" type="text" placeholder="Ваше имя">
+      <input class="inp" type="tel" placeholder="Телефон" value="+7 ">
+      <input class="inp" type="text" placeholder="Ваш город">
+      <button class="btn btn-red" style="height:50px;font-size:15px;width:100%" onclick="submitForm()">Отправить заявку</button>
+      <p class="form-note">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных (152-ФЗ)</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.scenario-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + id).classList.add('active');
+}
+
+function toggleObj(el) {
+  const open = el.classList.contains('open');
+  document.querySelectorAll('.obj-item').forEach(i => i.classList.remove('open'));
+  if (!open) el.classList.add('open');
+}
+
+let selectedPkg = '';
+function openModal(pkg, price) {
+  selectedPkg = pkg || 'Охрана дома';
+  document.getElementById('modalTitle').textContent = pkg ? `Оформить: «${pkg}»` : 'Оформить охрану дома';
+  document.getElementById('modalDesc').textContent = `Оставьте контакты — менеджер свяжется в течение 30 минут и согласует дату монтажа.${price ? ' Пакет: ' + pkg + ' — ' + price : ''}`;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function submitForm() {
+  document.getElementById('modalContent').innerHTML = `<div class="success-modal"><div class="success-emoji">✅</div><h3>Заявка отправлена!</h3><p style="color:var(--n600);margin-top:8px;line-height:1.6">Менеджер позвонит вам в течение 30 минут.<br>Пока ждёте — скачайте приложение Reforce.</p><div style="display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap"><button class="btn btn-red">Скачать для iOS</button><button class="btn btn-ghost">Для Android</button></div><button onclick="closeModal()" style="background:none;color:var(--n600);font-size:13px;margin-top:12px">Закрыть</button></div>`;
+}
+document.getElementById('modal').addEventListener('click', e => { if(e.target === e.currentTarget) closeModal(); });
+
+// Sticky bottom
+window.addEventListener('scroll', () => {
+  const s = document.getElementById('stickyBottom');
+  s.classList.toggle('visible', window.scrollY > 600);
+}, {passive: true});
+
+/* SCROLL REVEAL */
+(function(){
+  // Auto-add reveal to cards and headings
+  document.querySelectorAll('.scene-card,.pkg-card,.rv-card').forEach(function(el){
+    el.classList.add('reveal');
+  });
+  document.querySelectorAll('.scenes-title,.packages-title,.reviews-title').forEach(function(el){
+    el.classList.add('reveal');
+  });
+  // Stagger within grids (cycle 1–3)
+  document.querySelectorAll('.scenes-grid,.pkg-grid,.reviews-grid').forEach(function(grid){
+    grid.querySelectorAll(':scope > .reveal').forEach(function(el, i){
+      el.setAttribute('data-d', String((i % 3) + 1));
+    });
+  });
+
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); }
+    });
+  }, {threshold: 0.12});
+  document.querySelectorAll('.reveal,.reveal-scale').forEach(function(el){ obs.observe(el); });
+
+  // Count-up
+  function countUp(el){
+    var orig = el.textContent.trim();
+    var isK = orig.indexOf('К') !== -1;
+    var numMatch = orig.match(/[\d\s]+/);
+    if(!numMatch) return;
+    var raw = numMatch[0].replace(/\s/g,'');
+    var end = parseInt(raw, 10);
+    if(isNaN(end) || end === 0) return;
+    var suffix = orig.slice(numMatch[0].length);
+    if(isK){ end = parseInt(orig); suffix = 'К+'; }
+    var t0 = performance.now(), dur = 950;
+    function step(t){
+      var p = Math.min((t - t0) / dur, 1);
+      var e2 = p < 0.5 ? 2*p*p : -1 + (4 - 2*p)*p;
+      var v = Math.round(e2 * end);
+      if(isK){ el.textContent = v + 'К+'; }
+      else if(end >= 1000){ el.textContent = v.toLocaleString('ru-RU') + suffix; }
+      else { el.textContent = v + suffix; }
+      if(p < 1){ requestAnimationFrame(step); } else { el.textContent = orig; }
+    }
+    requestAnimationFrame(step);
+  }
+  var cobs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ countUp(e.target); cobs.unobserve(e.target); }
+    });
+  }, {threshold: 0.5});
+  document.querySelectorAll('[data-countup]').forEach(function(el){ cobs.observe(el); });
+})();
+</script>
+</body>
+</html>

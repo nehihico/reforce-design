@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reforce — Безопасность как сервис</title>
+<style>
+:root {
+  --red: #D42B2B; --red-d: #BC2525;
+  --dark: #1A1A2E;
+  --n900: #1C1C1E; --n600: #636366; --n300: #C7C7CC;
+  --n100: #F2F2F7; --n50: #F9F9FB;
+  --green: #34C759; --blue: #007AFF;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif; color: var(--n900); background: #fff; -webkit-font-smoothing: antialiased; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; border: none; font-family: inherit; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+/* ─── HEADER — FLOATING PILL ─── */
+.hdr{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:14px 24px;background:transparent;pointer-events:none}
+.hdr-in{pointer-events:all;background:rgba(16,16,24,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:100px;height:52px;padding:0 8px;display:flex;align-items:center;gap:4px;box-shadow:0 4px 32px rgba(0,0,0,.3);width:100%;max-width:860px}
+.logo{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700;flex-shrink:0;color:#fff;margin-right:4px;white-space:nowrap}
+.logo-ic{width:34px;height:34px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:800;flex-shrink:0}
+.nav{display:flex;gap:2px;align-items:center;flex:1;white-space:nowrap}
+.nav-item{position:relative}
+.nav-lnk{display:flex;align-items:center;gap:4px;padding:7px 12px;border-radius:100px;font-size:13.5px;font-weight:500;color:rgba(255,255,255,.6);transition:background .12s,color .12s;background:none;border:none;cursor:pointer;font-family:inherit}
+.nav-lnk:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.9)}
+.nav-lnk.active{color:#fff;background:rgba(255,255,255,.12)}
+.nav-drop{position:absolute;top:calc(100% + 10px);left:-8px;min-width:200px;background:rgba(14,14,22,.97);border:1px solid rgba(255,255,255,.1);border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,.5);padding:6px;display:none;flex-direction:column;z-index:200}
+.nav-item:hover .nav-drop{display:flex}
+.nav-drop a{padding:9px 13px;border-radius:10px;font-size:13px;color:rgba(255,255,255,.7);font-weight:500;display:block;transition:background .12s}
+.nav-drop a:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-sep{width:1px;height:20px;background:rgba(255,255,255,.12);flex-shrink:0;margin:0 4px}
+.hdr-r{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.hdr-login{font-size:13.5px;font-weight:500;color:rgba(255,255,255,.6);padding:7px 12px;border-radius:100px;background:none;border:none;cursor:pointer;font-family:inherit;transition:background .12s,color .12s;white-space:nowrap}
+.hdr-login:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.9)}
+.hdr-in .btn-red{border-radius:100px;font-size:13px;height:36px;white-space:nowrap}
+.city-btn{display:none}
+
+/* ─── BUTTONS ─── */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: inherit; font-weight: 600; transition: all .14s; border: none; cursor: pointer; }
+.btn-red { background: var(--red); color: #fff; border-radius: 12px; }
+.btn-red:hover { background: var(--red-d); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(212,43,43,.3); }
+.btn-ghost { background: var(--n100); color: var(--n900); border-radius: 12px; }
+.btn-ghost:hover { background: #e5e5ea; }
+.btn-outline-w { background: transparent; border: 1.5px solid rgba(255,255,255,.22); color: rgba(255,255,255,.75); border-radius: 12px; }
+.btn-outline-w:hover { border-color: rgba(255,255,255,.45); color: #fff; }
+.sz-sm { height: 36px; padding: 0 16px; font-size: 13px; border-radius: 10px; }
+.sz-md { height: 44px; padding: 0 22px; font-size: 14px; }
+.sz-lg { height: 54px; padding: 0 36px; font-size: 17px; border-radius: 16px; }
+
+/* ─── HERO ─── */
+.hero { background: var(--dark); padding: 72px 0 0; overflow: hidden; position: relative; }
+.hero::before { content:''; position: absolute; inset: 0; background: radial-gradient(ellipse 55% 75% at 72% 45%, rgba(212,43,43,.11) 0%, transparent 68%); pointer-events: none; }
+.hero-g { display: grid; grid-template-columns: 1fr 460px; gap: 48px; align-items: flex-end; position: relative; z-index: 1; }
+.hero-c { padding-bottom: 72px; }
+.hero-badge { display: inline-flex; align-items: center; gap: 7px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.1); border-radius: 100px; padding: 6px 14px; font-size: 12px; color: rgba(255,255,255,.6); margin-bottom: 24px; }
+.badge-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: blink 2s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
+.hero h1 { font-size: 52px; font-weight: 700; line-height: 1.08; letter-spacing: -.8px; color: #fff; margin-bottom: 18px; }
+.hero h1 em { color: var(--red); font-style: normal; }
+.hero-sub { font-size: 17px; line-height: 1.65; color: rgba(255,255,255,.52); max-width: 460px; margin-bottom: 32px; }
+.hero-cta-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.hero-phone-hint { font-size: 13px; color: rgba(255,255,255,.3); margin-top: 4px; }
+.hero-phone-hint strong { color: rgba(255,255,255,.55); }
+.hero-stats { display: flex; gap: 32px; flex-wrap: wrap; margin-top: 44px; padding-top: 28px; border-top: 1px solid rgba(255,255,255,.07); }
+.hs-num { font-size: 26px; font-weight: 700; color: #fff; }
+.hs-lbl { font-size: 12px; color: rgba(255,255,255,.4); margin-top: 3px; }
+
+/* Phone mockup */
+.hero-vis { display: flex; justify-content: center; align-items: flex-end; }
+.ph-wrap { width: 268px; }
+.ph-body { background: linear-gradient(155deg, #252540 0%, #1a1a2e 100%); border-radius: 40px; border: 1.5px solid rgba(255,255,255,.1); box-shadow: 0 32px 80px rgba(0,0,0,.5); overflow: hidden; padding-bottom: 0; }
+.ph-bar { padding: 14px 20px 8px; display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,.5); }
+.ph-notch { width: 90px; height: 6px; background: rgba(255,255,255,.08); border-radius: 3px; margin: 0 auto 4px; }
+.ph-scr { padding: 12px 16px 0; }
+.ph-greeting { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+.ph-sub { font-size: 12px; color: rgba(255,255,255,.4); margin-bottom: 14px; }
+.ph-card { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); border-radius: 18px; padding: 14px; margin-bottom: 10px; }
+.ph-obj { font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+.ph-addr { font-size: 10px; color: rgba(255,255,255,.35); margin-bottom: 12px; }
+.ph-armed { width: 100%; height: 40px; background: rgba(52,199,89,.12); border: 1px solid rgba(52,199,89,.3); border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 7px; font-size: 13px; font-weight: 600; color: #34C759; }
+.ph-events { display: flex; flex-direction: column; gap: 6px; padding-bottom: 16px; }
+.ph-ev { display: flex; align-items: center; gap: 7px; background: rgba(255,255,255,.04); border-radius: 9px; padding: 7px 10px; font-size: 11px; color: rgba(255,255,255,.5); }
+.ph-ev-t { margin-left: auto; font-size: 10px; color: rgba(255,255,255,.25); }
+
+/* ─── SEGMENTS ─── */
+.seg { background: var(--n50); padding: 64px 0; }
+.seg-hd { text-align: center; margin-bottom: 36px; }
+.overline { font-size: 11px; font-weight: 500; letter-spacing: .8px; text-transform: uppercase; color: var(--n600); margin-bottom: 10px; }
+.seg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.seg-card { background: #fff; border: 1.5px solid var(--n100); border-radius: 20px; padding: 28px; cursor: pointer; transition: all .2s; position: relative; overflow: hidden; }
+.seg-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--red); opacity: 0; transition: opacity .2s; }
+.seg-card:hover { border-color: var(--red); box-shadow: 0 6px 24px rgba(0,0,0,.09); transform: translateY(-3px); }
+.seg-card:hover::after { opacity: 1; }
+.seg-ico { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(212,43,43,.08); border-radius: 12px; margin-bottom: 16px; color: var(--red); }
+.seg-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.seg-desc { font-size: 14px; color: var(--n600); line-height: 1.6; margin-bottom: 16px; }
+.seg-list { list-style: none; display: flex; flex-direction: column; gap: 7px; margin-bottom: 20px; }
+.seg-list li { font-size: 13px; color: var(--n900); display: flex; align-items: center; gap: 7px; }
+.seg-list li::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+.seg-link { font-size: 13px; font-weight: 600; color: var(--red); display: flex; align-items: center; gap: 5px; transition: gap .14s; }
+.seg-card:hover .seg-link { gap: 9px; }
+
+/* ─── QUIZ ─── */
+.quiz-sec { background: var(--dark); padding: 80px 0; }
+.quiz-hd { text-align: center; margin-bottom: 44px; }
+.quiz-hd .overline { color: rgba(255,255,255,.38); }
+.quiz-hd h2 { font-size: 38px; font-weight: 700; color: #fff; letter-spacing: -.4px; margin-bottom: 10px; }
+.quiz-hd p { font-size: 16px; color: rgba(255,255,255,.48); }
+.quiz-box { max-width: 700px; margin: 0 auto; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 26px; padding: 36px; }
+.q-prog { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+.q-bar { flex: 1; height: 3px; background: rgba(255,255,255,.07); border-radius: 2px; overflow: hidden; }
+.q-fill { height: 100%; background: var(--red); border-radius: 2px; transition: width .4s ease; }
+.q-lbl { font-size: 12px; color: rgba(255,255,255,.32); white-space: nowrap; }
+.q-step { display: none; }
+.q-step.on { display: block; }
+.q-title { font-size: 23px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.q-hint { font-size: 14px; color: rgba(255,255,255,.42); margin-bottom: 26px; }
+.q-opts { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+.q-opt { background: rgba(255,255,255,.05); border: 1.5px solid rgba(255,255,255,.08); border-radius: 15px; padding: 16px 18px; display: flex; align-items: center; gap: 13px; cursor: pointer; transition: all .14s; }
+.q-opt:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); }
+.q-opt.sel { background: rgba(212,43,43,.1); border-color: var(--red); }
+.q-oi { width: 44px; height: 44px; background: rgba(255,255,255,.06); border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.q-ot { flex: 1; }
+.q-ot-h { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+.q-ot-d { font-size: 12px; color: rgba(255,255,255,.4); }
+.q-ck { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; font-size: 10px; color: transparent; flex-shrink: 0; transition: all .14s; }
+.q-opt.sel .q-ck { background: var(--red); border-color: var(--red); color: #fff; }
+.q-nav { display: flex; align-items: center; justify-content: space-between; margin-top: 24px; }
+.q-back { background: none; font-size: 14px; color: rgba(255,255,255,.36); font-weight: 500; transition: color .14s; }
+.q-back:hover { color: rgba(255,255,255,.65); }
+
+/* Results */
+.q-res { display: none; }
+.q-res.on { display: block; }
+.q-res-h { margin-bottom: 24px; }
+.q-res-h h3 { font-size: 21px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.q-res-h p { font-size: 13px; color: rgba(255,255,255,.42); }
+.res-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.res-card { background: rgba(255,255,255,.04); border: 1.5px solid rgba(255,255,255,.08); border-radius: 18px; padding: 22px; transition: all .2s; }
+.res-card.rec { border-color: var(--red); background: rgba(212,43,43,.07); }
+.res-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--red); color: #fff; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 100px; margin-bottom: 12px; }
+.res-name { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+.res-price { font-size: 26px; font-weight: 700; color: var(--red); }
+.res-price span { font-size: 13px; font-weight: 400; color: rgba(255,255,255,.38); }
+.res-equip { font-size: 12px; color: rgba(255,255,255,.32); margin-bottom: 14px; }
+.res-list { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
+.res-list li { font-size: 12px; color: rgba(255,255,255,.6); display: flex; align-items: flex-start; gap: 7px; }
+.res-list li::before { content: '✓'; color: var(--green); font-weight: 700; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+.res-btns { display: flex; flex-direction: column; gap: 7px; }
+.rb-pr { width: 100%; height: 40px; background: var(--red); color: #fff; border-radius: 10px; font-size: 13px; font-weight: 600; transition: background .14s; }
+.rb-pr:hover { background: var(--red-d); }
+.rb-sec { width: 100%; height: 34px; background: rgba(255,255,255,.06); color: rgba(255,255,255,.55); border-radius: 9px; font-size: 12px; font-weight: 500; transition: background .14s; }
+.rb-sec:hover { background: rgba(255,255,255,.11); }
+.res-restart { text-align: center; margin-top: 20px; }
+.res-restart button { background: none; font-size: 13px; color: rgba(255,255,255,.3); text-decoration: underline; text-underline-offset: 3px; transition: color .14s; }
+.res-restart button:hover { color: rgba(255,255,255,.55); }
+
+/* ─── HOW ─── */
+.how { background: var(--n50); padding: 80px 0; }
+.how-hd { text-align: center; margin-bottom: 52px; }
+.how-hd h2 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+.how-hd p { font-size: 16px; color: var(--n600); }
+.how-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 0; position: relative; }
+.how-step { padding: 0 20px; text-align: center; position: relative; }
+.how-step::after { content: '→'; position: absolute; top: 27px; right: -10px; font-size: 18px; color: var(--n300); }
+.how-step:last-child::after { display: none; }
+.how-num { width: 56px; height: 56px; border-radius: 50%; background: var(--red); color: #fff; font-size: 22px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin: 0 auto 18px; }
+.how-t { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+.how-d { font-size: 14px; color: var(--n600); line-height: 1.6; }
+.how-time { display: inline-flex; margin-top: 10px; font-size: 11px; font-weight: 600; color: var(--red); background: rgba(212,43,43,.08); border-radius: 100px; padding: 3px 10px; }
+
+/* ─── PARTNERS ─── */
+.prtnr { background: var(--dark); padding: 80px 0; }
+.prtnr-in { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.prtnr-c .overline { color: rgba(255,255,255,.38); margin-bottom: 12px; }
+.prtnr-c h2 { font-size: 36px; font-weight: 700; color: #fff; letter-spacing: -.35px; margin-bottom: 14px; }
+.prtnr-c p { font-size: 16px; color: rgba(255,255,255,.5); line-height: 1.7; margin-bottom: 28px; }
+.ben-list { list-style: none; display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
+.ben-item { display: flex; align-items: flex-start; gap: 12px; }
+.ben-ic { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.ben-tx strong { display: block; font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 2px; }
+.ben-tx span { font-size: 13px; color: rgba(255,255,255,.4); }
+.prtnr-stats { display: flex; flex-direction: column; gap: 14px; }
+.pstat { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 18px; padding: 22px 26px; display: flex; align-items: center; gap: 18px; }
+.pstat-num { font-size: 34px; font-weight: 700; color: var(--red); white-space: nowrap; }
+.pstat-desc strong { display: block; font-size: 14px; color: rgba(255,255,255,.8); font-weight: 600; margin-bottom: 2px; }
+.pstat-desc span { font-size: 13px; color: rgba(255,255,255,.4); }
+.prtnr-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ─── PROOF ─── */
+.proof { background: #fff; padding: 80px 0; }
+.proof-hd { text-align: center; margin-bottom: 44px; }
+.proof-hd h2 { font-size: 32px; font-weight: 700; }
+.proof-nums { display: grid; grid-template-columns: repeat(5,1fr); gap: 16px; margin-bottom: 56px; }
+.pnum { text-align: center; padding: 22px 12px; background: var(--n50); border-radius: 18px; border: 1px solid var(--n100); }
+.pnum-n { font-size: 30px; font-weight: 700; color: var(--red); }
+.pnum-l { font-size: 13px; color: var(--n600); margin-top: 5px; line-height: 1.4; }
+.rv-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+.rv { background: var(--n50); border: 1px solid var(--n100); border-radius: 18px; padding: 24px; }
+.rv-stars { color: #FFB800; font-size: 13px; margin-bottom: 10px; }
+.rv-text { font-size: 14px; color: var(--n900); line-height: 1.65; margin-bottom: 16px; }
+.rv-auth { display: flex; align-items: center; gap: 10px; }
+.rv-ava { width: 36px; height: 36px; border-radius: 50%; background: var(--n300); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: var(--n600); flex-shrink: 0; }
+.rv-name { font-size: 14px; font-weight: 600; }
+.rv-meta { font-size: 12px; color: var(--n600); }
+
+/* ─── APP ─── */
+.app-sec { background: var(--n50); padding: 80px 0; }
+.app-in { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+.app-c .overline { margin-bottom: 12px; }
+.app-c h2 { font-size: 32px; font-weight: 700; margin-bottom: 14px; }
+.app-c p { font-size: 16px; color: var(--n600); line-height: 1.7; margin-bottom: 28px; }
+.app-badges { display: flex; gap: 12px; flex-wrap: wrap; }
+.app-badge { display: flex; align-items: center; gap: 10px; background: var(--n900); color: #fff; border-radius: 13px; padding: 11px 18px; transition: transform .14s; }
+.app-badge:hover { transform: translateY(-2px); }
+.app-badge-ic { display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.app-badge-lbl { font-size: 10px; color: rgba(255,255,255,.48); }
+.app-badge-store { font-size: 14px; font-weight: 600; }
+.app-vis { display: flex; justify-content: center; gap: 18px; align-items: flex-end; }
+.mini-ph { width: 150px; background: var(--n900); border-radius: 26px; border: 1.5px solid rgba(255,255,255,.08); overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,.16); }
+.mini-scr { background: #0d0d1a; padding: 14px; display: flex; flex-direction: column; gap: 8px; min-height: 240px; }
+.mini-lbl { font-size: 10px; color: rgba(255,255,255,.3); text-align: center; }
+.mini-obj { background: rgba(255,255,255,.05); border-radius: 12px; padding: 10px; display: flex; align-items: center; gap: 8px; }
+.mini-obj-ico { font-size: 16px; }
+.mini-obj-n { font-size: 11px; font-weight: 600; color: #fff; }
+.mini-obj-s { font-size: 10px; color: var(--green); font-weight: 600; }
+.mini-btn { background: rgba(212,43,43,.14); border: 1px solid rgba(212,43,43,.3); border-radius: 10px; padding: 8px; text-align: center; font-size: 11px; font-weight: 600; color: var(--red); margin-top: auto; }
+
+/* ─── FAQ ─── */
+.faq { background: #fff; padding: 80px 0; }
+.faq-hd { text-align: center; margin-bottom: 40px; }
+.faq-hd h2 { font-size: 32px; font-weight: 700; }
+.faq-list { max-width: 700px; margin: 0 auto; display: flex; flex-direction: column; gap: 2px; }
+.faq-it { background: var(--n50); border: 1px solid var(--n100); border-radius: 4px; overflow: hidden; }
+.faq-it:first-child { border-radius: 16px 16px 4px 4px; }
+.faq-it:last-child { border-radius: 4px 4px 16px 16px; }
+.faq-q { width: 100%; background: none; padding: 18px 22px; display: flex; align-items: center; justify-content: space-between; gap: 14px; font-size: 15px; font-weight: 600; text-align: left; transition: background .13s; }
+.faq-q:hover { background: #eaeaef; }
+.faq-ch { width: 22px; height: 22px; background: var(--n100); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; transition: all .16s; }
+.faq-it.open .faq-ch { background: var(--red); color: #fff; transform: rotate(180deg); }
+.faq-a { display: none; padding: 0 22px 18px; font-size: 14px; color: var(--n600); line-height: 1.68; }
+.faq-it.open .faq-a { display: block; }
+
+/* ─── FOOTER ─── */
+.footer { background: var(--dark); padding: 56px 0 28px; }
+.ft-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 44px; border-bottom: 1px solid rgba(255,255,255,.07); }
+.ft-brand { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
+.ft-brand-ic { width: 34px; height: 34px; background: var(--red); border-radius: 9px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 17px; font-weight: 800; }
+.ft-brand-n { font-size: 19px; font-weight: 700; color: #fff; }
+.ft-desc { font-size: 14px; color: rgba(255,255,255,.36); line-height: 1.6; max-width: 280px; margin-bottom: 20px; }
+.ft-tel { font-size: 18px; font-weight: 600; color: #fff; }
+.ft-tel-n { font-size: 12px; color: rgba(255,255,255,.28); margin-top: 3px; }
+.ft-col-t { font-size: 12px; font-weight: 600; color: rgba(255,255,255,.5); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 14px; }
+.ft-links { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+.ft-links a { font-size: 14px; color: rgba(255,255,255,.4); transition: color .13s; }
+.ft-links a:hover { color: rgba(255,255,255,.75); }
+.ft-bot { display: flex; align-items: center; justify-content: space-between; padding-top: 24px; flex-wrap: wrap; gap: 10px; }
+.ft-copy { font-size: 13px; color: rgba(255,255,255,.22); }
+.ft-legal { display: flex; gap: 18px; flex-wrap: wrap; }
+.ft-legal a { font-size: 12px; color: rgba(255,255,255,.22); transition: color .13s; }
+.ft-legal a:hover { color: rgba(255,255,255,.45); }
+
+/* ─── STICKY CTA ─── */
+.sticky { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: rgba(28,28,30,.96); border: 1px solid rgba(255,255,255,.08); border-radius: 100px; padding: 10px 8px 10px 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 8px 40px rgba(0,0,0,.28); z-index: 100; opacity: 0; pointer-events: none; transition: opacity .28s; white-space: nowrap; backdrop-filter: blur(10px); }
+.sticky.show { opacity: 1; pointer-events: auto; }
+.sticky-txt { font-size: 14px; color: rgba(255,255,255,.65); font-weight: 500; }
+
+/* ─── MODAL ─── */
+.modal-ov { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 200; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+.modal-ov.open { display: flex; }
+.modal { background: #fff; border-radius: 22px; padding: 36px; max-width: 460px; width: 90%; position: relative; }
+.modal-x { position: absolute; top: 14px; right: 14px; width: 28px; height: 28px; background: var(--n100); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; transition: background .13s; }
+.modal-x:hover { background: var(--n300); }
+.modal h3 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+.modal p { font-size: 14px; color: var(--n600); margin-bottom: 20px; line-height: 1.6; }
+.form-col { display: flex; flex-direction: column; gap: 10px; }
+.inp { width: 100%; height: 48px; border: 1.5px solid var(--n300); border-radius: 12px; padding: 0 16px; font-size: 15px; font-family: inherit; outline: none; transition: border-color .13s; }
+.inp:focus { border-color: var(--red); }
+.form-note { font-size: 12px; color: var(--n600); text-align: center; line-height: 1.5; }
+
+/* ─── ANIMATIONS ─── */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.ph-wrap{animation:float 4s ease-in-out infinite}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity 260ms cubic-bezier(0,0,.2,1),transform 260ms cubic-bezier(0,0,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.reveal-scale{opacity:0;transform:scale(.96) translateY(12px);transition:opacity 300ms cubic-bezier(0,0,.2,1),transform 300ms cubic-bezier(0,0,.2,1)}
+.reveal-scale.in{opacity:1;transform:none}
+[data-d="1"]{transition-delay:80ms}[data-d="2"]{transition-delay:160ms}[data-d="3"]{transition-delay:240ms}[data-d="4"]{transition-delay:320ms}
+@media(prefers-reduced-motion:reduce){.ph-wrap{animation:none}.reveal,.reveal-scale{transition:none!important;opacity:1!important;transform:none!important}}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width: 1024px) {
+  .hero-g, .prtnr-in, .app-in { grid-template-columns: 1fr; }
+  .hero-vis { display: none; }
+  .seg-grid { grid-template-columns: 1fr; }
+  .how-grid { grid-template-columns: 1fr 1fr; }
+  .proof-nums { grid-template-columns: repeat(3,1fr); }
+  .rv-grid { grid-template-columns: 1fr 1fr; }
+  .ft-top { grid-template-columns: 1fr 1fr; }
+  .res-grid { grid-template-columns: 1fr; }
+}
+@media(max-width: 640px) {
+  .hero h1 { font-size: 36px; }
+  .nav { display: none; }
+  .how-grid { grid-template-columns: 1fr; }
+  .how-step::after { display: none; }
+  .proof-nums { grid-template-columns: 1fr 1fr; }
+  .rv-grid { grid-template-columns: 1fr; }
+  .q-opts { grid-template-columns: 1fr; }
+  .sticky { bottom: 12px; padding: 8px 6px 8px 16px; }
+  .sticky-txt { font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-in">
+    <a href="main.html" class="logo">
+      <div class="logo-ic">R</div>
+      Reforce
+    </a>
+    <nav class="nav">
+      <div class="nav-item">
+        <button class="nav-lnk">О нас <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="nav-drop">
+          <a href="#">О компании</a>
+          <a href="#how">Как это работает</a>
+          <a href="#proof">Отзывы клиентов</a>
+          <a href="#app">Приложение</a>
+        </div>
+      </div>
+      <a href="home.html" class="nav-lnk">Для дома</a>
+      <a href="business.html" class="nav-lnk">Для бизнеса</a>
+      <a href="partners.html" class="nav-lnk">Партнёрам</a>
+    </nav>
+    <div class="nav-sep"></div>
+    <div class="hdr-r">
+      <button class="hdr-login" onclick="window.location='#'">Войти</button>
+      <button class="btn btn-red sz-sm" onclick="scrollToQuiz()">Подобрать →</button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-g">
+      <div class="hero-c">
+        <div class="hero-badge">
+          <span class="badge-dot"></span>
+          70 000+ объектов под охраной прямо сейчас
+        </div>
+        <h1>Безопасность,<br>которую легко<br><em>настроить</em></h1>
+        <p class="hero-sub">Выбрали пакет онлайн — мастер приехал на следующий день. Управление, камеры и уведомления — всё в телефоне.</p>
+        <div class="hero-cta-row">
+          <button class="btn btn-red sz-lg" onclick="scrollToQuiz()">Подобрать решение</button>
+        </div>
+        <p class="hero-phone-hint" style="margin-top:12px">или звоните: <strong>8 800 555-75-55</strong> — бесплатно</p>
+        <div class="hero-stats">
+          <div><div class="hs-num" data-countup>96%</div><div class="hs-lbl">соблюдение SLA</div></div>
+          <div><div class="hs-num" data-countup>85%</div><div class="hs-lbl">клиенты рекомендуют</div></div>
+          <div><div class="hs-num">1 день</div><div class="hs-lbl">до подключения</div></div>
+          <div><div class="hs-num" data-countup>100+</div><div class="hs-lbl">городов присутствия</div></div>
+        </div>
+      </div>
+      <div class="hero-vis">
+        <div class="ph-wrap">
+          <div class="ph-body">
+            <div class="ph-notch"></div>
+            <div class="ph-bar"><span>9:41</span><span style="letter-spacing:2px">●●●</span></div>
+            <div class="ph-scr">
+              <div class="ph-greeting">Добрый вечер</div>
+              <div class="ph-sub">Все объекты в порядке</div>
+              <div class="ph-card">
+                <div class="ph-obj" style="display:flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg> Квартира на Тверской</div>
+                <div class="ph-addr">Москва, ул. Тверская, 14</div>
+                <div class="ph-armed">
+                  <span class="badge-dot"></span>
+                  Под охраной
+                </div>
+              </div>
+              <div class="ph-card" style="opacity:.6">
+                <div class="ph-obj" style="display:flex;align-items:center;gap:5px"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/><rect x="3" y="9" width="18" height="13" rx="1"/></svg> Дача в Подмосковье</div>
+                <div class="ph-addr">Одинцово, ул. Садовая, 3</div>
+                <div class="ph-armed"><span class="badge-dot"></span>Под охраной</div>
+              </div>
+              <div class="ph-events">
+                <div class="ph-ev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg> Снято с охраны — Андрей<span class="ph-ev-t">18:02</span></div>
+                <div class="ph-ev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Поставлено на охрану<span class="ph-ev-t">08:47</span></div>
+                <div class="ph-ev"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg> Камера: движение на входе<span class="ph-ev-t">вчера</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEGMENTS -->
+<section class="seg" id="segments">
+  <div class="wrap">
+    <div class="seg-hd">
+      <p class="overline">Что мы защищаем</p>
+      <h2 class="reveal" style="font-size:32px;font-weight:700">Выберите ваш сценарий</h2>
+    </div>
+    <div class="seg-grid">
+      <div class="seg-card reveal" data-d="1" onclick="window.location='home.html'">
+        <div class="seg-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+        <div class="seg-title">Для дома</div>
+        <p class="seg-desc">Квартиры, загородные дома, дачи, гаражи. Охрана, видеонаблюдение и реагирование — под контролем с телефона.</p>
+        <ul class="seg-list">
+          <li>Охрана квартиры или дома</li>
+          <li>Видеонаблюдение онлайн</li>
+          <li>Экстренный выезд ГБР</li>
+          <li>Умный дом и климат</li>
+        </ul>
+        <span class="seg-link">Подробнее →</span>
+      </div>
+      <div class="seg-card reveal" data-d="2" onclick="window.location='business.html'">
+        <div class="seg-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 0-2 2h-2"/><line x1="10" y1="6" x2="14" y2="6"/><line x1="10" y1="10" x2="14" y2="10"/><line x1="10" y1="14" x2="14" y2="14"/><line x1="10" y1="18" x2="14" y2="18"/></svg></div>
+        <div class="seg-title">Для бизнеса</div>
+        <p class="seg-desc">Магазины, офисы, склады. Контроль доступов, видеоаналитика, постовая охрана — без лишних звонков в офис охраны.</p>
+        <ul class="seg-list">
+          <li>Мониторинг объектов 24/7</li>
+          <li>Управление доступами</li>
+          <li>Постовая охрана и ГБР</li>
+          <li>Несколько объектов в одном ЛК</li>
+        </ul>
+        <span class="seg-link">Подробнее →</span>
+      </div>
+      <div class="seg-card reveal" data-d="3" onclick="window.location='partners.html'">
+        <div class="seg-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="seg-title">Партнёрам</div>
+        <p class="seg-desc">Работаете в охране? Получайте готовый поток клиентов и технологическую платформу — без вложений в рекламу.</p>
+        <ul class="seg-list">
+          <li>Готовые заявки на монтаж</li>
+          <li>ПО для пульта и ЛК</li>
+          <li>Поддержка и обучение</li>
+          <li>Участие в федеральной сети</li>
+        </ul>
+        <span class="seg-link">Стать партнёром →</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUIZ -->
+<section class="quiz-sec" id="quiz">
+  <div class="wrap">
+    <div class="quiz-hd">
+      <p class="overline">Конфигуратор</p>
+      <h2>Подберём охрану под вас</h2>
+      <p>2 вопроса — и вы увидите подходящие пакеты с ценами</p>
+    </div>
+    <div class="quiz-box">
+      <div class="q-prog">
+        <div class="q-bar"><div class="q-fill" id="qFill" style="width:33%"></div></div>
+        <span class="q-lbl" id="qLbl">Шаг 1 из 2</span>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="q-step on" id="qs1">
+        <div class="q-title">Что нужно защитить?</div>
+        <p class="q-hint">Выберите тип объекта — подберём подходящие варианты</p>
+        <div class="q-opts">
+          <div class="q-opt" onclick="pick(1,'apt',this)">
+            <div class="q-oi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+            <div class="q-ot"><div class="q-ot-h">Квартира</div><div class="q-ot-d">В многоквартирном доме</div></div>
+            <div class="q-ck"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+          <div class="q-opt" onclick="pick(1,'house',this)">
+            <div class="q-oi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/><rect x="3" y="9" width="18" height="13" rx="1"/></svg></div>
+            <div class="q-ot"><div class="q-ot-h">Частный дом или дача</div><div class="q-ot-d">Загородная недвижимость</div></div>
+            <div class="q-ck"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+          <div class="q-opt" onclick="pick(1,'biz',this)">
+            <div class="q-oi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 0-2 2h-2"/><line x1="10" y1="6" x2="14" y2="6"/><line x1="10" y1="10" x2="14" y2="10"/></svg></div>
+            <div class="q-ot"><div class="q-ot-h">Бизнес-объект</div><div class="q-ot-d">Магазин, офис, склад</div></div>
+            <div class="q-ck"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+          <div class="q-opt" onclick="pick(1,'garage',this)">
+            <div class="q-oi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
+            <div class="q-ot"><div class="q-ot-h">Гараж или склад</div><div class="q-ot-d">Имущество и транспорт</div></div>
+            <div class="q-ck"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+        </div>
+        <div class="q-nav">
+          <span></span>
+          <button class="btn btn-red sz-md" id="s1next" disabled onclick="goStep(2)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="q-step" id="qs2">
+        <div class="q-title">Что важнее всего?</div>
+        <p class="q-hint">Выберите главную задачу</p>
+        <div class="q-opts">
+          <div class="q-opt" onclick="pick(2,'intrusion',this)">
+            <div class="q-oi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+            <div class="q-ot"><div class="q-ot-h">Защита от проникновения</div><div class="q-ot-d">Сигнализация, ГБР, мониторинг</div></div>
+            <div class="q-ck"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+          <div class="q-opt" onclick="pick(2,'video',this)">
+            <div class="q-oi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div>
+            <div class="q-ot"><div class="q-ot-h">Видеонаблюдение</div><div class="q-ot-d">Камеры, онлайн-просмотр, архив</div></div>
+            <div class="q-ck"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+          <div class="q-opt" onclick="pick(2,'full',this)">
+            <div class="q-oi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
+            <div class="q-ot"><div class="q-ot-h">Комплексная защита</div><div class="q-ot-d">Охрана + видео + умный дом</div></div>
+            <div class="q-ck"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+          <div class="q-opt" onclick="pick(2,'personal',this)">
+            <div class="q-oi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+            <div class="q-ot"><div class="q-ot-h">Безопасность близких</div><div class="q-ot-d">Кнопка жизни, SOS</div></div>
+            <div class="q-ck"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          </div>
+        </div>
+        <div class="q-nav">
+          <button class="q-back" onclick="goStep(1)">← Назад</button>
+          <button class="btn btn-red sz-md" id="s2next" disabled onclick="showRes()">Показать варианты →</button>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="q-res" id="qRes">
+        <div class="q-res-h">
+          <h3>Вот что подходит именно вам</h3>
+          <p id="resCity">Подобрано по вашему запросу · Москва · Цены актуальны</p>
+        </div>
+        <div class="res-grid">
+          <div class="res-card">
+            <div class="res-name" id="rn1">Базовая охрана</div>
+            <div class="res-price">от 800 ₽<span>/мес</span></div>
+            <div class="res-equip">+ оборудование от 8 025 ₽</div>
+            <ul class="res-list">
+              <li>Охранная сигнализация</li>
+              <li>Мониторинг 24/7</li>
+              <li>Push-уведомления</li>
+              <li>Выезд ГБР при сигнале</li>
+            </ul>
+            <div class="res-btns">
+              <button class="rb-pr" onclick="openModal('Базовая охрана')">Оформить</button>
+              <button class="rb-sec">Подробнее</button>
+            </div>
+          </div>
+          <div class="res-card rec">
+            <div class="res-badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Рекомендуем</div>
+            <div class="res-name" id="rn2">Охрана + видео</div>
+            <div class="res-price">от 1 100 ₽<span>/мес</span></div>
+            <div class="res-equip">+ оборудование от 11 500 ₽</div>
+            <ul class="res-list">
+              <li>Всё из базового пакета</li>
+              <li>2 камеры с онлайн-просмотром</li>
+              <li>Архив записей 30 дней</li>
+              <li>Видеоверификация сигнала</li>
+            </ul>
+            <div class="res-btns">
+              <button class="rb-pr" onclick="openModal('Охрана + видео')">Оформить</button>
+              <button class="rb-sec">Подробнее</button>
+            </div>
+          </div>
+          <div class="res-card">
+            <div class="res-name" id="rn3">Умный дом</div>
+            <div class="res-price">от 1 600 ₽<span>/мес</span></div>
+            <div class="res-equip">+ оборудование от 19 900 ₽</div>
+            <ul class="res-list">
+              <li>Охрана + видео + климат</li>
+              <li>Управление светом и розетками</li>
+              <li>Датчики протечки и дыма</li>
+              <li>Автоматические сценарии</li>
+            </ul>
+            <div class="res-btns">
+              <button class="rb-pr" onclick="openModal('Умный дом')">Оформить</button>
+              <button class="rb-sec">Подробнее</button>
+            </div>
+          </div>
+        </div>
+        <div class="res-restart"><button onclick="resetQuiz()">Начать заново</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how">
+  <div class="wrap">
+    <div class="how-hd">
+      <p class="overline">Процесс</p>
+      <h2 class="reveal">От заявки до охраны — за 24 часа</h2>
+      <p>Никаких долгих согласований и визитов в офис</p>
+    </div>
+    <div class="how-grid">
+      <div class="how-step reveal" data-d="1">
+        <div class="how-num">1</div>
+        <div class="how-t">Выберите пакет</div>
+        <p class="how-d">Ответьте на 2 вопроса в конфигураторе — получите 3 варианта с ценами.</p>
+        <div class="how-time"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> 2 минуты</div>
+      </div>
+      <div class="how-step reveal" data-d="2">
+        <div class="how-num">2</div>
+        <div class="how-t">Оформите заявку</div>
+        <p class="how-d">Заполните адрес и контакты онлайн. Без визита в офис и бумажных форм.</p>
+        <div class="how-time"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg> 5 минут</div>
+      </div>
+      <div class="how-step reveal" data-d="3">
+        <div class="how-num">3</div>
+        <div class="how-t">Монтаж оборудования</div>
+        <p class="how-d">Мастер приедет в удобное время. Стандартная квартира — 2–3 часа.</p>
+        <div class="how-time"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> 1 рабочий день</div>
+      </div>
+      <div class="how-step reveal" data-d="4">
+        <div class="how-num">4</div>
+        <div class="how-t">Управляйте с телефона</div>
+        <p class="how-d">Приложение уже настроено. Охрана, камеры, уведомления — сразу после монтажа.</p>
+        <div class="how-time"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Сразу</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERS -->
+<section class="prtnr" id="partners">
+  <div class="wrap">
+    <div class="prtnr-in">
+      <div class="prtnr-c">
+        <p class="overline">Партнёрам</p>
+        <h2 class="reveal">Работаете в охране?<br>Станьте сильнее вместе с нами</h2>
+        <p>Reforce — технологическая платформа для охранных предприятий. Вы занимаетесь охраной, мы берём на себя технологии, маркетинг и клиентский поток.</p>
+        <ul class="ben-list">
+          <li class="ben-item reveal" data-d="1">
+            <div class="ben-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></div>
+            <div class="ben-tx"><strong>Готовый поток клиентов</strong><span>Заявки с сайта — не нужен бюджет на рекламу</span></div>
+          </li>
+          <li class="ben-item reveal" data-d="2">
+            <div class="ben-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+            <div class="ben-tx"><strong>Платформа под ключ</strong><span>Пульт, ЛК для клиентов, мобильное приложение</span></div>
+          </li>
+          <li class="ben-item reveal" data-d="3">
+            <div class="ben-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+            <div class="ben-tx"><strong>Контроль качества</strong><span>Рейтинги помогают лучшим партнёрам получать больше</span></div>
+          </li>
+          <li class="ben-item reveal" data-d="4">
+            <div class="ben-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+            <div class="ben-tx"><strong>Обучение и поддержка</strong><span>Онбординг, документация, выделенная линия</span></div>
+          </li>
+        </ul>
+        <div class="prtnr-btns">
+          <button class="btn btn-red sz-md" onclick="window.location='partners.html'">Стать партнёром</button>
+          <button class="btn btn-outline-w sz-md" onclick="openModal()">Задать вопрос</button>
+        </div>
+      </div>
+      <div class="prtnr-stats">
+        <div class="pstat reveal" data-d="1">
+          <div class="pstat-num" data-countup>120+</div>
+          <div class="pstat-desc"><strong>Партнёров на платформе</strong><span>в 100+ городах России</span></div>
+        </div>
+        <div class="pstat reveal" data-d="2">
+          <div class="pstat-num" data-countup>70К+</div>
+          <div class="pstat-desc"><strong>Объектов под охраной</strong><span>прирост +15% ежеквартально</span></div>
+        </div>
+        <div class="pstat reveal" data-d="3">
+          <div class="pstat-num" data-countup>96%</div>
+          <div class="pstat-desc"><strong>SLA по реагированию</strong><span>контроль в реальном времени</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF -->
+<section class="proof">
+  <div class="wrap">
+    <div class="proof-hd">
+      <p class="overline" style="margin-bottom:10px">Доверие</p>
+      <h2 class="reveal">Reforce выбирают</h2>
+    </div>
+    <div class="proof-nums">
+      <div class="pnum reveal" data-d="1"><div class="pnum-n" data-countup>70 000+</div><div class="pnum-l">объектов под мониторингом</div></div>
+      <div class="pnum reveal" data-d="2"><div class="pnum-n" data-countup>100+</div><div class="pnum-l">городов присутствия</div></div>
+      <div class="pnum reveal" data-d="3"><div class="pnum-n" data-countup>120+</div><div class="pnum-l">сертифицированных партнёров</div></div>
+      <div class="pnum reveal" data-d="4"><div class="pnum-n" data-countup>85%</div><div class="pnum-l">клиентов рекомендуют</div></div>
+      <div class="pnum reveal" data-d="1"><div class="pnum-n" data-countup>96%</div><div class="pnum-l">SLA соблюдён</div></div>
+    </div>
+    <div class="rv-grid">
+      <div class="rv reveal" data-d="1">
+        <div class="rv-stars">★★★★★</div>
+        <p class="rv-text">«Поставил охрану за день. Приложение простое — сразу разобрался, даже инструкцию не читал. Камеры смотрю с телефона, когда нахожусь на даче.»</p>
+        <div class="rv-auth"><div class="rv-ava">В</div><div><div class="rv-name">Виктор, 54 года</div><div class="rv-meta">Квартира + дача · Москва</div></div></div>
+      </div>
+      <div class="rv reveal" data-d="2">
+        <div class="rv-stars">★★★★★</div>
+        <p class="rv-text">«Управляем 8 точками. Открываешь приложение — сразу видно статус каждого. Уволили кассира — отозвали доступ за 30 секунд без звонков в охрану.»</p>
+        <div class="rv-auth"><div class="rv-ava">А</div><div><div class="rv-name">Алина, 32 года</div><div class="rv-meta">Сеть кофеен · 8 объектов</div></div></div>
+      </div>
+      <div class="rv reveal" data-d="3">
+        <div class="rv-stars">★★★★☆</div>
+        <p class="rv-text">«Сравнивал несколько компаний. Только у Reforce можно оформить полностью онлайн. Поставили быстро, оплата списывается автоматически — не надо помнить.»</p>
+        <div class="rv-auth"><div class="rv-ava">М</div><div><div class="rv-name">Максим, 38 лет</div><div class="rv-meta">Торговая точка + склад · ИП</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APP -->
+<section class="app-sec">
+  <div class="wrap">
+    <div class="app-in">
+      <div class="app-c">
+        <p class="overline">Мобильное приложение</p>
+        <h2 class="reveal">Охрана в кармане</h2>
+        <p>Смотрите камеры, управляйте постановкой и получайте мгновенные уведомления. Как банковское приложение — только для безопасности.</p>
+        <div class="app-badges">
+          <a href="#" class="app-badge">
+            <div class="app-badge-ic">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            </div>
+            <div><div class="app-badge-lbl">Загрузить в</div><div class="app-badge-store">App Store</div></div>
+          </a>
+          <a href="#" class="app-badge">
+            <div class="app-badge-ic">
+              <svg width="22" height="22" viewBox="0 0 24 24">
+                <path fill="#ea4335" d="M.43 23.12L13.14 12 .43.88A2 2 0 0 0 0 2v20a2 2 0 0 0 .43 1.12z"/>
+                <path fill="#4285f4" d="M20.3 10.72 17.1 9l-3.96 3 3.96 3 3.2-1.72a1.88 1.88 0 0 0 0-3.36z"/>
+                <path fill="#34a853" d="M.43 23.12 13.14 12l3.96 3L3.58 23.73A2 2 0 0 1 .43 23.12z"/>
+                <path fill="#fbbc05" d="M.43.88 13.14 12 17.1 9 3.58.27A2 2 0 0 0 .43.88z"/>
+              </svg>
+            </div>
+            <div><div class="app-badge-lbl">Доступно в</div><div class="app-badge-store">Google Play</div></div>
+          </a>
+        </div>
+      </div>
+      <div class="app-vis reveal-scale">
+        <div class="mini-ph" style="margin-bottom:20px">
+          <div class="mini-scr">
+            <div class="mini-lbl">Объекты</div>
+            <div class="mini-obj">
+              <div class="mini-obj-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+              <div><div class="mini-obj-n">Квартира</div><div class="mini-obj-s">● Под охраной</div></div>
+            </div>
+            <div class="mini-obj" style="opacity:.6">
+              <div class="mini-obj-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7"/><path d="M9 22V12h6v10"/><rect x="3" y="9" width="18" height="13" rx="1"/></svg></div>
+              <div><div class="mini-obj-n">Дача</div><div class="mini-obj-s">● Под охраной</div></div>
+            </div>
+            <div class="mini-btn">Снять с охраны</div>
+          </div>
+        </div>
+        <div class="mini-ph">
+          <div class="mini-scr">
+            <div class="mini-lbl">Камеры</div>
+            <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:10px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;color:rgba(255,255,255,.5)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div>
+            <div class="mini-lbl">Вход · Онлайн</div>
+            <div style="background:rgba(255,255,255,.04);border-radius:10px;padding:10px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg></div>
+            <div class="mini-lbl">Двор · Онлайн</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <div class="wrap">
+    <div class="faq-hd">
+      <p class="overline" style="margin-bottom:10px">FAQ</p>
+      <h2>Частые вопросы</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-it">
+        <button class="faq-q" onclick="tFaq(this)">Можно ли оформить охрану полностью онлайн, без визита в офис? <span class="faq-ch">▼</span></button>
+        <div class="faq-a">Да — и это наше главное отличие от конкурентов. Заполните заявку онлайн, монтажник приедет к вам. Договор и документы подписываются электронно. Ни одна другая охранная компания в России пока не предлагает полностью цифровое оформление.</div>
+      </div>
+      <div class="faq-it">
+        <button class="faq-q" onclick="tFaq(this)">Сколько времени занимает установка? <span class="faq-ch">▼</span></button>
+        <div class="faq-a">Стандартная квартира — 2–3 часа. Загородный дом — 4–6 часов. Монтажник приедет в выбранный день, сразу после установки приложение готово к работе.</div>
+      </div>
+      <div class="faq-it">
+        <button class="faq-q" onclick="tFaq(this)">Что происходит, когда сигнализация срабатывает? <span class="faq-ch">▼</span></button>
+        <div class="faq-a">Пульт получает сигнал, вам приходит уведомление. Оператор звонит в течение минуты. При подтверждении угрозы — направляется группа реагирования. При ложном сигнале — просто информируем, без паники.</div>
+      </div>
+      <div class="faq-it">
+        <button class="faq-q" onclick="tFaq(this)">Цена фиксированная или может вырасти? <span class="faq-ch">▼</span></button>
+        <div class="faq-a">Абонентская плата фиксируется в договоре. Об изменении тарифов предупреждаем за 30 дней. Стоимость оборудования — разовая, при продлении не меняется.</div>
+      </div>
+      <div class="faq-it">
+        <button class="faq-q" onclick="tFaq(this)">Работает ли охрана если отключат электричество? <span class="faq-ch">▼</span></button>
+        <div class="faq-a">Приборы оснащены резервным аккумулятором на 4–8 часов. При пропадании электричества связь с пультом переходит на GSM-канал автоматически. Охрана не прерывается.</div>
+      </div>
+      <div class="faq-it">
+        <button class="faq-q" onclick="tFaq(this)">Можно ли расторгнуть договор в любое время? <span class="faq-ch">▼</span></button>
+        <div class="faq-a">Да. С уведомлением за 30 дней. Оборудование остаётся у вас — можно использовать с другой охранной компанией или перевезти на новый адрес.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="ft-top">
+      <div>
+        <div class="ft-brand"><div class="ft-brand-ic">R</div><span class="ft-brand-n">Reforce</span></div>
+        <p class="ft-desc">Федеральная платформа безопасности. Охрана дома и бизнеса — онлайн, без офиса.</p>
+        <div class="ft-tel">8 800 555-75-55</div>
+        <div class="ft-tel-n">звонок бесплатный · круглосуточно</div>
+      </div>
+      <div>
+        <div class="ft-col-t">Услуги</div>
+        <ul class="ft-links">
+          <li><a href="home.html">Для дома</a></li>
+          <li><a href="business.html">Для бизнеса</a></li>
+          <li><a href="partners.html">Партнёрам</a></li>
+          <li><a href="#quiz">Подобрать охрану</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="ft-col-t">Компания</div>
+        <ul class="ft-links">
+          <li><a href="#">О Reforce</a></li>
+          <li><a href="#how">Как это работает</a></li>
+          <li><a href="#">Карьера</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="ft-col-t">Поддержка</div>
+        <ul class="ft-links">
+          <li><a href="#">Личный кабинет</a></li>
+          <li><a href="#">Приложение</a></li>
+          <li><a href="#">info@reforce.group</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ft-bot">
+      <span class="ft-copy">© 2026 ООО «Рефорс». Все права защищены.</span>
+      <div class="ft-legal">
+        <a href="#">Политика конфиденциальности</a>
+        <a href="#">Обработка персональных данных</a>
+        <a href="#">Пользовательское соглашение</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- STICKY CTA -->
+<div class="sticky" id="sticky">
+  <span class="sticky-txt">Подобрать охрану за 2 минуты</span>
+  <button class="btn btn-red sz-sm" onclick="scrollToQuiz()">Начать →</button>
+</div>
+
+<!-- MODAL -->
+<div class="modal-ov" id="modal">
+  <div class="modal" id="mContent">
+    <button class="modal-x" onclick="closeModal()">✕</button>
+    <h3 id="mTitle">Оформить охрану</h3>
+    <p id="mDesc">Оставьте контакты — менеджер свяжется в течение 30 минут.</p>
+    <div class="form-col">
+      <input class="inp" type="text" placeholder="Ваше имя">
+      <input class="inp" type="tel" placeholder="Телефон" value="+7 ">
+      <input class="inp" type="text" placeholder="Город">
+      <button class="btn btn-red" style="height:50px;font-size:15px;width:100%;border-radius:12px" onclick="submitForm()">Отправить заявку</button>
+      <p class="form-note">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных (152-ФЗ)</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* QUIZ */
+const ans = {};
+
+function pick(step, val, el) {
+  el.closest('.q-opts').querySelectorAll('.q-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+  ans['s' + step] = val;
+  const nb = document.getElementById('s' + step + 'next');
+  if (nb) nb.disabled = false;
+  setTimeout(() => { if (step === 1) goStep(2); else if (step === 2) showRes(); }, 380);
+}
+
+function goStep(n) {
+  document.querySelectorAll('.q-step').forEach(s => s.classList.remove('on'));
+  document.getElementById('qs' + n).classList.add('on');
+  const f = document.getElementById('qFill');
+  const l = document.getElementById('qLbl');
+  if (n === 1) { f.style.width = '33%'; l.textContent = 'Шаг 1 из 2'; }
+  if (n === 2) { f.style.width = '66%'; l.textContent = 'Шаг 2 из 2'; }
+}
+
+function showRes() {
+  document.querySelectorAll('.q-step').forEach(s => s.classList.remove('on'));
+  document.getElementById('qRes').classList.add('on');
+  document.getElementById('qFill').style.width = '100%';
+  document.getElementById('qLbl').textContent = 'Готово!';
+  // Adapt names
+  const obj = ans['s1'];
+  const names = {
+    apt: ['Базовая охрана','Охрана + видео','Умный дом'],
+    house: ['Защита дома','Дом + видео','Дом + умный дом'],
+    biz: ['Бизнес Базовый','Бизнес + Видео','Постовая охрана'],
+    garage: ['Защита гаража','Гараж + Камера','Полная защита']
+  };
+  const n = names[obj] || names['apt'];
+  document.getElementById('rn1').textContent = n[0];
+  document.getElementById('rn2').textContent = n[1];
+  document.getElementById('rn3').textContent = n[2];
+}
+
+function resetQuiz() {
+  ans.s1 = null; ans.s2 = null;
+  document.getElementById('qRes').classList.remove('on');
+  document.querySelectorAll('.q-opt').forEach(o => o.classList.remove('sel'));
+  document.getElementById('s1next').disabled = true;
+  document.getElementById('s2next').disabled = true;
+  goStep(1);
+}
+
+function scrollToQuiz() {
+  document.getElementById('quiz').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* FAQ */
+function tFaq(btn) {
+  const it = btn.closest('.faq-it');
+  const was = it.classList.contains('open');
+  document.querySelectorAll('.faq-it').forEach(i => i.classList.remove('open'));
+  if (!was) it.classList.add('open');
+}
+
+/* MODAL */
+function openModal(pkg) {
+  document.getElementById('mTitle').textContent = pkg ? `Оформить: «${pkg}»` : 'Оставить заявку';
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function submitForm() {
+  document.getElementById('mContent').innerHTML = `<button class="modal-x" onclick="closeModal()">✕</button><div style="text-align:center;padding:20px 0"><div style="font-size:50px;margin-bottom:14px">✅</div><h3 style="font-size:20px;font-weight:700;margin-bottom:8px">Заявка отправлена!</h3><p style="color:var(--n600);line-height:1.6;margin-bottom:20px">Менеджер позвонит в течение 30 минут.<br>Пока ждёте — скачайте приложение.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a href="#" class="btn btn-red sz-md">App Store</a><a href="#" class="btn btn-ghost sz-md">Google Play</a></div><button onclick="closeModal()" style="background:none;color:var(--n600);font-size:13px;margin-top:14px">Закрыть</button></div>`;
+}
+document.getElementById('modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+
+/* CITY */
+function openCity() { alert('Выбор города — в финальной версии определяется автоматически по геолокации или из списка.'); }
+
+/* STICKY */
+window.addEventListener('scroll', () => {
+  const heroH = document.querySelector('.hero').getBoundingClientRect().bottom;
+  const quiz = document.getElementById('quiz').getBoundingClientRect();
+  const inQuiz = quiz.top < window.innerHeight && quiz.bottom > 0;
+  document.getElementById('sticky').classList.toggle('show', heroH < 0 && !inQuiz);
+}, { passive: true });
+
+/* SCROLL REVEAL */
+(function(){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); }
+    });
+  }, {threshold: 0.12});
+  document.querySelectorAll('.reveal, .reveal-scale').forEach(function(el){ obs.observe(el); });
+
+  /* COUNT-UP */
+  function countUp(el){
+    var orig = el.textContent.trim();
+    var isK = orig.indexOf('К') !== -1;
+    var numMatch = orig.match(/[\d\s]+/);
+    if(!numMatch) return;
+    var raw = numMatch[0].replace(/\s/g,'');
+    var end = parseInt(raw, 10);
+    if(isNaN(end) || end === 0) return;
+    var suffix = orig.slice(numMatch[0].length);
+    if(isK){ end = parseInt(orig); suffix = 'К+'; }
+    var t0 = performance.now(), dur = 950;
+    function step(t){
+      var p = Math.min((t - t0) / dur, 1);
+      var e2 = p < 0.5 ? 2*p*p : -1 + (4 - 2*p)*p;
+      var v = Math.round(e2 * end);
+      if(isK){ el.textContent = v + 'К+'; }
+      else if(end >= 1000){ el.textContent = v.toLocaleString('ru-RU') + suffix; }
+      else { el.textContent = v + suffix; }
+      if(p < 1){ requestAnimationFrame(step); }
+      else { el.textContent = orig; }
+    }
+    requestAnimationFrame(step);
+  }
+
+  var cobs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ countUp(e.target); cobs.unobserve(e.target); }
+    });
+  }, {threshold: 0.5});
+  document.querySelectorAll('[data-countup]').forEach(function(el){ cobs.observe(el); });
+})();
+</script>
+
+</body>
+</html>

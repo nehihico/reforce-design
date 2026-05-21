@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reforce — Партнёрам</title>
+<style>
+:root{
+  --red:#D42B2B;--red-dark:#BC2525;--dark:#1A1A2E;
+  --n900:#1C1C1E;--n600:#636366;--n300:#C7C7CC;--n100:#F2F2F7;--n50:#F9F9FB;
+  --green:#34C759;--blue:#007AFF;--orange:#FF9500;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Roboto',sans-serif;color:var(--n900);background:#fff;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;border:none;font-family:inherit}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.section{padding:72px 0}
+
+/* ─── HEADER — FLOATING PILL ─── */
+.hdr{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:14px 24px;background:transparent;pointer-events:none}
+.hdr-in{pointer-events:all;background:rgba(16,16,24,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:100px;height:52px;padding:0 8px;display:flex;align-items:center;gap:4px;box-shadow:0 4px 32px rgba(0,0,0,.3);width:100%;max-width:860px}
+.logo{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700;flex-shrink:0;color:#fff;margin-right:4px;white-space:nowrap}
+.logo-ic{width:34px;height:34px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:800;flex-shrink:0}
+.nav{display:flex;gap:2px;align-items:center;flex:1;white-space:nowrap}
+.nav-item{position:relative}
+.nav-lnk{display:flex;align-items:center;gap:4px;padding:7px 12px;border-radius:100px;font-size:13.5px;font-weight:500;color:rgba(255,255,255,.6);transition:background .12s,color .12s;background:none;border:none;cursor:pointer;font-family:inherit}
+.nav-lnk:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.9)}
+.nav-lnk.active{color:#fff;background:rgba(255,255,255,.12)}
+.nav-drop{position:absolute;top:calc(100% + 10px);left:-8px;min-width:200px;background:rgba(14,14,22,.97);border:1px solid rgba(255,255,255,.1);border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,.5);padding:6px;display:none;flex-direction:column;z-index:200}
+.nav-item:hover .nav-drop{display:flex}
+.nav-drop a{padding:9px 13px;border-radius:10px;font-size:13px;color:rgba(255,255,255,.7);font-weight:500;display:block;transition:background .12s}
+.nav-drop a:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-sep{width:1px;height:20px;background:rgba(255,255,255,.12);flex-shrink:0;margin:0 4px}
+.hdr-r{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.hdr-login{font-size:13.5px;font-weight:500;color:rgba(255,255,255,.6);padding:7px 12px;border-radius:100px;background:none;border:none;cursor:pointer;font-family:inherit;transition:background .12s,color .12s;white-space:nowrap}
+.hdr-login:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.9)}
+.hdr-in .btn-red{border-radius:100px;font-size:13px;height:36px;white-space:nowrap}
+.city-btn{display:none}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 24px;height:44px;border-radius:12px;font-size:14px;font-weight:600;transition:all .15s}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:var(--red-dark);transform:translateY(-1px)}
+.btn-outline-w{background:transparent;border:1.5px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7)}.btn-outline-w:hover{border-color:rgba(255,255,255,.4);color:#fff}
+.btn-ghost{background:var(--n100);color:var(--n900)}.btn-ghost:hover{background:#e5e5ea}
+.btn-lg{height:52px;padding:0 32px;font-size:16px;border-radius:14px}
+.btn-sm{height:36px;padding:0 16px;font-size:13px;border-radius:10px}
+
+/* HERO — тёмный, партнёрский */
+.hero{background:var(--dark);padding:80px 0 0;overflow:hidden;position:relative}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 30% 50%,rgba(212,43,43,.1) 0%,transparent 65%);pointer-events:none}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:end;position:relative;z-index:1}
+.hero-content{padding-bottom:72px}
+.hero-flag{display:inline-flex;align-items:center;gap:8px;margin-bottom:24px}
+.hero-flag-badge{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:5px 14px;font-size:12px;color:rgba(255,255,255,.6)}
+.hero-flag-sep{width:1px;height:16px;background:rgba(255,255,255,.15)}
+.hero-flag-count{font-size:12px;color:rgba(255,255,255,.4)}
+.hero h1{font-size:50px;font-weight:700;line-height:1.1;letter-spacing:-.6px;color:#fff;margin-bottom:16px}
+.hero h1 em{color:var(--red);font-style:normal}
+.hero-sub{font-size:17px;color:rgba(255,255,255,.5);line-height:1.65;max-width:460px;margin-bottom:32px}
+.hero-ctas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px}
+.hero-social{display:flex;gap:28px;padding-top:28px;border-top:1px solid rgba(255,255,255,.07)}
+.hs-num{font-size:26px;font-weight:700;color:#fff}
+.hs-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
+
+/* PARTNER FLOW VISUAL */
+.partner-flow{padding:24px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:22px 22px 0 0;width:100%;max-width:460px;margin:0 auto}
+.pf-title{font-size:12px;color:rgba(255,255,255,.35);margin-bottom:16px;text-align:center;text-transform:uppercase;letter-spacing:.5px}
+.pf-steps{display:flex;flex-direction:column;gap:10px}
+.pf-step{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);border-radius:13px;padding:14px 16px}
+.pf-step-num{width:28px;height:28px;border-radius:50%;background:rgba(212,43,43,.15);border:1px solid rgba(212,43,43,.25);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--red);flex-shrink:0}
+.pf-step-text{font-size:13px;color:rgba(255,255,255,.7)}
+.pf-step-time{margin-left:auto;font-size:11px;color:rgba(255,255,255,.25);flex-shrink:0}
+.pf-arrow{text-align:center;font-size:16px;color:rgba(255,255,255,.15);margin:2px 0}
+.pf-result{background:rgba(52,199,89,.08);border:1px solid rgba(52,199,89,.2);border-radius:13px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+.pf-result-icon{font-size:20px}
+.pf-result-text{font-size:13px;color:rgba(52,199,89,.9);font-weight:600}
+
+/* BENEFITS */
+.benefits{background:var(--n50);padding:72px 0}
+.benefits-header{text-align:center;margin-bottom:48px}
+.ben-overline{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--n600);margin-bottom:10px}
+.ben-title{font-size:32px;font-weight:700;margin-bottom:8px}
+.ben-sub{font-size:16px;color:var(--n600);max-width:480px;margin:0 auto}
+.ben-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.ben-card{background:#fff;border:1px solid var(--n100);border-radius:20px;padding:28px;transition:all .2s}
+.ben-card:hover{border-color:var(--red);box-shadow:0 4px 16px rgba(0,0,0,.07);transform:translateY(-2px)}
+.ben-icon{width:52px;height:52px;border-radius:14px;background:rgba(212,43,43,.08);display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:18px}
+.ben-name{font-size:19px;font-weight:700;margin-bottom:8px}
+.ben-desc{font-size:14px;color:var(--n600);line-height:1.65;margin-bottom:14px}
+.ben-detail{font-size:13px;color:var(--n900);background:var(--n50);border-radius:10px;padding:12px 14px;line-height:1.6}
+
+/* CALCULATOR */
+.calc-section{background:var(--dark);padding:72px 0}
+.calc-inner{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start}
+.calc-content h2{font-size:34px;font-weight:700;color:#fff;letter-spacing:-.3px;margin-bottom:12px}
+.calc-content p{font-size:16px;color:rgba(255,255,255,.5);line-height:1.65;margin-bottom:28px}
+.calc-note{font-size:13px;color:rgba(255,255,255,.3);line-height:1.6;padding:16px;background:rgba(255,255,255,.04);border-radius:12px;border-left:3px solid rgba(255,255,255,.1)}
+.calc-widget{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:22px;padding:28px}
+.calc-widget-title{font-size:17px;font-weight:700;color:#fff;margin-bottom:20px}
+.calc-row{margin-bottom:18px}
+.calc-label{font-size:13px;color:rgba(255,255,255,.45);margin-bottom:8px;display:flex;justify-content:space-between}
+.calc-label span{color:#fff;font-weight:600;font-size:14px}
+.calc-slider{width:100%;accent-color:var(--red);cursor:pointer}
+.calc-result{background:rgba(212,43,43,.08);border:1px solid rgba(212,43,43,.2);border-radius:14px;padding:20px;text-align:center;margin-top:24px}
+.calc-result-label{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:rgba(255,255,255,.4);margin-bottom:8px}
+.calc-result-num{font-size:40px;font-weight:700;color:#fff;margin-bottom:4px}
+.calc-result-sub{font-size:13px;color:rgba(255,255,255,.4)}
+.calc-disclaimer{font-size:11px;color:rgba(255,255,255,.2);text-align:center;margin-top:12px;line-height:1.5}
+
+/* HOW TO JOIN */
+.join{background:#fff;padding:72px 0}
+.join-header{text-align:center;margin-bottom:56px}
+.join-overline{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--n600);margin-bottom:10px}
+.join-title{font-size:32px;font-weight:700;margin-bottom:8px}
+.join-sub{font-size:16px;color:var(--n600)}
+.join-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+.join-step{padding:0 16px;text-align:center;position:relative}
+.join-step::after{content:'→';position:absolute;top:28px;right:-8px;font-size:18px;color:var(--n300)}
+.join-step:last-child::after{display:none}
+.join-num{width:56px;height:56px;border-radius:50%;background:var(--red);color:#fff;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+.join-step-title{font-size:15px;font-weight:700;margin-bottom:8px}
+.join-step-desc{font-size:13px;color:var(--n600);line-height:1.6}
+.join-step-time{display:inline-flex;margin-top:8px;font-size:11px;font-weight:600;color:var(--red);background:rgba(212,43,43,.08);border-radius:100px;padding:3px 10px}
+
+/* REQUIREMENTS */
+.reqs{background:var(--n50);padding:72px 0}
+.reqs-inner{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.reqs-content h2{font-size:28px;font-weight:700;margin-bottom:12px}
+.reqs-content p{font-size:15px;color:var(--n600);line-height:1.65;margin-bottom:28px}
+.req-list{display:flex;flex-direction:column;gap:12px}
+.req-item{display:flex;align-items:flex-start;gap:12px;background:#fff;border:1px solid var(--n100);border-radius:14px;padding:16px}
+.req-icon{width:36px;height:36px;border-radius:10px;background:rgba(52,199,89,.1);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.req-text strong{display:block;font-size:14px;font-weight:600;margin-bottom:2px}
+.req-text span{font-size:13px;color:var(--n600)}
+.reqs-form{background:#fff;border:1px solid var(--n100);border-radius:20px;padding:32px;position:sticky;top:90px}
+.reqs-form-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.reqs-form-desc{font-size:14px;color:var(--n600);margin-bottom:20px;line-height:1.6}
+.inp{width:100%;height:48px;border:1.5px solid var(--n300);border-radius:12px;padding:0 16px;font-size:15px;font-family:inherit;outline:none;transition:border-color .15s;margin-bottom:10px}
+.inp:focus{border-color:var(--red)}
+.inp-select{width:100%;height:48px;border:1.5px solid var(--n300);border-radius:12px;padding:0 16px;font-size:15px;font-family:inherit;outline:none;appearance:none;color:var(--n900);background:#fff;margin-bottom:10px}
+.inp-ta{width:100%;height:80px;border:1.5px solid var(--n300);border-radius:12px;padding:12px 16px;font-size:14px;font-family:inherit;outline:none;resize:none;transition:border-color .15s;margin-bottom:10px}
+.inp-ta:focus{border-color:var(--red)}
+.form-note{font-size:12px;color:var(--n600);text-align:center;line-height:1.5}
+
+/* PARTNERS REVIEWS */
+.p-reviews{background:#fff;padding:72px 0}
+.p-reviews-header{text-align:center;margin-bottom:40px}
+.p-reviews-title{font-size:28px;font-weight:700;margin-bottom:8px}
+.p-reviews-sub{font-size:15px;color:var(--n600)}
+.pr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.pr-card{background:var(--n50);border:1px solid var(--n100);border-radius:18px;padding:24px}
+.pr-quote{font-size:28px;color:var(--n300);line-height:1;margin-bottom:10px}
+.pr-text{font-size:14px;color:var(--n900);line-height:1.65;margin-bottom:16px}
+.pr-author{display:flex;align-items:center;gap:10px}
+.pr-ava{width:40px;height:40px;border-radius:50%;background:var(--n300);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--n600)}
+.pr-name{font-size:14px;font-weight:700}
+.pr-org{font-size:12px;color:var(--n600)}
+.pr-stat{display:flex;gap:16px;margin-top:14px;padding-top:14px;border-top:1px solid var(--n100)}
+.pr-stat-item{text-align:center}
+.pr-stat-num{font-size:18px;font-weight:700;color:var(--red)}
+.pr-stat-label{font-size:11px;color:var(--n600);margin-top:1px}
+
+/* FAQ */
+.faq{background:var(--n50);padding:72px 0}
+.faq-header{text-align:center;margin-bottom:40px}
+.faq-title{font-size:28px;font-weight:700}
+.faq-list{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:2px}
+.faq-item{background:#fff;border:1px solid var(--n100);border-radius:4px;overflow:hidden}
+.faq-item:first-child{border-radius:16px 16px 4px 4px}
+.faq-item:last-child{border-radius:4px 4px 16px 16px}
+.faq-q{width:100%;background:none;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:14px;font-weight:600;text-align:left;transition:background .15s}
+.faq-q:hover{background:var(--n50)}
+.faq-ch{width:22px;height:22px;background:var(--n100);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:all .15s}
+.faq-item.open .faq-ch{background:var(--red);color:#fff;transform:rotate(180deg)}
+.faq-a{display:none;padding:0 22px 18px;font-size:14px;color:var(--n600);line-height:1.65}
+.faq-item.open .faq-a{display:block}
+
+/* FINAL CTA */
+.final-cta{background:var(--dark);padding:80px 0;text-align:center}
+.final-cta h2{font-size:40px;font-weight:700;color:#fff;letter-spacing:-.4px;margin-bottom:14px}
+.final-cta p{font-size:17px;color:rgba(255,255,255,.5);line-height:1.65;max-width:500px;margin:0 auto 36px}
+.final-cta-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.final-phone{font-size:20px;font-weight:600;color:rgba(255,255,255,.5);margin-top:20px}
+.final-phone strong{color:#fff}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:24px;padding:36px;max-width:480px;width:90%;position:relative}
+.modal-x{position:absolute;top:14px;right:14px;width:30px;height:30px;background:var(--n100);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer}
+
+@media(max-width:960px){
+  .hero-inner,.calc-inner,.reqs-inner{grid-template-columns:1fr}
+  .ben-grid{grid-template-columns:1fr}
+  .join-steps{grid-template-columns:1fr 1fr}
+  .pr-grid{grid-template-columns:1fr 1fr}
+  .partner-flow{display:none}
+}
+@media(max-width:640px){
+  .hero h1,.calc-content h2{font-size:32px}
+  .join-steps{grid-template-columns:1fr}
+  .join-step::after{display:none}
+  .pr-grid{grid-template-columns:1fr}
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity 260ms cubic-bezier(0,0,.2,1),transform 260ms cubic-bezier(0,0,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.reveal-scale{opacity:0;transform:scale(.96) translateY(12px);transition:opacity 300ms cubic-bezier(0,0,.2,1),transform 300ms cubic-bezier(0,0,.2,1)}
+.reveal-scale.in{opacity:1;transform:none}
+[data-d="1"]{transition-delay:80ms}[data-d="2"]{transition-delay:160ms}[data-d="3"]{transition-delay:240ms}[data-d="4"]{transition-delay:320ms}
+@media(prefers-reduced-motion:reduce){.reveal,.reveal-scale{transition:none!important;opacity:1!important;transform:none!important}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-in">
+    <a href="main.html" class="logo">
+      <div class="logo-ic">R</div>
+      Reforce
+    </a>
+    <nav class="nav">
+      <div class="nav-item">
+        <button class="nav-lnk">О нас <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="nav-drop">
+          <a href="main.html#how">Как это работает</a>
+          <a href="main.html#proof">Отзывы клиентов</a>
+          <a href="main.html#app">Приложение</a>
+          <a href="#">О компании</a>
+        </div>
+      </div>
+      <a href="home.html" class="nav-lnk">Для дома</a>
+      <a href="business.html" class="nav-lnk">Для бизнеса</a>
+      <a href="partners.html" class="nav-lnk active">Партнёрам</a>
+    </nav>
+    <div class="nav-sep"></div>
+    <div class="hdr-r">
+      <button class="hdr-login" onclick="window.location='#'">Войти</button>
+      <button class="btn btn-red btn-sm" onclick="scrollToForm()">Стать партнёром</button>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-flag">
+          <span class="hero-flag-badge">Для охранных предприятий</span>
+          <span class="hero-flag-sep"></span>
+          <span class="hero-flag-count">120+ партнёров уже работают</span>
+        </div>
+        <h1>Вы охраняете —<br>мы находим<br><em>клиентов</em></h1>
+        <p class="hero-sub">Reforce — технологическая платформа для ЧОП. Берём на себя маркетинг, заявки и ПО. Вы занимаетесь охраной. Вместе — сильнее.</p>
+        <div class="hero-ctas">
+          <button class="btn btn-red btn-lg" onclick="scrollToForm()">Стать партнёром</button>
+          <button class="btn btn-outline-w btn-lg" onclick="openModal()">Задать вопрос</button>
+        </div>
+        <div class="hero-social">
+          <div><div class="hs-num" data-countup>120+</div><div class="hs-label">партнёров</div></div>
+          <div><div class="hs-num" data-countup>100+</div><div class="hs-label">городов</div></div>
+          <div><div class="hs-num" data-countup>70К+</div><div class="hs-label">объектов</div></div>
+          <div><div class="hs-num">2018</div><div class="hs-label">год основания</div></div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;align-items:flex-end">
+        <div class="partner-flow">
+          <div class="pf-title">Как это работает</div>
+          <div class="pf-steps">
+            <div class="pf-step">
+              <div class="pf-step-num">1</div>
+              <span class="pf-step-text">Клиент оформляет охрану на shop.reforce.group</span>
+              <span class="pf-step-time">Онлайн</span>
+            </div>
+            <div class="pf-arrow">↓</div>
+            <div class="pf-step">
+              <div class="pf-step-num">2</div>
+              <span class="pf-step-text">Reforce автоматически назначает ближайшего партнёра</span>
+              <span class="pf-step-time">30 сек</span>
+            </div>
+            <div class="pf-arrow">↓</div>
+            <div class="pf-step">
+              <div class="pf-step-num">3</div>
+              <span class="pf-step-text">Партнёр монтирует оборудование и подключает к пульту</span>
+              <span class="pf-step-time">1 день</span>
+            </div>
+            <div class="pf-arrow">↓</div>
+            <div class="pf-result">
+              <div class="pf-result-icon">✅</div>
+              <div class="pf-result-text">Партнёр получает нового долгосрочного клиента</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BENEFITS -->
+<section class="benefits">
+  <div class="container">
+    <div class="benefits-header">
+      <div class="ben-overline">Что вы получаете</div>
+      <div class="ben-title">4 причины работать с Reforce</div>
+      <p class="ben-sub">Всё что нужно для роста охранного бизнеса — без лишних вложений</p>
+    </div>
+    <div class="ben-grid">
+      <div class="ben-card">
+        <div class="ben-icon">📲</div>
+        <div class="ben-name">Готовый поток клиентов</div>
+        <p class="ben-desc">Мы вкладываем в маркетинг — вам приходят готовые заявки на монтаж и подключение. Не нужно тратить бюджет на рекламу и лидогенерацию.</p>
+        <div class="ben-detail">В среднем партнёр получает 8–15 новых клиентов в месяц в зависимости от города и активности.</div>
+      </div>
+      <div class="ben-card">
+        <div class="ben-icon">💻</div>
+        <div class="ben-name">Платформа под ключ</div>
+        <p class="ben-desc">Пульт мониторинга, личный кабинет для ваших клиентов, мобильное приложение, API для интеграции — всё включено. Разработка и поддержка за нами.</p>
+        <div class="ben-detail">Лицензия на ПО входит в партнёрский договор — никаких дополнительных платежей за платформу.</div>
+      </div>
+      <div class="ben-card">
+        <div class="ben-icon">⭐</div>
+        <div class="ben-name">Рейтинг и доверие клиентов</div>
+        <p class="ben-desc">Клиенты оценивают качество после монтажа. Высокий рейтинг — приоритет в распределении заявок в вашем регионе. Система мотивирует работать лучше.</p>
+        <div class="ben-detail">Партнёры с рейтингом 4.7+ получают на 35% больше заявок по сравнению со средним по региону.</div>
+      </div>
+      <div class="ben-card">
+        <div class="ben-icon">🎓</div>
+        <div class="ben-name">Обучение и поддержка</div>
+        <p class="ben-desc">Онбординг, документация, обучающие материалы по оборудованию Reforce. Выделенная линия поддержки для партнёров — отвечаем быстрее, чем клиентам.</p>
+        <div class="ben-detail">Среднее время ответа партнёрской поддержки — 12 минут в рабочее время.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CALCULATOR -->
+<section class="calc-section">
+  <div class="container">
+    <div class="calc-inner">
+      <div class="calc-content">
+        <h2>Оцените потенциал<br>в вашем городе</h2>
+        <p>Подвигайте слайдеры, чтобы увидеть ориентировочный дополнительный доход от работы с Reforce.</p>
+        <div class="calc-note">
+          Расчёт основан на средних показателях действующих партнёров. Реальные цифры зависят от города, конкуренции и качества работы.
+        </div>
+      </div>
+      <div class="calc-widget">
+        <div class="calc-widget-title">Калькулятор партнёра</div>
+        <div class="calc-row">
+          <div class="calc-label">Новых клиентов в месяц <span id="v-clients">10</span></div>
+          <input class="calc-slider" type="range" min="2" max="40" value="10" oninput="updateCalc()">
+        </div>
+        <div class="calc-row">
+          <div class="calc-label">Средний чек монтажа <span id="v-install">12 000 ₽</span></div>
+          <input class="calc-slider" type="range" min="5000" max="30000" step="1000" value="12000" oninput="updateCalc()">
+        </div>
+        <div class="calc-row">
+          <div class="calc-label">Доля от абонентской платы <span id="v-share">60%</span></div>
+          <input class="calc-slider" type="range" min="40" max="75" step="5" value="60" oninput="updateCalc()">
+        </div>
+        <div class="calc-result">
+          <div class="calc-result-label">Дополнительный доход в месяц</div>
+          <div class="calc-result-num" id="calc-total">от 156 000 ₽</div>
+          <div class="calc-result-sub" id="calc-sub">монтаж 120 000 ₽ + абонплата 36 000 ₽</div>
+        </div>
+        <p class="calc-disclaimer">Ориентировочный расчёт. Точные условия — в партнёрском договоре.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW TO JOIN -->
+<section class="join">
+  <div class="container">
+    <div class="join-header">
+      <div class="join-overline">Процесс</div>
+      <div class="join-title">Как стать партнёром</div>
+      <p class="join-sub">От заявки до первого клиента — за 5 рабочих дней</p>
+    </div>
+    <div class="join-steps">
+      <div class="join-step">
+        <div class="join-num">1</div>
+        <div class="join-step-title">Подайте заявку</div>
+        <p class="join-step-desc">Заполните форму — расскажите о компании, городах присутствия и количестве экипажей.</p>
+        <div class="join-step-time">⚡ 5 минут</div>
+      </div>
+      <div class="join-step">
+        <div class="join-num">2</div>
+        <div class="join-step-title">Проверка и звонок</div>
+        <p class="join-step-desc">Менеджер проверит лицензию ЧОП, позвонит, обсудит условия и ответит на вопросы.</p>
+        <div class="join-step-time">📅 1–2 дня</div>
+      </div>
+      <div class="join-step">
+        <div class="join-num">3</div>
+        <div class="join-step-title">Подписание договора</div>
+        <p class="join-step-desc">Партнёрский договор подписывается электронно. Никаких поездок в офис.</p>
+        <div class="join-step-time">📋 1 день</div>
+      </div>
+      <div class="join-step">
+        <div class="join-num">4</div>
+        <div class="join-step-title">Онбординг и старт</div>
+        <p class="join-step-desc">Доступ к платформе, обучение, первые заявки. Выделенный менеджер помогает на старте.</p>
+        <div class="join-step-time">🚀 1–2 дня</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENTS + FORM -->
+<section class="reqs" id="partner-form">
+  <div class="container">
+    <div class="reqs-inner">
+      <div>
+        <div class="reqs-content">
+          <h2>Требования к партнёру</h2>
+          <p>Мы работаем только с проверенными охранными предприятиями. Это честно по отношению к нашим клиентам — и к вам тоже.</p>
+        </div>
+        <div class="req-list">
+          <div class="req-item">
+            <div class="req-icon">📄</div>
+            <div class="req-text">
+              <strong>Действующая лицензия ЧОП</strong>
+              <span>Лицензия на охранную деятельность, выданная Росгвардией</span>
+            </div>
+          </div>
+          <div class="req-item">
+            <div class="req-icon">🚗</div>
+            <div class="req-text">
+              <strong>Минимум 1 экипаж ГБР</strong>
+              <span>Для приёма заявок на экстренное реагирование в регионе</span>
+            </div>
+          </div>
+          <div class="req-item">
+            <div class="req-icon">📡</div>
+            <div class="req-text">
+              <strong>Пульт мониторинга или готовность его подключить</strong>
+              <span>Или использование пульта Reforce — обсудим при звонке</span>
+            </div>
+          </div>
+          <div class="req-item">
+            <div class="req-icon">🔧</div>
+            <div class="req-text">
+              <strong>Монтажники в штате или на подряде</strong>
+              <span>Для установки оборудования у клиентов</span>
+            </div>
+          </div>
+          <div class="req-item">
+            <div class="req-icon">⏱️</div>
+            <div class="req-text">
+              <strong>Время реагирования не более 15 минут</strong>
+              <span>В радиусе обслуживания — это наш стандарт для клиентов</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reqs-form" id="apply-form">
+        <div class="reqs-form-title">Заявка на партнёрство</div>
+        <p class="reqs-form-desc">Менеджер перезвонит в течение часа и ответит на все вопросы.</p>
+        <input class="inp" type="text" placeholder="Название компании / ЧОП">
+        <input class="inp" type="text" placeholder="Контактное лицо — ФИО">
+        <input class="inp" type="tel" placeholder="Телефон" value="+7 ">
+        <input class="inp" type="text" placeholder="Email">
+        <input class="inp" type="text" placeholder="Город или регион работы">
+        <select class="inp-select">
+          <option value="">Количество экипажей ГБР</option>
+          <option>1–2 экипажа</option>
+          <option>3–5 экипажей</option>
+          <option>6–15 экипажей</option>
+          <option>15+ экипажей</option>
+        </select>
+        <textarea class="inp-ta" placeholder="Расскажите о своей компании (необязательно)"></textarea>
+        <button class="btn btn-red" style="width:100%;height:50px;font-size:15px;margin-bottom:10px" onclick="submitPartner()">Отправить заявку</button>
+        <p class="form-note">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных (152-ФЗ). Никакого спама — только по делу.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNER REVIEWS -->
+<section class="p-reviews">
+  <div class="container">
+    <div class="p-reviews-header">
+      <div class="p-reviews-title">Говорят партнёры</div>
+      <p class="p-reviews-sub">Настоящие отзывы — от ЧОП, которые уже работают на платформе</p>
+    </div>
+    <div class="pr-grid">
+      <div class="pr-card">
+        <div class="pr-quote">"</div>
+        <p class="pr-text">До Reforce тратили на рекламу 80 000 ₽ в месяц и получали 3–5 заявок. Сейчас платим фиксированный процент и получаем 12–18 клиентов ежемесячно. Математика очевидна.</p>
+        <div class="pr-author">
+          <div class="pr-ava">А</div>
+          <div>
+            <div class="pr-name">Алексей Д.</div>
+            <div class="pr-org">ЧОО «Щит», Екатеринбург · 3 года с Reforce</div>
+          </div>
+        </div>
+        <div class="pr-stat">
+          <div class="pr-stat-item"><div class="pr-stat-num">+38%</div><div class="pr-stat-label">выручка</div></div>
+          <div class="pr-stat-item"><div class="pr-stat-num">4.8★</div><div class="pr-stat-label">рейтинг</div></div>
+          <div class="pr-stat-item"><div class="pr-stat-num" data-countup>240</div><div class="pr-stat-label">объектов</div></div>
+        </div>
+      </div>
+      <div class="pr-card">
+        <div class="pr-quote">"</div>
+        <p class="pr-text">Платформа — это не просто заявки. Клиенты сами управляют доступами, платят автоматически, реже звонят диспетчеру. Операционная нагрузка упала на треть при том же количестве объектов.</p>
+        <div class="pr-author">
+          <div class="pr-ava">М</div>
+          <div>
+            <div class="pr-name">Михаил Т.</div>
+            <div class="pr-org">ЧОП «Патруль», Казань · 2 года с Reforce</div>
+          </div>
+        </div>
+        <div class="pr-stat">
+          <div class="pr-stat-item"><div class="pr-stat-num">−30%</div><div class="pr-stat-label">нагрузка</div></div>
+          <div class="pr-stat-item"><div class="pr-stat-num">4.9★</div><div class="pr-stat-label">рейтинг</div></div>
+          <div class="pr-stat-item"><div class="pr-stat-num" data-countup>180</div><div class="pr-stat-label">объектов</div></div>
+        </div>
+      </div>
+      <div class="pr-card">
+        <div class="pr-quote">"</div>
+        <p class="pr-text">Онбординг занял 4 дня. Менеджер объяснил платформу, помог настроить пульт, разобрались с первыми клиентами вместе. Первую неделю было много вопросов — всегда отвечали быстро.</p>
+        <div class="pr-author">
+          <div class="pr-ava">Е</div>
+          <div>
+            <div class="pr-name">Елена С.</div>
+            <div class="pr-org">ЧОО «Гарант-С», Краснодар · 8 месяцев с Reforce</div>
+          </div>
+        </div>
+        <div class="pr-stat">
+          <div class="pr-stat-item"><div class="pr-stat-num">4 дня</div><div class="pr-stat-label">онбординг</div></div>
+          <div class="pr-stat-item"><div class="pr-stat-num">4.7★</div><div class="pr-stat-label">рейтинг</div></div>
+          <div class="pr-stat-item"><div class="pr-stat-num" data-countup>65</div><div class="pr-stat-label">объектов</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq">
+  <div class="container">
+    <div class="faq-header">
+      <div class="faq-title">Вопросы о партнёрстве</div>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Сколько стоит подключение к платформе?
+          <span class="faq-ch">▼</span>
+        </button>
+        <div class="faq-a">Входной барьер — нулевой. Вы не платите за подключение. Reforce зарабатывает процент от абонентской платы ваших клиентов. Точные условия обсуждаются индивидуально при звонке менеджера.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Мы небольшая региональная компания. Подойдёт ли нам?
+          <span class="faq-ch">▼</span>
+        </button>
+        <div class="faq-a">Да. Большинство наших партнёров — небольшие региональные ЧОП с 1–3 экипажами. Именно они формируют основу нашей сети. Мы заинтересованы в присутствии в малых городах не меньше, чем в миллионниках.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Нужно ли покупать оборудование заранее?
+          <span class="faq-ch">▼</span>
+        </button>
+        <div class="faq-a">Нет. Оборудование закупается под конкретные заявки. Мы работаем с несколькими поставщиками и можем помочь с оптовыми условиями для партнёров с большим объёмом монтажей.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Что если клиент окажется в регионе, где нет нашего экипажа?
+          <span class="faq-ch">▼</span>
+        </button>
+        <div class="faq-a">Система автоматически назначает партнёра только в зонах вашего присутствия. Вы сами определяете географию при регистрации. Заявки из других регионов вам не придут.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Можно ли работать с Reforce и привлекать клиентов самостоятельно тоже?
+          <span class="faq-ch">▼</span>
+        </button>
+        <div class="faq-a">Да, партнёрский договор не устанавливает эксклюзивности. Вы можете продолжать работать по своим каналам. Более того, ваших прямых клиентов можно перевести на платформу Reforce — они получат приложение и ЛК, вы сохраняете их как абонентов.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="container">
+    <h2>Готовы обсудить условия?</h2>
+    <p>Заполните заявку — менеджер перезвонит в течение часа и ответит на все вопросы без давления и обязательств.</p>
+    <div class="final-cta-btns">
+      <button class="btn btn-red btn-lg" onclick="scrollToForm()">Подать заявку</button>
+      <button class="btn btn-outline-w btn-lg" onclick="openModal()">Задать вопрос</button>
+    </div>
+    <div class="final-phone">Или звоните: <strong>8 800 555-75-55</strong></div>
+  </div>
+</section>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" id="modalContent">
+    <button class="modal-x" onclick="closeModal()">✕</button>
+    <h3>Задать вопрос</h3>
+    <p style="font-size:14px;color:var(--n600);margin-bottom:20px;line-height:1.6">Оставьте контакты — менеджер по партнёрству перезвонит в течение часа.</p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <input class="inp" type="text" placeholder="Ваше имя">
+      <input class="inp" type="tel" placeholder="Телефон" value="+7 ">
+      <button class="btn btn-red" style="height:50px;font-size:15px;width:100%" onclick="submitModal()">Жду звонка</button>
+      <p class="form-note">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных (152-ФЗ)</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function scrollToForm() {
+  document.getElementById('partner-form').scrollIntoView({behavior:'smooth', block:'start'});
+  setTimeout(() => document.querySelector('.reqs-form input').focus(), 600);
+}
+
+function toggleFaq(btn) {
+  const item = btn.closest('.faq-item');
+  const open = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!open) item.classList.add('open');
+}
+
+// CALCULATOR
+function updateCalc() {
+  const sliders = document.querySelectorAll('.calc-slider');
+  const clients = +sliders[0].value;
+  const install = +sliders[1].value;
+  const share = +sliders[2].value;
+  const avgAbonent = 1000;
+
+  document.getElementById('v-clients').textContent = clients;
+  document.getElementById('v-install').textContent = install.toLocaleString('ru') + ' ₽';
+  document.getElementById('v-share').textContent = share + '%';
+
+  const installTotal = clients * install;
+  const abonentTotal = clients * avgAbonent * (share / 100);
+  const total = installTotal + abonentTotal;
+
+  document.getElementById('calc-total').textContent = 'от ' + Math.round(total / 1000) * 1000 .toLocaleString('ru') + ' ₽';
+  document.getElementById('calc-sub').textContent = `монтаж ${installTotal.toLocaleString('ru')} ₽ + абонплата ${Math.round(abonentTotal).toLocaleString('ru')} ₽`;
+}
+
+function openModal() { document.getElementById('modal').classList.add('open'); }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function submitModal() {
+  document.getElementById('modalContent').innerHTML = '<button class="modal-x" onclick="closeModal()">✕</button><div style="text-align:center;padding:20px 0"><div style="font-size:48px;margin-bottom:16px">✅</div><h3 style="font-size:20px;font-weight:700;margin-bottom:8px">Отлично!</h3><p style="color:var(--n600);line-height:1.6">Менеджер перезвонит в течение часа.</p><button onclick="closeModal()" style="background:none;color:var(--n600);font-size:13px;margin-top:14px">Закрыть</button></div>';
+}
+function submitPartner() {
+  document.getElementById('apply-form').innerHTML = '<div style="text-align:center;padding:32px 0"><div style="font-size:52px;margin-bottom:16px">🤝</div><h3 style="font-size:22px;font-weight:700;margin-bottom:10px">Заявка отправлена!</h3><p style="color:var(--n600);line-height:1.65;margin-bottom:20px">Менеджер перезвонит в течение часа.<br>Договор и онбординг — за 3–5 рабочих дней.</p><div style="font-size:15px;font-weight:600;color:var(--n900)">8 800 555-75-55</div><div style="font-size:13px;color:var(--n600)">если не хотите ждать</div></div>';
+}
+document.getElementById('modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+
+/* SCROLL REVEAL */
+(function(){
+  // Auto-add reveal to cards, steps, items
+  document.querySelectorAll('.ben-card,.pr-card,.req-item,.join-step').forEach(function(el){
+    el.classList.add('reveal');
+  });
+  document.querySelectorAll('.ben-title,.p-reviews-title,.join-title').forEach(function(el){
+    el.classList.add('reveal');
+  });
+  // Partner flow diagram + calculator widget — reveal-scale
+  document.querySelectorAll('.partner-flow,.calc-widget').forEach(function(el){
+    el.classList.add('reveal-scale');
+  });
+  // Stagger within grids (cycle 1–4)
+  document.querySelectorAll('.ben-grid,.pr-grid,.join-steps').forEach(function(grid){
+    grid.querySelectorAll(':scope > .reveal').forEach(function(el, i){
+      el.setAttribute('data-d', String((i % 4) + 1));
+    });
+  });
+  // req-list stagger
+  document.querySelectorAll('.req-list').forEach(function(grid){
+    grid.querySelectorAll(':scope > .reveal').forEach(function(el, i){
+      el.setAttribute('data-d', String((i % 4) + 1));
+    });
+  });
+
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); }
+    });
+  }, {threshold: 0.12});
+  document.querySelectorAll('.reveal,.reveal-scale').forEach(function(el){ obs.observe(el); });
+
+  // Count-up
+  function countUp(el){
+    var orig = el.textContent.trim();
+    var isK = orig.indexOf('К') !== -1;
+    var numMatch = orig.match(/[\d\s]+/);
+    if(!numMatch) return;
+    var raw = numMatch[0].replace(/\s/g,'');
+    var end = parseInt(raw, 10);
+    if(isNaN(end) || end === 0) return;
+    var suffix = orig.slice(numMatch[0].length);
+    if(isK){ end = parseInt(orig); suffix = 'К+'; }
+    var t0 = performance.now(), dur = 950;
+    function step(t){
+      var p = Math.min((t - t0) / dur, 1);
+      var e2 = p < 0.5 ? 2*p*p : -1 + (4 - 2*p)*p;
+      var v = Math.round(e2 * end);
+      if(isK){ el.textContent = v + 'К+'; }
+      else if(end >= 1000){ el.textContent = v.toLocaleString('ru-RU') + suffix; }
+      else { el.textContent = v + suffix; }
+      if(p < 1){ requestAnimationFrame(step); } else { el.textContent = orig; }
+    }
+    requestAnimationFrame(step);
+  }
+  var cobs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ countUp(e.target); cobs.unobserve(e.target); }
+    });
+  }, {threshold: 0.5});
+  document.querySelectorAll('[data-countup]').forEach(function(el){ cobs.observe(el); });
+})();
+</script>
+</body>
+</html>

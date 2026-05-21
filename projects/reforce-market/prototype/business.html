@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reforce — Охрана бизнеса</title>
+<style>
+:root{
+  --red:#D42B2B;--red-dark:#BC2525;--dark:#1A1A2E;
+  --n900:#1C1C1E;--n600:#636366;--n300:#C7C7CC;--n100:#F2F2F7;--n50:#F9F9FB;
+  --green:#34C759;--blue:#007AFF;--orange:#FF9500;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Roboto',sans-serif;color:var(--n900);background:#fff;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;border:none;font-family:inherit}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+.section{padding:72px 0}
+
+/* ─── HEADER — FLOATING PILL ─── */
+.hdr{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:14px 24px;background:transparent;pointer-events:none}
+.hdr-in{pointer-events:all;background:rgba(16,16,24,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.1);border-radius:100px;height:52px;padding:0 8px;display:flex;align-items:center;gap:4px;box-shadow:0 4px 32px rgba(0,0,0,.3);width:100%;max-width:860px}
+.logo{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:700;flex-shrink:0;color:#fff;margin-right:4px;white-space:nowrap}
+.logo-ic{width:34px;height:34px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:800;flex-shrink:0}
+.nav{display:flex;gap:2px;align-items:center;flex:1;white-space:nowrap}
+.nav-item{position:relative}
+.nav-lnk{display:flex;align-items:center;gap:4px;padding:7px 12px;border-radius:100px;font-size:13.5px;font-weight:500;color:rgba(255,255,255,.6);transition:background .12s,color .12s;background:none;border:none;cursor:pointer;font-family:inherit}
+.nav-lnk:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.9)}
+.nav-lnk.active{color:#fff;background:rgba(255,255,255,.12)}
+.nav-drop{position:absolute;top:calc(100% + 10px);left:-8px;min-width:200px;background:rgba(14,14,22,.97);border:1px solid rgba(255,255,255,.1);border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,.5);padding:6px;display:none;flex-direction:column;z-index:200}
+.nav-item:hover .nav-drop{display:flex}
+.nav-drop a{padding:9px 13px;border-radius:10px;font-size:13px;color:rgba(255,255,255,.7);font-weight:500;display:block;transition:background .12s}
+.nav-drop a:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-sep{width:1px;height:20px;background:rgba(255,255,255,.12);flex-shrink:0;margin:0 4px}
+.hdr-r{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.hdr-login{font-size:13.5px;font-weight:500;color:rgba(255,255,255,.6);padding:7px 12px;border-radius:100px;background:none;border:none;cursor:pointer;font-family:inherit;transition:background .12s,color .12s;white-space:nowrap}
+.hdr-login:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.9)}
+.hdr-in .btn-red{border-radius:100px;font-size:13px;height:36px;white-space:nowrap}
+.city-btn{display:none}
+
+/* ─── SCALE SWITCHER ─── */
+.scale-switch{background:#fff;padding:20px 0;border-bottom:1px solid var(--n100)}
+.scale-pills{display:flex;align-items:center;gap:8px}
+.scale-pill{display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:100px;font-size:14px;font-weight:500;color:var(--n600);background:var(--n50);border:1.5px solid var(--n100);cursor:pointer;transition:all .15s;font-family:inherit}
+.scale-pill:hover{border-color:var(--n300);color:var(--n900)}
+.scale-pill.active{background:rgba(212,43,43,.06);border-color:var(--red);color:var(--red);font-weight:600}
+.scale-hint{font-size:13px;color:var(--n600);margin-left:auto}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 24px;height:44px;border-radius:12px;font-size:14px;font-weight:600;transition:all .15s}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:var(--red-dark);transform:translateY(-1px)}
+.btn-ghost{background:var(--n100);color:var(--n900)}.btn-ghost:hover{background:#e5e5ea}
+.btn-outline{background:transparent;border:1.5px solid var(--red);color:var(--red)}.btn-outline:hover{background:rgba(212,43,43,.06)}
+.btn-lg{height:52px;padding:0 32px;font-size:16px;border-radius:14px}
+.btn-sm{height:36px;padding:0 16px;font-size:13px;border-radius:10px}
+
+/* SCALE GATE — ключевое решение этой страницы */
+.gate{background:var(--dark);min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:80px 0}
+.gate-inner{text-align:center;max-width:760px;margin:0 auto}
+.gate-overline{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:rgba(255,255,255,.4);margin-bottom:16px}
+.gate-title{font-size:48px;font-weight:700;line-height:1.1;letter-spacing:-.5px;color:#fff;margin-bottom:16px}
+.gate-title em{color:var(--red);font-style:normal}
+.gate-sub{font-size:17px;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:48px;max-width:540px;margin-left:auto;margin-right:auto}
+.gate-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;text-align:left}
+.gate-card{background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.09);border-radius:22px;padding:32px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.gate-card:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.08);transform:translateY(-2px)}
+.gate-card.selected{border-color:var(--red);background:rgba(212,43,43,.08)}
+.gate-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--red);opacity:0;transition:opacity .2s}
+.gate-card.selected::before{opacity:1}
+.gate-card-icon{font-size:32px;margin-bottom:16px}
+.gate-card-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:8px}
+.gate-card-desc{font-size:14px;color:rgba(255,255,255,.5);line-height:1.6;margin-bottom:20px}
+.gate-card-examples{list-style:none;display:flex;flex-direction:column;gap:5px}
+.gate-card-examples li{font-size:13px;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:6px}
+.gate-card-examples li::before{content:'·';color:rgba(255,255,255,.25)}
+.gate-arrow{display:flex;align-items:center;justify-content:center;margin-top:32px;gap:8px;font-size:14px;color:rgba(255,255,255,.35)}
+
+/* PATHS */
+.path{display:none}
+.path.active{display:block}
+
+/* PATH A — малый бизнес: самообслуживание */
+.path-hero{background:var(--dark);padding:64px 0}
+.path-hero-inner{display:grid;grid-template-columns:1fr 460px;gap:48px;align-items:start}
+.ph-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:5px 14px;font-size:12px;color:rgba(255,255,255,.6);margin-bottom:20px}
+.ph-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.path-hero h1{font-size:42px;font-weight:700;line-height:1.15;letter-spacing:-.5px;color:#fff;margin-bottom:14px}
+.path-hero h1 em{color:var(--red);font-style:normal}
+.ph-sub{font-size:16px;color:rgba(255,255,255,.5);line-height:1.65;margin-bottom:28px}
+.ph-ctas{display:flex;gap:10px;flex-wrap:wrap}
+.ph-stats{display:flex;gap:24px;padding-top:24px;border-top:1px solid rgba(255,255,255,.07);margin-top:28px;flex-wrap:wrap}
+.ph-stat-num{font-size:22px;font-weight:700;color:#fff}
+.ph-stat-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:1px}
+
+/* DASHBOARD MOCKUP */
+.dash-mock{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:20px;padding:0;overflow:hidden}
+.dash-topbar{background:rgba(255,255,255,.05);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06)}
+.dash-topbar-title{font-size:13px;font-weight:600;color:rgba(255,255,255,.8)}
+.dash-topbar-btn{font-size:11px;color:var(--red);background:rgba(212,43,43,.12);border-radius:8px;padding:4px 10px;font-weight:600}
+.dash-body{padding:16px}
+.dash-row{display:flex;gap:10px;margin-bottom:10px}
+.dash-obj{flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:12px}
+.dash-obj-name{font-size:12px;font-weight:600;color:rgba(255,255,255,.8);margin-bottom:2px}
+.dash-obj-addr{font-size:10px;color:rgba(255,255,255,.3);margin-bottom:8px}
+.dash-obj-status{font-size:11px;font-weight:600;display:flex;align-items:center;gap:5px}
+.status-on{color:var(--green)}
+.status-off{color:rgba(255,255,255,.35)}
+.dash-actions{display:flex;gap:8px;margin-top:12px}
+.dash-action-btn{flex:1;height:32px;border-radius:9px;font-size:11px;font-weight:600;background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);transition:background .15s}
+.dash-action-btn:hover{background:rgba(255,255,255,.1)}
+.dash-access{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:12px}
+.dash-access-title{font-size:11px;color:rgba(255,255,255,.4);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.dash-person{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.dash-person:last-child{border-bottom:none}
+.dash-person-name{font-size:12px;color:rgba(255,255,255,.7)}
+.dash-person-role{font-size:10px;color:rgba(255,255,255,.3)}
+.dash-revoke{font-size:10px;color:rgba(212,43,43,.7);font-weight:600}
+
+/* FEATURES GRID */
+.features{background:var(--n50);padding:64px 0}
+.features-header{margin-bottom:40px}
+.feat-overline{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--n600);margin-bottom:10px}
+.feat-title{font-size:28px;font-weight:700;margin-bottom:8px}
+.feat-sub{font-size:15px;color:var(--n600)}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feat-card{background:#fff;border:1px solid var(--n100);border-radius:18px;padding:24px;transition:all .2s}
+.feat-card:hover{border-color:var(--red);box-shadow:0 4px 16px rgba(0,0,0,.07);transform:translateY(-2px)}
+.feat-icon{font-size:26px;margin-bottom:14px}
+.feat-name{font-size:16px;font-weight:700;margin-bottom:8px}
+.feat-desc{font-size:14px;color:var(--n600);line-height:1.6}
+.feat-tag{display:inline-flex;margin-top:10px;font-size:11px;font-weight:600;color:var(--red);background:rgba(212,43,43,.08);border-radius:100px;padding:3px 10px}
+
+/* INDUSTRY CARDS */
+.industries{background:#fff;padding:64px 0}
+.ind-title{font-size:28px;font-weight:700;margin-bottom:8px}
+.ind-sub{font-size:15px;color:var(--n600);margin-bottom:32px}
+.ind-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.ind-card{background:var(--n50);border:1px solid var(--n100);border-radius:16px;padding:20px;cursor:pointer;transition:all .2s;text-align:center}
+.ind-card:hover{border-color:var(--red);background:#fff;transform:translateY(-2px)}
+.ind-card.active{border-color:var(--red);background:#fff}
+.ind-emoji{font-size:28px;margin-bottom:10px}
+.ind-name{font-size:14px;font-weight:600;margin-bottom:4px}
+.ind-count{font-size:12px;color:var(--n600)}
+.ind-detail{background:var(--n50);border:1px solid var(--n100);border-radius:18px;padding:28px;margin-top:20px}
+.ind-detail-inner{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+.ind-detail-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.ind-detail-desc{font-size:14px;color:var(--n600);line-height:1.65;margin-bottom:16px}
+.ind-detail-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.ind-detail-list li{display:flex;align-items:flex-start;gap:8px;font-size:14px}
+.ind-detail-list li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0;margin-top:1px}
+.ind-price-card{background:#fff;border:1px solid var(--n100);border-radius:14px;padding:20px}
+.ind-price-label{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--n600);margin-bottom:6px}
+.ind-price-main{font-size:26px;font-weight:700;margin-bottom:4px}
+.ind-price-note{font-size:12px;color:var(--n600);margin-bottom:16px}
+
+/* PATH B — крупный: запрос КП */
+.kp-hero{background:var(--dark);padding:64px 0}
+.kp-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.kp-content h1{font-size:42px;font-weight:700;line-height:1.15;color:#fff;letter-spacing:-.4px;margin-bottom:14px}
+.kp-content h1 em{color:var(--red);font-style:normal}
+.kp-desc{font-size:16px;color:rgba(255,255,255,.5);line-height:1.65;margin-bottom:28px}
+.kp-benefits{list-style:none;display:flex;flex-direction:column;gap:14px;margin-bottom:32px}
+.kp-benefits li{display:flex;align-items:flex-start;gap:12px;font-size:15px;color:rgba(255,255,255,.8)}
+.kp-ben-icon{width:36px;height:36px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.kp-ben-text strong{display:block;font-weight:600;color:#fff;margin-bottom:2px}
+.kp-ben-text span{font-size:13px;color:rgba(255,255,255,.4)}
+.kp-form{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:22px;padding:32px}
+.kp-form-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:6px}
+.kp-form-desc{font-size:14px;color:rgba(255,255,255,.45);margin-bottom:20px;line-height:1.6}
+.kp-inp{width:100%;height:48px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;padding:0 16px;font-size:15px;font-family:inherit;color:#fff;outline:none;transition:border-color .15s;margin-bottom:10px}
+.kp-inp::placeholder{color:rgba(255,255,255,.3)}
+.kp-inp:focus{border-color:var(--red)}
+.kp-select{width:100%;height:48px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:12px;padding:0 16px;font-size:15px;font-family:inherit;color:rgba(255,255,255,.6);outline:none;appearance:none;margin-bottom:10px}
+.kp-note{font-size:12px;color:rgba(255,255,255,.25);text-align:center;margin-top:8px;line-height:1.5}
+
+/* PACKAGES B2B */
+.pkg-b2b{background:var(--n50);padding:64px 0}
+.pkg-b2b-header{margin-bottom:32px}
+.pkg-b2b-title{font-size:28px;font-weight:700;margin-bottom:8px}
+.pkg-b2b-sub{font-size:15px;color:var(--n600)}
+.b2b-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.b2b-card{background:#fff;border:1.5px solid var(--n100);border-radius:20px;padding:24px;transition:all .2s}
+.b2b-card.featured{border-color:var(--red)}
+.b2b-badge{display:inline-flex;align-items:center;gap:4px;background:var(--red);color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;margin-bottom:12px}
+.b2b-name{font-size:18px;font-weight:700;margin-bottom:6px}
+.b2b-for{font-size:12px;color:var(--n600);margin-bottom:12px}
+.b2b-price{font-size:26px;font-weight:700;color:var(--red)}
+.b2b-price span{font-size:13px;font-weight:400;color:var(--n600)}
+.b2b-equip{font-size:12px;color:var(--n600);margin-top:2px;margin-bottom:14px}
+.b2b-list{list-style:none;display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+.b2b-list li{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--n900)}
+.b2b-list li::before{content:'✓';color:var(--green);font-weight:700;font-size:11px;margin-top:1px;flex-shrink:0}
+.b2b-btns{display:flex;flex-direction:column;gap:8px}
+.b2b-btn{width:100%;height:42px;border-radius:11px;font-size:13px;font-weight:600;transition:all .15s}
+.b2b-btn-primary{background:var(--red);color:#fff}.b2b-btn-primary:hover{background:var(--red-dark)}
+.b2b-btn-sec{background:var(--n100);color:var(--n900)}.b2b-btn-sec:hover{background:#e5e5ea}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:24px;padding:36px;max-width:480px;width:90%;position:relative}
+.modal-x{position:absolute;top:14px;right:14px;width:30px;height:30px;background:var(--n100);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer}
+.modal h3{font-size:20px;font-weight:700;margin-bottom:8px}
+.modal p{font-size:14px;color:var(--n600);margin-bottom:20px;line-height:1.6}
+.form-row{display:flex;flex-direction:column;gap:10px}
+.inp{width:100%;height:48px;border:1.5px solid var(--n300);border-radius:12px;padding:0 16px;font-size:15px;font-family:inherit;outline:none;transition:border-color .15s}
+.inp:focus{border-color:var(--red)}
+.form-note{font-size:12px;color:var(--n600);text-align:center;line-height:1.5}
+
+/* ─── ANIMATIONS ─── */
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.reveal{opacity:0;transform:translateY(18px);transition:opacity 260ms cubic-bezier(0,0,.2,1),transform 260ms cubic-bezier(0,0,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.reveal-scale{opacity:0;transform:scale(.96) translateY(12px);transition:opacity 300ms cubic-bezier(0,0,.2,1),transform 300ms cubic-bezier(0,0,.2,1)}
+.reveal-scale.in{opacity:1;transform:none}
+[data-d="1"]{transition-delay:80ms}[data-d="2"]{transition-delay:160ms}[data-d="3"]{transition-delay:240ms}[data-d="4"]{transition-delay:320ms}
+@media(prefers-reduced-motion:reduce){.reveal,.reveal-scale{transition:none!important;opacity:1!important;transform:none!important}}
+
+@media(max-width:960px){
+  .gate-cards,.path-hero-inner,.kp-grid,.ind-grid{grid-template-columns:1fr}
+  .feat-grid{grid-template-columns:1fr 1fr}
+  .b2b-grid{grid-template-columns:1fr 1fr}
+  .ind-detail-inner{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .path-hero h1,.gate-title,.kp-content h1{font-size:30px}
+  .feat-grid,.b2b-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-in">
+    <a href="main.html" class="logo">
+      <div class="logo-ic">R</div>
+      Reforce
+    </a>
+    <nav class="nav">
+      <div class="nav-item">
+        <button class="nav-lnk">О нас <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button>
+        <div class="nav-drop">
+          <a href="main.html#how">Как это работает</a>
+          <a href="main.html#proof">Отзывы клиентов</a>
+          <a href="main.html#app">Приложение</a>
+          <a href="#">О компании</a>
+        </div>
+      </div>
+      <a href="home.html" class="nav-lnk">Для дома</a>
+      <a href="business.html" class="nav-lnk active">Для бизнеса</a>
+      <a href="partners.html" class="nav-lnk">Партнёрам</a>
+    </nav>
+    <div class="nav-sep"></div>
+    <div class="hdr-r">
+      <button class="hdr-login" onclick="window.location='#'">Войти</button>
+      <button class="btn btn-red btn-sm" onclick="openModal()">Стать партнёром</button>
+    </div>
+  </div>
+</header>
+
+<!-- SCALE SWITCHER -->
+<section class="scale-switch">
+  <div class="container">
+    <div class="scale-pills">
+      <button class="scale-pill active" id="pill-small" onclick="setScale('small',this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><line x1="10" y1="6" x2="14" y2="6"/><line x1="10" y1="10" x2="14" y2="10"/></svg>
+        1–3 объекта
+      </button>
+      <button class="scale-pill" id="pill-large" onclick="setScale('large',this)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 0-2 2h-2"/></svg>
+        4 и более объектов
+      </button>
+      <span class="scale-hint">Онлайн-оформление или индивидуальное КП — зависит от масштаба</span>
+    </div>
+  </div>
+</section>
+
+<!-- PATH A — МАЛЫЙ БИЗНЕС -->
+<div class="path active" id="path-small">
+
+  <!-- PATH HERO -->
+  <section class="path-hero">
+    <div class="container">
+      <div class="path-hero-inner">
+        <div>
+          <div class="ph-tag"><span class="ph-dot"></span>Для 1–3 объектов · Онлайн-оформление</div>
+          <h1>Охрана бизнеса —<br>как <em>статья расходов,</em><br>о которой не думаешь</h1>
+          <p class="ph-sub">Оформите онлайн, платите по автоплатежу. Уволили сотрудника — отозвали доступ сами за 30 секунд. Никаких звонков в офис охраны.</p>
+          <div class="ph-ctas">
+            <button class="btn btn-red btn-lg" onclick="openModal()">Стать партнёром</button>
+            <button class="btn btn-outline-w btn-lg" onclick="window.location='#'" style="background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.18);color:rgba(255,255,255,.8)">Войти в платформу</button>
+          </div>
+          <div class="ph-stats">
+            <div><div class="ph-stat-num">30 сек</div><div class="ph-stat-label">Отозвать доступ</div></div>
+            <div><div class="ph-stat-num">1 день</div><div class="ph-stat-label">До охраны</div></div>
+            <div><div class="ph-stat-num">0 ₽</div><div class="ph-stat-label">Звонков в офис</div></div>
+            <div><div class="ph-stat-num">24/7</div><div class="ph-stat-label">Мониторинг</div></div>
+          </div>
+        </div>
+        <div>
+          <div class="dash-mock">
+            <div class="dash-topbar">
+              <span class="dash-topbar-title">Мои объекты · 2 активных</span>
+              <button class="dash-topbar-btn">+ Добавить</button>
+            </div>
+            <div class="dash-body">
+              <div class="dash-row">
+                <div class="dash-obj">
+                  <div class="dash-obj-name">🏪 Магазин на Садовой</div>
+                  <div class="dash-obj-addr">Москва, ул. Садовая-Кудринская, 17</div>
+                  <div class="dash-obj-status status-on"><span style="width:6px;height:6px;background:var(--green);border-radius:50%;display:inline-block"></span> Под охраной</div>
+                </div>
+                <div class="dash-obj">
+                  <div class="dash-obj-name">📦 Склад Люберцы</div>
+                  <div class="dash-obj-addr">Люберцы, Проспект Мира, 5</div>
+                  <div class="dash-obj-status status-off">○ Снят с охраны</div>
+                </div>
+              </div>
+              <div class="dash-access">
+                <div class="dash-access-title">Доступы · Магазин на Садовой</div>
+                <div class="dash-person">
+                  <div><div class="dash-person-name">Анна Петрова</div><div class="dash-person-role">Продавец · может ставить/снимать</div></div>
+                  <button class="dash-revoke">Отозвать</button>
+                </div>
+                <div class="dash-person">
+                  <div><div class="dash-person-name">Игорь Смирнов</div><div class="dash-person-role">Охранник · только постановка</div></div>
+                  <button class="dash-revoke">Отозвать</button>
+                </div>
+                <div class="dash-person" style="opacity:.4">
+                  <div><div class="dash-person-name" style="color:rgba(255,255,255,.5)">Добавить человека</div></div>
+                  <button style="font-size:10px;color:rgba(255,255,255,.3);background:none">+ Пригласить</button>
+                </div>
+              </div>
+              <div class="dash-actions" style="margin-top:12px">
+                <button class="dash-action-btn">📹 Камеры</button>
+                <button class="dash-action-btn">📋 События</button>
+                <button class="dash-action-btn">💳 Оплата</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <div class="container">
+      <div class="features-header">
+        <div class="feat-overline">Возможности</div>
+        <div class="feat-title">Всё под контролем — без звонков в офис</div>
+        <p class="feat-sub">Управляйте охраной своего бизнеса самостоятельно, в любое время</p>
+      </div>
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-icon">👤</div>
+          <div class="feat-name">Доступы за 30 секунд</div>
+          <p class="feat-desc">Выдайте или отзовите доступ к постановке/снятию прямо в приложении. Уволенный сотрудник теряет доступ немедленно.</p>
+          <div class="feat-tag">← Уникально для Reforce</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📊</div>
+          <div class="feat-name">Мультиобъект в одном экране</div>
+          <p class="feat-desc">Все объекты и их статусы — на одном экране. Не нужно переключаться между аккаунтами или приложениями.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">💰</div>
+          <div class="feat-name">Автоплатёж без мыслей</div>
+          <p class="feat-desc">Привяжите карту один раз — абонентская плата списывается автоматически. Уведомление за 3 дня до списания.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📹</div>
+          <div class="feat-name">Видеонаблюдение онлайн</div>
+          <p class="feat-desc">Смотрите камеры в реальном времени с телефона или ноутбука. Архив 30 дней — можно пересмотреть любой момент.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🔔</div>
+          <div class="feat-name">Умные уведомления</div>
+          <p class="feat-desc">Уведомления только о важном: сигнал тревоги, ГБР направлена, открытие вне расписания. Не отвлекаем по мелочам.</p>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🧾</div>
+          <div class="feat-name">Документы для бухгалтерии</div>
+          <p class="feat-desc">Акты и счета автоматически появляются в ЛК. Скачайте и отправьте в бухгалтерию без запроса у менеджера.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INDUSTRY SELECTOR -->
+  <section class="industries">
+    <div class="container">
+      <div class="ind-title">Выберите тип вашего бизнеса</div>
+      <p class="ind-sub">Подберём пакет под ваш сегмент</p>
+      <div class="ind-grid">
+        <div class="ind-card active" onclick="selectIndustry('retail', this)">
+          <div class="ind-emoji">🛍️</div>
+          <div class="ind-name">Ритейл</div>
+          <div class="ind-count">Магазины, шоурумы</div>
+        </div>
+        <div class="ind-card" onclick="selectIndustry('office', this)">
+          <div class="ind-emoji">💼</div>
+          <div class="ind-name">Офис</div>
+          <div class="ind-count">Офисы, переговорные</div>
+        </div>
+        <div class="ind-card" onclick="selectIndustry('warehouse', this)">
+          <div class="ind-emoji">📦</div>
+          <div class="ind-name">Склад</div>
+          <div class="ind-count">Склады, производство</div>
+        </div>
+        <div class="ind-card" onclick="selectIndustry('horeca', this)">
+          <div class="ind-emoji">☕</div>
+          <div class="ind-name">HoReCa</div>
+          <div class="ind-count">Кафе, рестораны, отели</div>
+        </div>
+      </div>
+      <div class="ind-detail" id="ind-detail">
+        <div class="ind-detail-inner">
+          <div>
+            <div class="ind-detail-title" id="ind-title">Охрана ритейла</div>
+            <p class="ind-detail-desc" id="ind-desc">Для магазинов важно: контроль кто и когда открывает, видеоаналитика, быстрое реагирование при попытке взлома. Вы следите за торговой точкой даже когда вас там нет.</p>
+            <ul class="ind-detail-list" id="ind-list">
+              <li>Охрана после закрытия — сигнализация + ГБР</li>
+              <li>Видеокамеры с онлайн-просмотром</li>
+              <li>Контроль открытия/закрытия по расписанию</li>
+              <li>Управление доступами продавцов</li>
+              <li>Уведомления об открытии в нерабочее время</li>
+            </ul>
+          </div>
+          <div class="ind-price-card">
+            <div class="ind-price-label">Стартовая цена для ритейла</div>
+            <div class="ind-price-main" id="ind-price">от 1 500 ₽<span style="font-size:14px;font-weight:400;color:var(--n600)">/мес</span></div>
+            <div class="ind-price-note" id="ind-equip">+ оборудование от 14 500 ₽</div>
+            <button class="btn btn-red" style="width:100%;height:46px;margin-bottom:8px" onclick="openModal()">Оформить для магазина</button>
+            <button class="btn btn-ghost" style="width:100%;height:40px;font-size:13px" onclick="openModal()">Заказать звонок</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PACKAGES B2B -->
+  <section class="pkg-b2b" id="packages-b2b">
+    <div class="container">
+      <div class="pkg-b2b-header">
+        <div class="pkg-b2b-title">Пакеты для бизнеса</div>
+        <p class="pkg-b2b-sub">Все пакеты включают монтаж и первый месяц мониторинга</p>
+      </div>
+      <div class="b2b-grid">
+        <div class="b2b-card">
+          <div class="b2b-name">Бизнес Базовый</div>
+          <div class="b2b-for">Малый бизнес · 1 объект</div>
+          <div class="b2b-price">1 500 ₽<span>/мес</span></div>
+          <div class="b2b-equip">+ оборудование от 11 500 ₽</div>
+          <ul class="b2b-list">
+            <li>Охранная сигнализация</li>
+            <li>Мониторинг 24/7 + ГБР</li>
+            <li>Управление доступами (до 5 чел.)</li>
+            <li>Push-уведомления</li>
+            <li>История событий 90 дней</li>
+          </ul>
+          <div class="b2b-btns">
+            <button class="b2b-btn b2b-btn-primary" onclick="openModal('Бизнес Базовый')">Оформить онлайн</button>
+            <button class="b2b-btn b2b-btn-sec">Подробнее</button>
+          </div>
+        </div>
+        <div class="b2b-card featured">
+          <div class="b2b-badge">⭐ Популярный</div>
+          <div class="b2b-name">Бизнес + Видео</div>
+          <div class="b2b-for">Ритейл, кафе, офис · 1–2 объекта</div>
+          <div class="b2b-price">2 200 ₽<span>/мес</span></div>
+          <div class="b2b-equip">+ оборудование от 16 900 ₽</div>
+          <ul class="b2b-list">
+            <li>Всё из базового пакета</li>
+            <li>4 камеры с видеоаналитикой</li>
+            <li>Архив 30 дней, онлайн-просмотр</li>
+            <li>Контроль открытия по расписанию</li>
+            <li>Управление доступами (до 20 чел.)</li>
+            <li>Акты и счета в ЛК</li>
+          </ul>
+          <div class="b2b-btns">
+            <button class="b2b-btn b2b-btn-primary" onclick="openModal('Бизнес + Видео')">Оформить онлайн</button>
+            <button class="b2b-btn b2b-btn-sec">Подробнее</button>
+          </div>
+        </div>
+        <div class="b2b-card">
+          <div class="b2b-name">Постовая охрана</div>
+          <div class="b2b-for">Банки, производство, крупный ритейл</div>
+          <div class="b2b-price">от 1 100 ₽<span>/смена</span></div>
+          <div class="b2b-equip">Абонентская плата — по договору</div>
+          <ul class="b2b-list">
+            <li>Профессиональные охранники</li>
+            <li>Пропускной режим</li>
+            <li>Контроль через приложение</li>
+            <li>Подключение к системам сигнализации</li>
+            <li>Аудит безопасности объекта</li>
+          </ul>
+          <div class="b2b-btns">
+            <button class="b2b-btn b2b-btn-primary" onclick="openModal('Постовая охрана')">Получить КП</button>
+            <button class="b2b-btn b2b-btn-sec">Подробнее</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- end path-small -->
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- PATH B — КРУПНЫЙ БИЗНЕС: запрос КП        -->
+<!-- ═══════════════════════════════════════════ -->
+<div class="path" id="path-large">
+  <section class="kp-hero">
+    <div class="container">
+      <div class="kp-grid">
+        <div class="kp-content">
+          <div class="ph-tag" style="margin-bottom:20px"><span class="ph-dot"></span>Для сетей и крупного бизнеса</div>
+          <h1>Единый договор<br>на <em>все объекты</em></h1>
+          <p class="kp-desc">Корпоративные условия, выделенный менеджер, единая отчётность для бухгалтерии. Масштабируется под 4, 40 или 400 объектов.</p>
+          <ul class="kp-benefits">
+            <li>
+              <div class="kp-ben-icon">📋</div>
+              <div class="kp-ben-text"><strong>Единый договор</strong><span>Один договор на все объекты — без дублирования документов</span></div>
+            </li>
+            <li>
+              <div class="kp-ben-icon">👨‍💼</div>
+              <div class="kp-ben-text"><strong>Выделенный менеджер</strong><span>Персональный контакт, который знает вашу структуру</span></div>
+            </li>
+            <li>
+              <div class="kp-ben-icon">📊</div>
+              <div class="kp-ben-text"><strong>Сводная отчётность</strong><span>Счета, акты и статусы всех объектов в едином ЛК</span></div>
+            </li>
+            <li>
+              <div class="kp-ben-icon">🏷️</div>
+              <div class="kp-ben-text"><strong>Корпоративные цены</strong><span>Скидки от объёма, специальные условия для сетей</span></div>
+            </li>
+          </ul>
+        </div>
+        <div class="kp-form">
+          <div class="kp-form-title">Получить коммерческое предложение</div>
+          <p class="kp-form-desc">Менеджер перезвонит в течение 30 минут и подготовит КП с ценами в течение дня.</p>
+          <input class="kp-inp" type="text" placeholder="Название компании">
+          <input class="kp-inp" type="text" placeholder="Контактное лицо">
+          <input class="kp-inp" type="tel" placeholder="Телефон" value="+7 ">
+          <select class="kp-select">
+            <option value="">Количество объектов</option>
+            <option>4–10 объектов</option>
+            <option>11–50 объектов</option>
+            <option>51–200 объектов</option>
+            <option>200+ объектов</option>
+          </select>
+          <button class="btn btn-red" style="width:100%;height:50px;font-size:15px" onclick="submitKP()">Запросить КП</button>
+          <p class="kp-note">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных (152-ФЗ). Никакого спама.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div><!-- end path-large -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" id="modalContent">
+    <button class="modal-x" onclick="closeModal()">✕</button>
+    <h3 id="mTitle">Оставить заявку</h3>
+    <p id="mDesc">Менеджер перезвонит в течение 30 минут.</p>
+    <div class="form-row">
+      <input class="inp" type="text" placeholder="Ваше имя">
+      <input class="inp" type="tel" placeholder="Телефон" value="+7 ">
+      <input class="inp" type="text" placeholder="Город">
+      <button class="btn btn-red" style="height:50px;font-size:15px;width:100%" onclick="submitModal()">Отправить</button>
+      <p class="form-note">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных (152-ФЗ)</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const indData = {
+  retail: {title:'Охрана ритейла',desc:'Контроль открытия и закрытия, видеонаблюдение, управление доступами продавцов. Уведомление если открыли раньше расписания или не закрыли вовремя.',list:['Сигнализация + ГБР после закрытия','Камеры с аналитикой у кассы и на входе','Контроль расписания открытия/закрытия','Управление доступами сотрудников','Удалённый просмотр с телефона'],price:'от 1 500 ₽',equip:'+ оборудование от 14 500 ₽',btn:'Оформить для магазина'},
+  office: {title:'Охрана офиса',desc:'Охрана в нерабочее время, контроль кто и когда входил, видеофиксация. Управление доступами сотрудников и временными посетителями.',list:['Охрана в нерабочее время','Контроль доступа в серверную и переговорные','История кто и когда открывал','Временные доступы для гостей','Видеонаблюдение в коридорах и на входе'],price:'от 1 200 ₽',equip:'+ оборудование от 12 500 ₽',btn:'Оформить для офиса'},
+  warehouse: {title:'Охрана склада',desc:'Периметральная охрана, датчики движения снаружи и внутри, видеонаблюдение с длинным архивом. Работает без стабильного интернета через GSM.',list:['Периметральная охрана территории','Датчики движения снаружи и внутри','Видеонаблюдение + архив 90 дней','GSM-канал без зависимости от интернета','Контроль доступа в зоны'],price:'от 1 800 ₽',equip:'+ оборудование от 18 000 ₽',btn:'Оформить для склада'},
+  horeca: {title:'Охрана HoReCa',desc:'Для кафе и ресторанов важно закрытие по расписанию, видеонаблюдение у кассы, быстрое реагирование. Управление ночными сменщиками в приложении.',list:['Охрана после закрытия ресторана/кафе','Видео у кассы и входа с архивом','Контроль ночных смен через приложение','Датчики пожара и газа','Управление доступами для персонала'],price:'от 1 400 ₽',equip:'+ оборудование от 13 500 ₽',btn:'Оформить для кафе'}
+};
+
+function setScale(type, el) {
+  document.querySelectorAll('.scale-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.path').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('path-' + type);
+  target.classList.add('active');
+  target.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function selectIndustry(id, el) {
+  document.querySelectorAll('.ind-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const d = indData[id];
+  document.getElementById('ind-title').textContent = d.title;
+  document.getElementById('ind-desc').textContent = d.desc;
+  document.getElementById('ind-price').innerHTML = d.price + '<span style="font-size:14px;font-weight:400;color:var(--n600)">/мес</span>';
+  document.getElementById('ind-equip').textContent = d.equip;
+  const list = document.getElementById('ind-list');
+  list.innerHTML = d.list.map(i => `<li>${i}</li>`).join('');
+}
+
+function openModal(pkg) {
+  document.getElementById('mTitle').textContent = pkg ? `Оформить: «${pkg}»` : 'Оставить заявку';
+  document.getElementById('mDesc').textContent = 'Менеджер перезвонит в течение 30 минут, ответит на вопросы и согласует дату монтажа.';
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+function submitModal() {
+  document.getElementById('modalContent').innerHTML = '<div style="text-align:center;padding:20px 0"><div style="font-size:48px;margin-bottom:16px">✅</div><h3 style="font-size:20px;font-weight:700;margin-bottom:8px">Заявка отправлена!</h3><p style="color:var(--n600);line-height:1.6">Менеджер позвонит вам в течение 30 минут.</p><button onclick="closeModal()" style="background:none;color:var(--n600);font-size:13px;margin-top:16px">Закрыть</button></div>';
+}
+function submitKP() {
+  document.querySelector('.kp-form').innerHTML = '<div style="text-align:center;padding:20px 0"><div style="font-size:48px;margin-bottom:16px">✅</div><h3 style="font-size:20px;font-weight:700;color:#fff;margin-bottom:8px">Заявка отправлена!</h3><p style="color:rgba(255,255,255,.5);line-height:1.6">Менеджер перезвонит в течение 30 минут.<br>КП с ценами — в течение рабочего дня.</p></div>';
+}
+document.getElementById('modal').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+
+/* SCROLL REVEAL */
+(function(){
+  // Auto-add reveal to cards and headings
+  document.querySelectorAll('.feat-card,.b2b-card').forEach(function(el){
+    el.classList.add('reveal');
+  });
+  document.querySelectorAll('.feat-title,.pkg-b2b-title').forEach(function(el){
+    el.classList.add('reveal');
+  });
+  // Dashboard mockup — reveal-scale
+  document.querySelectorAll('.dash-mock').forEach(function(el){
+    el.classList.add('reveal-scale');
+  });
+  // Stagger within grids (cycle 1–3)
+  document.querySelectorAll('.feat-grid,.b2b-grid').forEach(function(grid){
+    grid.querySelectorAll(':scope > .reveal').forEach(function(el, i){
+      el.setAttribute('data-d', String((i % 3) + 1));
+    });
+  });
+
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target); }
+    });
+  }, {threshold: 0.12});
+  document.querySelectorAll('.reveal,.reveal-scale').forEach(function(el){ obs.observe(el); });
+})();
+</script>
+</body>
+</html>
