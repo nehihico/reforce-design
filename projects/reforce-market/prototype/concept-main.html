@@ -496,13 +496,15 @@ button { cursor: pointer; border: none; font-family: inherit; }
 /* ─── FAQ ─── */
 .faq-sec { padding: 96px 48px; border-top: 1px solid var(--border); background: var(--n50); }
 .faq-hd { margin-bottom: 48px; }
+.faq-hd .section-title { color: var(--red); }
 .faq-hd .section-sub { max-width: 480px; margin-top: 16px; }
-.faq-list { max-width: 800px; display: flex; flex-direction: column; gap: 8px; }
+.faq-list { display: flex; flex-direction: column; gap: 8px; }
 .faq-item { background: #fff; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; transition: border-color .2s, box-shadow .2s; }
 .faq-item.open { border-color: #ddd; box-shadow: 0 4px 20px rgba(0,0,0,.06); }
 .faq-q { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; font-size: 15.5px; font-weight: 600; text-align: left; background: none; font-family: inherit; color: var(--dark); cursor: pointer; border: none; transition: color .12s; }
 .faq-q:hover { color: var(--red); }
-.faq-chevron { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--n400); font-size: 11px; transition: transform .2s, border-color .2s, background .2s; }
+.faq-chevron { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--n400); transition: transform .25s, border-color .2s, background .2s; }
+.faq-chevron svg { display: block; }
 .faq-item.open .faq-chevron { transform: rotate(180deg); border-color: var(--red); color: var(--red); background: rgba(212,43,43,.06); }
 .faq-a { display: none; padding: 0 24px 20px; font-size: 14px; color: var(--n600); line-height: 1.75; }
 .faq-item.open .faq-a { display: block; }
@@ -1026,42 +1028,42 @@ button { cursor: pointer; border: none; font-family: inherit; }
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)">
         Как быстро установят оборудование?
-        <span class="faq-chevron">▾</span>
+        <span class="faq-chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
       </button>
       <div class="faq-a">В Москве и МО — в течение 4 рабочих дней после подписания договора. Монтаж занимает 2–4 часа: мастер приедет в удобное время, установит оборудование и проведёт инструктаж. В других городах сроки уточняйте у менеджера.</div>
     </div>
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)">
         Что такое кнопка тревоги и когда приедет ГБР?
-        <span class="faq-chevron">▾</span>
+        <span class="faq-chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
       </button>
       <div class="faq-a">Кнопка тревоги — это физическая кнопка или виртуальная в приложении. При нажатии оператор ПЦО свяжется с вами за 30 секунд. Если ответ не поступит или вы подтвердите угрозу, ГБР выедет и прибудет в течение 4–7 минут (в зависимости от района).</div>
     </div>
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)">
         Что входит в ежемесячную плату?
-        <span class="faq-chevron">▾</span>
+        <span class="faq-chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
       </button>
       <div class="faq-a">Ежемесячный платёж включает: мониторинг 24/7, реагирование ГБР при срабатывании, техническую поддержку, обслуживание оборудования и доступ к мобильному приложению. Оборудование оплачивается отдельно при установке — единоразово.</div>
     </div>
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)">
         Можно ли управлять охраной с телефона?
-        <span class="faq-chevron">▾</span>
+        <span class="faq-chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
       </button>
       <div class="faq-a">Да. В приложении REFORCE вы ставите объект на охрану и снимаете с неё, просматриваете онлайн-видео с камер, получаете push-уведомления о событиях, пользуетесь кнопкой тревоги и управляете умными устройствами (в тарифе «Умный дом»).</div>
     </div>
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)">
         Есть ли контракт и штрафы за досрочное расторжение?
-        <span class="faq-chevron">▾</span>
+        <span class="faq-chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
       </button>
       <div class="faq-a">Договор заключается на 1 год. Расторгнуть его можно в любой момент, предупредив за 30 дней. Штрафов нет. Оборудование остаётся у вас — оно является вашей собственностью с момента оплаты.</div>
     </div>
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)">
         В каких городах работает REFORCE?
-        <span class="faq-chevron">▾</span>
+        <span class="faq-chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
       </button>
       <div class="faq-a">Сейчас REFORCE работает в Москве и Московской области, Санкт-Петербурге, Екатеринбурге, Новосибирске, Казани, Краснодаре и Ростове-на-Дону. Список городов активно расширяется. Если вашего города нет в списке — оставьте заявку, мы сообщим, когда появимся у вас.</div>
     </div>
