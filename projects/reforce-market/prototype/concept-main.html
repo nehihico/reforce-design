@@ -189,7 +189,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .lb-tag { font-size: 12px; font-weight: 600; color: #666; background: #efefef; border-radius: 100px; padding: 4px 12px; white-space: nowrap; }
 .seg-bg-industry { background: linear-gradient(160deg, #0d2a1a 0%, #0d0d0d 100%); }
 .seg-accent-industry { position: absolute; top: 32px; right: 32px; width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, rgba(52,199,89,.15) 0%, transparent 70%); }
-.seg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.seg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .seg-card {
   border-radius: 24px; overflow: hidden; position: relative;
   min-height: 420px; display: flex; flex-direction: column; justify-content: flex-end;
@@ -460,7 +460,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
   .hero, .quiz-inner, .b2b-inner, .app-inner { grid-template-columns: 1fr; }
   .hero { min-height: auto; }
   .hero-r { min-height: 400px; }
-  .seg-grid { grid-template-columns: repeat(2, 1fr); }
+  .seg-grid { grid-template-columns: 1fr; }
   .logobar { padding: 16px 24px; }
   .how-grid { grid-template-columns: 1fr 1fr; }
   .how-step { border-bottom: 1px solid var(--border); }
@@ -697,15 +697,6 @@ button { cursor: pointer; border: none; font-family: inherit; }
         <div class="seg-title">Партнёрам</div>
         <div class="seg-desc">Охранные предприятия. Поток клиентов, платформа под ключ, доход от 150 000 ₽/мес.</div>
         <span class="seg-link">Стать партнёром →</span>
-      </div>
-    </div>
-    <div class="seg-card seg-bg-industry reveal" data-d="4" onclick="openModal('modalOrder')">
-      <div class="seg-accent-industry"></div>
-      <div class="seg-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
-      <div class="seg-body">
-        <div class="seg-title">Для отраслей</div>
-        <div class="seg-desc">Банки, ритейл, отели, промышленность. Отраслевые решения с учётом специфики.</div>
-        <span class="seg-link">Обсудить задачу →</span>
       </div>
     </div>
   </div>
