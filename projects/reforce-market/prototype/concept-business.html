@@ -163,6 +163,54 @@ button { cursor: pointer; border: none; font-family: inherit; }
   .float-bar-btn { padding: 10px 18px; font-size: 13px; }
 }
 
+/* HOW IT WORKS */
+.how { padding: 96px 48px; border-top: 1px solid var(--border); }
+.how-hd { margin-bottom: 64px; }
+.how-hd .section-sub { max-width: 520px; margin-top: 16px; }
+.how-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; }
+.how-step { padding: 36px 32px; border-right: 1px solid var(--border); position: relative; }
+.how-step:last-child { border-right: none; }
+.how-num { font-size: 13px; font-weight: 700; color: var(--red); letter-spacing: .5px; margin-bottom: 20px; }
+.how-t { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+.how-d { font-size: 13.5px; color: var(--n600); line-height: 1.65; margin-bottom: 16px; }
+.how-time { display: inline-block; font-size: 12px; font-weight: 600; color: var(--n400); background: var(--n50); border: 1px solid var(--border); border-radius: 100px; padding: 4px 12px; }
+
+/* PRICING */
+.pricing { padding: 96px 48px; border-top: 1px solid var(--border); background: var(--n50); }
+.pricing-hd { margin-bottom: 56px; }
+.pricing-hd .section-sub { max-width: 480px; margin-top: 16px; }
+.pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; align-items: start; }
+.pr-card { background: #fff; border: 1.5px solid var(--border); border-radius: 24px; padding: 32px; position: relative; transition: border-color .2s, transform .2s; }
+.pr-card:hover { border-color: #bbb; transform: translateY(-3px); }
+.pr-card.rec { border-color: var(--red); background: #fff; }
+.pr-card.rec:hover { border-color: var(--red); }
+.pr-badge { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--red); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .5px; padding: 4px 14px; border-radius: 100px; white-space: nowrap; }
+.pr-name { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--n400); margin-bottom: 8px; }
+.pr-price { font-size: 36px; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 4px; }
+.pr-price span { font-size: 15px; font-weight: 400; color: var(--n400); letter-spacing: 0; }
+.pr-equip { font-size: 12.5px; color: var(--n400); margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+.pr-list { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+.pr-list li { font-size: 13.5px; color: var(--n600); display: flex; align-items: flex-start; gap: 8px; line-height: 1.45; }
+.pr-list li::before { content: ''; width: 16px; height: 16px; border-radius: 50%; background: rgba(52,199,89,.12); border: 1px solid rgba(52,199,89,.3); flex-shrink: 0; margin-top: 1px; background-image: url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2334C759' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: center; background-size: 10px; }
+.pr-btn { width: 100%; height: 48px; border-radius: 100px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; border: 1.5px solid var(--border); background: none; color: var(--dark); transition: background .12s, border-color .12s, color .12s; }
+.pr-btn:hover { background: var(--n50); border-color: #bbb; }
+.pr-card.rec .pr-btn { background: var(--red); color: #fff; border-color: var(--red); }
+.pr-card.rec .pr-btn:hover { opacity: .88; background: var(--red); }
+
+/* REVIEWS */
+.biz-reviews { padding: 96px 48px; border-top: 1px solid var(--border); }
+.biz-reviews-hd { margin-bottom: 56px; }
+.biz-reviews-hd .section-sub { max-width: 480px; margin-top: 16px; }
+.biz-rev-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.biz-rev-card { border: 1.5px solid var(--border); border-radius: 22px; padding: 28px; transition: border-color .2s; }
+.biz-rev-card:hover { border-color: #bbb; }
+.biz-rev-stars { font-size: 14px; color: #f5a623; letter-spacing: 2px; margin-bottom: 16px; }
+.biz-rev-text { font-size: 14px; color: var(--n600); line-height: 1.7; margin-bottom: 20px; }
+.biz-rev-author { display: flex; align-items: center; gap: 12px; padding-top: 20px; border-top: 1px solid var(--border); }
+.biz-rev-ava { width: 40px; height: 40px; border-radius: 50%; background: var(--dark); color: #fff; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.biz-rev-name { font-size: 14px; font-weight: 700; }
+.biz-rev-meta { font-size: 12px; color: var(--n400); margin-top: 2px; }
+
 /* ANIMATIONS */
 .reveal { opacity: 0; transform: translateY(16px); transition: opacity 280ms ease, transform 280ms ease; }
 .reveal.in { opacity: 1; transform: none; }
@@ -180,14 +228,18 @@ button { cursor: pointer; border: none; font-family: inherit; }
   .feat-grid { grid-template-columns: 1fr 1fr; }
   .ind-grid { grid-template-columns: 1fr 1fr; }
   .ft-top { grid-template-columns: 1fr 1fr; }
-  .nav, .features, .case, .industries { padding-left: 24px; padding-right: 24px; }
+  .how-grid { grid-template-columns: 1fr 1fr; }
+  .how-step { border-bottom: 1px solid var(--border); }
+  .pricing-grid { grid-template-columns: 1fr 1fr; }
+  .biz-rev-grid { grid-template-columns: 1fr 1fr; }
+  .nav, .features, .case, .how, .pricing, .biz-reviews { padding-left: 24px; padding-right: 24px; }
 }
 @media (max-width: 640px) {
   .hero-h1 { font-size: 44px; letter-spacing: -2px; }
   .section-title { font-size: 36px; letter-spacing: -1.5px; }
   .hero-stats { flex-wrap: wrap; gap: 16px; }
   .hstat { border-right: none; }
-  .feat-grid, .case-metrics, .ind-grid { grid-template-columns: 1fr; }
+  .feat-grid, .case-metrics, .how-grid, .pricing-grid, .biz-rev-grid { grid-template-columns: 1fr; }
   .nav-links { display: none; }
   .nav-phone { display: none; }
   .ft-top { grid-template-columns: 1fr; }
@@ -404,6 +456,136 @@ button { cursor: pointer; border: none; font-family: inherit; }
       <div class="case-metric">
         <div class="case-metric-n">30 <em>сек</em></div>
         <div class="case-metric-l">выдача и отзыв доступов</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <div class="how-hd reveal">
+    <span class="label"><em>ПРОЦЕСС</em></span>
+    <h2 class="section-title">От заявки до охраны — за 24 часа</h2>
+    <p class="section-sub">Никаких долгих согласований и бумаг. Оформили онлайн — монтажник приехал — платформа запущена.</p>
+  </div>
+  <div class="how-grid">
+    <div class="how-step reveal" data-d="1">
+      <div class="how-num">01</div>
+      <div class="how-t">Заявка онлайн</div>
+      <p class="how-d">Укажите адрес объекта и количество точек. Менеджер свяжется за 15 минут и подберёт пакет.</p>
+      <div class="how-time">15 минут</div>
+    </div>
+    <div class="how-step reveal" data-d="2">
+      <div class="how-num">02</div>
+      <div class="how-t">Монтаж оборудования</div>
+      <p class="how-d">Мастер приедет в удобное время. Стандартный офис или магазин — 3–4 часа, без остановки работы.</p>
+      <div class="how-time">1 рабочий день</div>
+    </div>
+    <div class="how-step reveal" data-d="3">
+      <div class="how-num">03</div>
+      <div class="how-t">Подключение к ПЦО</div>
+      <p class="how-d">Объект ставится на мониторинг 24/7. ГБР закреплена, маршруты согласованы — реакция за 4–7 минут.</p>
+      <div class="how-time">Сразу после монтажа</div>
+    </div>
+    <div class="how-step reveal" data-d="4">
+      <div class="how-num">04</div>
+      <div class="how-t">Управляйте с платформы</div>
+      <p class="how-d">Приложение уже настроено. Статусы объектов, доступы сотрудников, камеры и документы — в одном экране.</p>
+      <div class="how-time">Постоянно</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="pricing-hd reveal">
+    <span class="label"><em>ТАРИФЫ</em></span>
+    <h2 class="section-title">Прозрачные цены<br>без скрытых платежей</h2>
+    <p class="section-sub">Абонентская плата фиксированная. Оборудование — разовый платёж, остаётся вашей собственностью.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="pr-card reveal" data-d="1">
+      <div class="pr-name">Старт</div>
+      <div class="pr-price">от 800 ₽<span>/мес</span></div>
+      <div class="pr-equip">+ оборудование от 8 025 ₽ единоразово · 1 объект</div>
+      <ul class="pr-list">
+        <li>Охранная сигнализация</li>
+        <li>Мониторинг 24/7 на ПЦО</li>
+        <li>Реагирование ГБР</li>
+        <li>Push-уведомления</li>
+        <li>Управление с приложения</li>
+      </ul>
+      <button class="pr-btn" onclick="openOrderModal('Старт')">Оформить</button>
+    </div>
+    <div class="pr-card rec reveal" data-d="2">
+      <div class="pr-badge">Рекомендуем</div>
+      <div class="pr-name">Бизнес</div>
+      <div class="pr-price">от 1 200 ₽<span>/мес · объект</span></div>
+      <div class="pr-equip">+ оборудование от 14 900 ₽ · до 5 объектов</div>
+      <ul class="pr-list">
+        <li>Всё из тарифа «Старт»</li>
+        <li>Видеонаблюдение + архив 30 дней</li>
+        <li>Управление доступами сотрудников</li>
+        <li>Автоплатёж + документы в ЛК</li>
+        <li>Единый договор на все объекты</li>
+      </ul>
+      <button class="pr-btn" onclick="openOrderModal('Бизнес')">Оформить</button>
+    </div>
+    <div class="pr-card reveal" data-d="3">
+      <div class="pr-name">Сеть</div>
+      <div class="pr-price">Договорная<span></span></div>
+      <div class="pr-equip">Индивидуальные условия · от 10 объектов</div>
+      <ul class="pr-list">
+        <li>Всё из тарифа «Бизнес»</li>
+        <li>Выделенный менеджер</li>
+        <li>AI Vision — ноль ложных тревог</li>
+        <li>API-интеграция с вашей системой</li>
+        <li>SLA с гарантированным временем</li>
+      </ul>
+      <button class="pr-btn" onclick="openOrderModal('Сеть')">Обсудить условия</button>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="biz-reviews">
+  <div class="biz-reviews-hd reveal">
+    <span class="label"><em>ОТЗЫВЫ</em></span>
+    <h2 class="section-title">Бизнес выбирает Reforce</h2>
+    <p class="section-sub">85% клиентов рекомендуют Reforce коллегам — по данным опроса 2024 года</p>
+  </div>
+  <div class="biz-rev-grid">
+    <div class="biz-rev-card reveal" data-d="1">
+      <div class="biz-rev-stars">★★★★★</div>
+      <p class="biz-rev-text">«Управляем 8 точками. Открываешь приложение — сразу видно статус каждого магазина. Когда уволили кассира, отозвали доступ за 30 секунд без звонков в охрану.»</p>
+      <div class="biz-rev-author">
+        <div class="biz-rev-ava">А</div>
+        <div>
+          <div class="biz-rev-name">Алина Р.</div>
+          <div class="biz-rev-meta">Сеть кофеен · 8 объектов · Москва</div>
+        </div>
+      </div>
+    </div>
+    <div class="biz-rev-card reveal" data-d="2">
+      <div class="biz-rev-stars">★★★★★</div>
+      <p class="biz-rev-text">«Перевели 12 складов за 3 недели. Ни разу не пришлось звонить в охрану — всё через платформу. Ложных тревог стало на порядок меньше после подключения AI Vision.»</p>
+      <div class="biz-rev-author">
+        <div class="biz-rev-ava">Д</div>
+        <div>
+          <div class="biz-rev-name">Дмитрий К.</div>
+          <div class="biz-rev-meta">Логистика · 12 складов · МО</div>
+        </div>
+      </div>
+    </div>
+    <div class="biz-rev-card reveal" data-d="3">
+      <div class="biz-rev-stars">★★★★☆</div>
+      <p class="biz-rev-text">«Сравнивал четыре компании — только Reforce дали прозрачный договор онлайн без встречи. Монтаж сделали за день без закрытия магазина. Акты приходят автоматически.»</p>
+      <div class="biz-rev-author">
+        <div class="biz-rev-ava">С</div>
+        <div>
+          <div class="biz-rev-name">Сергей М.</div>
+          <div class="biz-rev-meta">Ретейл · 3 точки · Екатеринбург</div>
+        </div>
       </div>
     </div>
   </div>
