@@ -168,7 +168,15 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .segments { padding: 96px 48px; }
 .segments-hd { margin-bottom: 48px; }
 .segments-hd .section-sub { max-width: 480px; margin-top: 16px; }
-.seg-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.logobar { border-top: 1px solid rgba(0,0,0,.08); border-bottom: 1px solid rgba(0,0,0,.08); background: #fafafa; padding: 16px 48px; }
+.logobar-in { display: flex; align-items: center; gap: 20px; justify-content: center; flex-wrap: wrap; }
+.logobar-label { font-size: 13px; color: #888; white-space: nowrap; }
+.logobar-label strong { color: #0d0d0d; }
+.logobar-vsep { width: 1px; height: 18px; background: #ddd; flex-shrink: 0; }
+.lb-tag { font-size: 12px; font-weight: 600; color: #666; background: #efefef; border-radius: 100px; padding: 4px 12px; white-space: nowrap; }
+.seg-bg-industry { background: linear-gradient(160deg, #0d2a1a 0%, #0d0d0d 100%); }
+.seg-accent-industry { position: absolute; top: 32px; right: 32px; width: 120px; height: 120px; border-radius: 50%; background: radial-gradient(circle, rgba(52,199,89,.15) 0%, transparent 70%); }
+.seg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 .seg-card {
   border-radius: 24px; overflow: hidden; position: relative;
   min-height: 420px; display: flex; flex-direction: column; justify-content: flex-end;
@@ -439,7 +447,8 @@ button { cursor: pointer; border: none; font-family: inherit; }
   .hero, .quiz-inner, .b2b-inner, .app-inner { grid-template-columns: 1fr; }
   .hero { min-height: auto; }
   .hero-r { min-height: 400px; }
-  .seg-grid { grid-template-columns: 1fr; }
+  .seg-grid { grid-template-columns: repeat(2, 1fr); }
+  .logobar { padding: 16px 24px; }
   .how-grid { grid-template-columns: 1fr 1fr; }
   .how-step { border-bottom: 1px solid var(--border); }
   .std-grid, .reviews-grid { grid-template-columns: 1fr 1fr; }
@@ -528,7 +537,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
     </div>
     <div class="hero-stats">
       <div class="hstat">
-        <div class="hstat-n">70<em>К+</em></div>
+        <div class="hstat-n">70 042</div>
         <div class="hstat-l">объектов<br>под охраной</div>
       </div>
       <div class="hstat">
@@ -536,7 +545,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
         <div class="hstat-l">городов<br>присутствия</div>
       </div>
       <div class="hstat">
-        <div class="hstat-n">4.2 <em>мин</em></div>
+        <div class="hstat-n">5,8 <em>мин</em></div>
         <div class="hstat-l">среднее время<br>прибытия ГБР</div>
       </div>
       <div class="hstat">
@@ -551,7 +560,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
       <div class="panel-card">
         <div class="panel-card-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
         <div>
-          <div class="panel-card-n">70 431</div>
+          <div class="panel-card-n">70 042</div>
           <div class="panel-card-l">объектов под охраной</div>
         </div>
         <div class="panel-card-delta">+142 сегодня</div>
@@ -559,7 +568,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
       <div class="panel-card">
         <div class="panel-card-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
         <div>
-          <div class="panel-card-n">4.2 мин</div>
+          <div class="panel-card-n">5,8 мин</div>
           <div class="panel-card-l">среднее время прибытия ГБР</div>
         </div>
         <div class="panel-card-delta">SLA ✓</div>
@@ -594,6 +603,19 @@ button { cursor: pointer; border: none; font-family: inherit; }
   </div>
 </section>
 
+<!-- LOGO BAR -->
+<div class="logobar">
+  <div class="logobar-in">
+    <span class="logobar-label">Платформе Reforce доверяют <strong>2 800+</strong> корпоративных клиентов</span>
+    <div class="logobar-vsep"></div>
+    <span class="lb-tag">Банки</span>
+    <span class="lb-tag">Ритейл-сети</span>
+    <span class="lb-tag">ЧОПы</span>
+    <span class="lb-tag">Гостиндустрия</span>
+    <span class="lb-tag">Промышленность</span>
+  </div>
+</div>
+
 <!-- SEGMENTS -->
 <section class="segments" id="segments">
   <div class="segments-hd reveal">
@@ -627,6 +649,15 @@ button { cursor: pointer; border: none; font-family: inherit; }
         <div class="seg-title">Партнёрам</div>
         <div class="seg-desc">Охранные предприятия. Поток клиентов, платформа под ключ, доход от 150 000 ₽/мес.</div>
         <span class="seg-link">Стать партнёром →</span>
+      </div>
+    </div>
+    <div class="seg-card seg-bg-industry reveal" data-d="4" onclick="openModal('modalOrder')">
+      <div class="seg-accent-industry"></div>
+      <div class="seg-icon"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+      <div class="seg-body">
+        <div class="seg-title">Для отраслей</div>
+        <div class="seg-desc">Банки, ритейл, отели, промышленность. Отраслевые решения с учётом специфики.</div>
+        <span class="seg-link">Обсудить задачу →</span>
       </div>
     </div>
   </div>
@@ -844,7 +875,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
         <div class="b2b-metric-l">ложных тревог после внедрения AI Vision</div>
       </div>
       <div class="b2b-metric">
-        <div class="b2b-metric-n">4.2 <em>мин</em></div>
+        <div class="b2b-metric-n">5,8 <em>мин</em></div>
         <div class="b2b-metric-l">среднее время прибытия ГБР по сети</div>
       </div>
       <div class="b2b-metric">
@@ -934,8 +965,8 @@ button { cursor: pointer; border: none; font-family: inherit; }
 <section class="reviews">
   <div class="reviews-hd reveal">
     <span class="label"><em>ОТЗЫВЫ</em></span>
-    <h2 class="section-title">Reforce выбирают</h2>
-    <p class="section-sub">85% клиентов рекомендуют Reforce своим знакомым — по данным опроса 2024 года</p>
+    <h2 class="section-title">70 042 объекта. Каждый под охраной.</h2>
+    <p class="section-sub">85% клиентов рекомендуют нас знакомым — по данным опроса 2024 года</p>
   </div>
   <div class="reviews-grid">
     <div class="rev-card reveal" data-d="1">
@@ -1099,7 +1130,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
   <div class="ft-top">
     <div>
       <div class="ft-logo">/<em>REFORCE</em></div>
-      <p class="ft-desc">Федеральная платформа безопасности. 70 000+ объектов под охраной в 100+ городах России.</p>
+      <p class="ft-desc">Федеральная платформа безопасности. 70 042 объекта под охраной в 100+ городах России.</p>
       <div class="ft-tel">8 800 555-75-55</div>
       <div class="ft-tel-sub">Звонок бесплатный, 24/7</div>
     </div>
