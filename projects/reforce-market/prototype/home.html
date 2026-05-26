@@ -62,13 +62,21 @@ button{cursor:pointer;border:none;font-family:inherit}
 .trust-num{font-size:24px;font-weight:700;color:#fff}
 .trust-label{font-size:11px;color:rgba(255,255,255,.4);margin-top:2px}
 
+/* ─── TOP STRIP ─── */
+.topstrip{background:rgba(14,14,26,.98);border-bottom:1px solid rgba(255,255,255,.06);height:34px;display:flex;align-items:center;overflow:hidden}
+.topstrip-inner{display:flex;align-items:center;white-space:nowrap;animation:marquee 32s linear infinite}
+.topstrip-item{display:inline-flex;align-items:center;gap:6px;padding:0 22px;font-size:11.5px;color:rgba(255,255,255,.42)}
+.topstrip-item strong{color:rgba(255,255,255,.78);font-weight:600}
+.ts-sep{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.18);flex-shrink:0}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
 /* SCENARIO TABS */
-.scenario-bar{background:#fff;padding:0;border-bottom:1px solid var(--n100);position:sticky;top:80px;z-index:15}
-.tabs-inner{display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+.scenario-bar{background:#fff;padding:12px 24px;border-bottom:1px solid var(--n100);position:sticky;top:80px;z-index:15;display:flex;justify-content:center}
+.tabs-inner{display:inline-flex;gap:4px;background:var(--n50);border:1px solid var(--n100);border-radius:100px;padding:4px}
 .tabs-inner::-webkit-scrollbar{display:none}
-.tab-btn{flex-shrink:0;padding:18px 28px;font-size:14px;font-weight:500;color:var(--n600);background:none;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
-.tab-btn:hover{color:var(--n900);background:var(--n50)}
-.tab-btn.active{color:var(--red);border-bottom-color:var(--red);font-weight:600}
+.tab-btn{flex-shrink:0;padding:8px 20px;font-size:14px;font-weight:500;color:var(--n600);background:none;border:none;border-radius:100px;cursor:pointer;transition:all .15s;white-space:nowrap;font-family:inherit}
+.tab-btn:hover{background:rgba(255,255,255,.7);color:var(--n900)}
+.tab-btn.active{background:#fff;color:var(--red);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.08)}
 
 /* SCENARIO PANELS */
 .scenario-panel{display:none}.scenario-panel.active{display:block}
@@ -107,7 +115,7 @@ button{cursor:pointer;border:none;font-family:inherit}
 .packages-title{font-size:28px;font-weight:700;color:#fff;margin-bottom:8px}
 .packages-sub{font-size:15px;color:rgba(255,255,255,.45);margin-bottom:36px}
 .pkg-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.pkg-card{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);border-radius:20px;padding:24px;transition:all .2s}
+.pkg-card{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.08);border-radius:20px;padding:24px;transition:all .2s;display:flex;flex-direction:column}
 .pkg-card.featured{border-color:var(--red);background:rgba(212,43,43,.07)}
 .pkg-badge{display:inline-flex;align-items:center;gap:4px;background:var(--red);color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;margin-bottom:12px}
 .pkg-name{font-size:18px;font-weight:700;color:#fff;margin-bottom:6px}
@@ -117,7 +125,7 @@ button{cursor:pointer;border:none;font-family:inherit}
 .pkg-list{list-style:none;display:flex;flex-direction:column;gap:7px;margin-bottom:20px}
 .pkg-list li{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:rgba(255,255,255,.65)}
 .pkg-list li::before{content:'✓';color:var(--green);font-weight:700;font-size:11px;margin-top:1px;flex-shrink:0}
-.pkg-btns{display:flex;flex-direction:column;gap:8px}
+.pkg-btns{display:flex;flex-direction:column;gap:8px;margin-top:auto}
 .btn-pkg{width:100%;height:42px;border-radius:11px;font-size:13px;font-weight:600;transition:all .15s}
 .btn-pkg-primary{background:var(--red);color:#fff}.btn-pkg-primary:hover{background:var(--red-dark)}
 .btn-pkg-sec{background:rgba(255,255,255,.07);color:rgba(255,255,255,.6)}.btn-pkg-sec:hover{background:rgba(255,255,255,.12)}
@@ -194,6 +202,25 @@ button{cursor:pointer;border:none;font-family:inherit}
 .success-modal{text-align:center;padding:20px 0}
 .success-emoji{font-size:52px;margin-bottom:16px}
 
+/* FOOTER */
+.footer{background:var(--dark);padding:56px 0 28px;border-top:1px solid rgba(255,255,255,.06)}
+.ft-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;padding-bottom:44px;border-bottom:1px solid rgba(255,255,255,.07)}
+.ft-brand{display:flex;align-items:center;gap:9px;margin-bottom:14px}
+.ft-brand-ic{width:34px;height:34px;background:var(--red);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;font-weight:800}
+.ft-brand-n{font-size:19px;font-weight:700;color:#fff}
+.ft-desc{font-size:14px;color:rgba(255,255,255,.36);line-height:1.6;max-width:280px;margin-bottom:20px}
+.ft-tel{font-size:18px;font-weight:600;color:#fff}
+.ft-tel-n{font-size:12px;color:rgba(255,255,255,.28);margin-top:3px}
+.ft-col-t{font-size:12px;font-weight:600;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
+.ft-links{list-style:none;display:flex;flex-direction:column;gap:9px}
+.ft-links a{font-size:14px;color:rgba(255,255,255,.4);transition:color .13s}
+.ft-links a:hover{color:rgba(255,255,255,.75)}
+.ft-bot{display:flex;align-items:center;justify-content:space-between;padding-top:24px;flex-wrap:wrap;gap:10px}
+.ft-copy{font-size:13px;color:rgba(255,255,255,.22)}
+.ft-legal{display:flex;gap:18px;flex-wrap:wrap}
+.ft-legal a{font-size:12px;color:rgba(255,255,255,.22);transition:color .13s}
+.ft-legal a:hover{color:rgba(255,255,255,.45)}
+
 /* ─── ANIMATIONS ─── */
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 .house-illustration{animation:float 4s ease-in-out infinite}
@@ -218,6 +245,32 @@ button{cursor:pointer;border:none;font-family:inherit}
 </style>
 </head>
 <body>
+
+<!-- TOP STRIP -->
+<div class="topstrip">
+  <div class="topstrip-inner">
+    <span class="topstrip-item"><strong>50 000+</strong> квартир и домов под охраной</span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Монтаж — <strong>1 рабочий день</strong></span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Мониторинг пульта <strong>24 / 7</strong></span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Выезд ГБР — <strong>4.2 мин</strong> в среднем</span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Управление с телефона — <strong>App Store и Google Play</strong></span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item"><strong>50 000+</strong> квартир и домов под охраной</span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Монтаж — <strong>1 рабочий день</strong></span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Мониторинг пульта <strong>24 / 7</strong></span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Выезд ГБР — <strong>4.2 мин</strong> в среднем</span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Управление с телефона — <strong>App Store и Google Play</strong></span>
+    <span class="ts-sep"></span>
+  </div>
+</div>
 
 <!-- HEADER -->
 <header class="hdr">
@@ -257,7 +310,7 @@ button{cursor:pointer;border:none;font-family:inherit}
           <span class="tag-dot"></span>
           Охрана жилья — с 2018 года
         </div>
-        <h1>Ушли из дома —<br>квартира<br><em>под контролем</em></h1>
+        <h1>Ушли из дома —<br>квартира<br><em>под охраной</em></h1>
         <p class="hero-sub">Охранная сигнализация, видеокамеры и экстренное реагирование — всё через одно приложение. Монтаж за 1 день, оформление без офиса.</p>
         <div class="hero-ctas">
           <button class="btn btn-red btn-lg" onclick="openModal()">Оформить охрану</button>
@@ -297,12 +350,10 @@ button{cursor:pointer;border:none;font-family:inherit}
 
 <!-- SCENARIO TABS -->
 <div class="scenario-bar">
-  <div class="container">
-    <div class="tabs-inner">
-      <button class="tab-btn active" onclick="switchTab('apt', this)">🏠 Квартира</button>
-      <button class="tab-btn" onclick="switchTab('house', this)">🌲 Загородный дом</button>
-      <button class="tab-btn" onclick="switchTab('dacha', this)">🏡 Дача и гараж</button>
-    </div>
+  <div class="tabs-inner">
+    <button class="tab-btn active" onclick="switchTab('apt', this)">Квартира</button>
+    <button class="tab-btn" onclick="switchTab('house', this)">Загородный дом</button>
+    <button class="tab-btn" onclick="switchTab('dacha', this)">Дача и гараж</button>
   </div>
 </div>
 
@@ -625,6 +676,52 @@ button{cursor:pointer;border:none;font-family:inherit}
     </div>
   </div>
 </section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="ft-top">
+      <div>
+        <div class="ft-brand"><div class="ft-brand-ic">R</div><span class="ft-brand-n">Reforce</span></div>
+        <p class="ft-desc">Федеральная платформа безопасности. Охрана дома и бизнеса — онлайн, без офиса.</p>
+        <div class="ft-tel">8 800 555-75-55</div>
+        <div class="ft-tel-n">звонок бесплатный · круглосуточно</div>
+      </div>
+      <div>
+        <div class="ft-col-t">Услуги</div>
+        <ul class="ft-links">
+          <li><a href="home.html">Для дома</a></li>
+          <li><a href="business.html">Для бизнеса</a></li>
+          <li><a href="partners.html">Партнёрам</a></li>
+          <li><a href="main.html#quiz">Подобрать охрану</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="ft-col-t">Компания</div>
+        <ul class="ft-links">
+          <li><a href="#">О Reforce</a></li>
+          <li><a href="main.html#how">Как это работает</a></li>
+          <li><a href="#">Карьера</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="ft-col-t">Поддержка</div>
+        <ul class="ft-links">
+          <li><a href="#">Личный кабинет</a></li>
+          <li><a href="#">Приложение</a></li>
+          <li><a href="#">info@reforce.group</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ft-bot">
+      <span class="ft-copy">© 2026 ООО «Рефорс». Все права защищены.</span>
+      <div class="ft-legal">
+        <a href="#">Политика конфиденциальности</a>
+        <a href="#">Обработка персональных данных</a>
+        <a href="#">Пользовательское соглашение</a>
+      </div>
+    </div>
+  </div>
+</footer>
 
 <!-- STICKY BOTTOM -->
 <div class="sticky-bottom" id="stickyBottom">

@@ -91,7 +91,13 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .seg { background: var(--n50); padding: 64px 0; }
 .seg-hd { text-align: center; margin-bottom: 36px; }
 .overline { font-size: 11px; font-weight: 500; letter-spacing: .8px; text-transform: uppercase; color: var(--n600); margin-bottom: 10px; }
-.seg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.logobar { border-top: 1px solid var(--n100); border-bottom: 1px solid var(--n100); background: var(--n50); padding: 18px 0; }
+.logobar-in { display: flex; align-items: center; gap: 24px; justify-content: center; flex-wrap: wrap; }
+.logobar-label { font-size: 13px; color: var(--n500); white-space: nowrap; }
+.logobar-label strong { color: var(--n900); }
+.logobar-sep { width: 1px; height: 20px; background: var(--n200); flex-shrink: 0; }
+.lb-tag { font-size: 12px; font-weight: 600; color: var(--n500); background: var(--n100); border-radius: 100px; padding: 4px 12px; white-space: nowrap; }
+.seg-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 .seg-card { background: #fff; border: 1.5px solid var(--n100); border-radius: 20px; padding: 28px; cursor: pointer; transition: all .2s; position: relative; overflow: hidden; }
 .seg-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--red); opacity: 0; transition: opacity .2s; }
 .seg-card:hover { border-color: var(--red); box-shadow: 0 6px 24px rgba(0,0,0,.09); transform: translateY(-3px); }
@@ -111,6 +117,10 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .quiz-hd .overline { color: rgba(255,255,255,.38); }
 .quiz-hd h2 { font-size: 38px; font-weight: 700; color: #fff; letter-spacing: -.4px; margin-bottom: 10px; }
 .quiz-hd p { font-size: 16px; color: rgba(255,255,255,.48); }
+.quiz-ai-badge { display: inline-flex; align-items: center; gap: 7px; background: linear-gradient(135deg, rgba(99,102,241,.18) 0%, rgba(168,85,247,.18) 100%); border: 1px solid rgba(168,85,247,.3); border-radius: 100px; padding: 5px 14px 5px 8px; font-size: 12px; font-weight: 600; color: rgba(200,180,255,.9); margin-bottom: 18px; }
+.quiz-ai-dot { width: 20px; height: 20px; background: linear-gradient(135deg, #6366f1, #a855f7); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; }
+@keyframes ai-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,.4)} 50%{box-shadow:0 0 0 5px rgba(168,85,247,0)} }
+.quiz-ai-dot { animation: ai-pulse 2s ease-in-out infinite; }
 .quiz-box { max-width: 700px; margin: 0 auto; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 26px; padding: 36px; }
 .q-prog { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
 .q-bar { flex: 1; height: 3px; background: rgba(255,255,255,.07); border-radius: 2px; overflow: hidden; }
@@ -283,6 +293,56 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .inp:focus { border-color: var(--red); }
 .form-note { font-size: 12px; color: var(--n600); text-align: center; line-height: 1.5; }
 
+/* ─── TOP STRIP ─── */
+.topstrip{background:rgba(14,14,26,.98);border-bottom:1px solid rgba(255,255,255,.06);height:34px;display:flex;align-items:center;overflow:hidden}
+.topstrip-inner{display:flex;align-items:center;white-space:nowrap;animation:marquee 32s linear infinite}
+.topstrip-item{display:inline-flex;align-items:center;gap:6px;padding:0 22px;font-size:11.5px;color:rgba(255,255,255,.42)}
+.topstrip-item strong{color:rgba(255,255,255,.78);font-weight:600}
+.ts-sep{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.18);flex-shrink:0}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ─── STANDARD REFORCE ─── */
+.standard{background:#fff;padding:72px 0}
+.standard-hd{text-align:center;margin-bottom:48px}
+.standard-hd h2{font-size:32px;font-weight:700;margin-bottom:10px}
+.standard-hd p{font-size:16px;color:var(--n600);max-width:520px;margin:0 auto}
+.std-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.std-card{border:1.5px solid var(--n100);border-radius:20px;padding:28px;background:var(--n50);transition:all .2s}
+.std-card:hover{border-color:rgba(212,43,43,.25);box-shadow:0 4px 18px rgba(0,0,0,.07)}
+.std-num{font-size:11px;font-weight:700;color:var(--red);letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px}
+.std-icon{width:46px;height:46px;border-radius:13px;background:rgba(212,43,43,.07);display:flex;align-items:center;justify-content:center;color:var(--red);margin-bottom:16px}
+.std-title{font-size:18px;font-weight:700;margin-bottom:8px}
+.std-desc{font-size:14px;color:var(--n600);line-height:1.65;margin-bottom:16px}
+.std-items{list-style:none;display:flex;flex-direction:column;gap:7px}
+.std-items li{font-size:13px;color:var(--n900);display:flex;align-items:center;gap:8px}
+.std-items li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--red);flex-shrink:0}
+
+/* ─── FEATURED B2B CASE ─── */
+.feat-case{background:var(--dark);padding:72px 0}
+.feat-case-inner{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.feat-case-label{font-size:11px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:12px}
+.feat-case h2{font-size:36px;font-weight:700;color:#fff;letter-spacing:-.3px;line-height:1.15;margin-bottom:14px}
+.feat-case-intro{font-size:16px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:28px}
+.feat-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px}
+.feat-m{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:18px 12px;text-align:center}
+.feat-m-num{font-size:26px;font-weight:700;color:var(--red);margin-bottom:4px}
+.feat-m-lbl{font-size:12px;color:rgba(255,255,255,.38);line-height:1.4}
+.feat-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:22px;padding:28px}
+.feat-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(212,43,43,.12);border:1px solid rgba(212,43,43,.2);border-radius:100px;padding:4px 12px;font-size:11px;color:var(--red);font-weight:600;margin-bottom:16px}
+.feat-org{font-size:17px;font-weight:700;color:#fff;margin-bottom:3px}
+.feat-org-meta{font-size:13px;color:rgba(255,255,255,.32);margin-bottom:20px}
+.feat-tl{display:flex;flex-direction:column}
+.feat-tl-item{display:flex;gap:14px}
+.feat-tl-line{display:flex;flex-direction:column;align-items:center;flex-shrink:0;padding-top:4px}
+.feat-tl-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0}
+.feat-tl-seg{width:1px;background:rgba(255,255,255,.1);flex:1;min-height:20px;margin:4px 0}
+.feat-tl-item:last-child .feat-tl-seg{display:none}
+.feat-tl-body{padding-bottom:18px}
+.feat-tl-t{font-size:14px;font-weight:600;color:#fff;margin-bottom:2px}
+.feat-tl-d{font-size:13px;color:rgba(255,255,255,.38);line-height:1.55}
+.feat-result{background:rgba(52,199,89,.07);border:1px solid rgba(52,199,89,.18);border-radius:13px;padding:14px 16px;display:flex;align-items:center;gap:10px;margin-top:4px}
+.feat-result-lbl{font-size:13px;color:rgba(52,199,89,.85);font-weight:600;line-height:1.5}
+
 /* ─── ANIMATIONS ─── */
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 .ph-wrap{animation:float 4s ease-in-out infinite}
@@ -295,9 +355,10 @@ button { cursor: pointer; border: none; font-family: inherit; }
 
 /* ─── RESPONSIVE ─── */
 @media(max-width: 1024px) {
+  .std-grid, .feat-case-inner { grid-template-columns: 1fr; }
   .hero-g, .prtnr-in, .app-in { grid-template-columns: 1fr; }
   .hero-vis { display: none; }
-  .seg-grid { grid-template-columns: 1fr; }
+  .seg-grid { grid-template-columns: repeat(2, 1fr); }
   .how-grid { grid-template-columns: 1fr 1fr; }
   .proof-nums { grid-template-columns: repeat(3,1fr); }
   .rv-grid { grid-template-columns: 1fr 1fr; }
@@ -305,6 +366,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
   .res-grid { grid-template-columns: 1fr; }
 }
 @media(max-width: 640px) {
+  .seg-grid { grid-template-columns: 1fr; }
   .hero h1 { font-size: 36px; }
   .nav { display: none; }
   .how-grid { grid-template-columns: 1fr; }
@@ -318,6 +380,32 @@ button { cursor: pointer; border: none; font-family: inherit; }
 </style>
 </head>
 <body>
+
+<!-- TOP STRIP -->
+<div class="topstrip">
+  <div class="topstrip-inner">
+    <span class="topstrip-item"><strong>70 042</strong> объекта под охраной прямо сейчас</span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Среднее прибытие ГБР — <strong>5,8 мин</strong></span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item"><strong>120+</strong> городов присутствия</span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">SLA выполняется в <strong>96%</strong> случаев</span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Поддержка <strong>24 / 7</strong></span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item"><strong>70 042</strong> объекта под охраной прямо сейчас</span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Среднее прибытие ГБР — <strong>5,8 мин</strong></span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item"><strong>120+</strong> городов присутствия</span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">SLA выполняется в <strong>96%</strong> случаев</span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Поддержка <strong>24 / 7</strong></span>
+    <span class="ts-sep"></span>
+  </div>
+</div>
 
 <!-- HEADER -->
 <header class="hdr">
@@ -355,17 +443,17 @@ button { cursor: pointer; border: none; font-family: inherit; }
       <div class="hero-c">
         <div class="hero-badge">
           <span class="badge-dot"></span>
-          70 000+ объектов под охраной прямо сейчас
+          70 042 объекта под охраной прямо сейчас
         </div>
-        <h1>Безопасность,<br>которую легко<br><em>настроить</em></h1>
-        <p class="hero-sub">Выбрали пакет онлайн — мастер приехал на следующий день. Управление, камеры и уведомления — всё в телефоне.</p>
+        <h1>Ваш объект<br>под <em>охраной.</em><br>Вы — за его пультом.</h1>
+        <p class="hero-sub">Охранная сигнализация, ГБР и видеонаблюдение — оформите онлайн, монтаж за 1 день.</p>
         <div class="hero-cta-row">
           <button class="btn btn-red sz-lg" onclick="scrollToQuiz()">Подобрать решение</button>
         </div>
         <p class="hero-phone-hint" style="margin-top:12px">или звоните: <strong>8 800 555-75-55</strong> — бесплатно</p>
         <div class="hero-stats">
           <div><div class="hs-num" data-countup>96%</div><div class="hs-lbl">соблюдение SLA</div></div>
-          <div><div class="hs-num" data-countup>85%</div><div class="hs-lbl">клиенты рекомендуют</div></div>
+          <div><div class="hs-num" data-countup>85%</div><div class="hs-lbl">рекомендуют нас</div></div>
           <div><div class="hs-num">1 день</div><div class="hs-lbl">до подключения</div></div>
           <div><div class="hs-num" data-countup>100+</div><div class="hs-lbl">городов присутствия</div></div>
         </div>
@@ -403,6 +491,21 @@ button { cursor: pointer; border: none; font-family: inherit; }
     </div>
   </div>
 </section>
+
+<!-- LOGO BAR -->
+<div class="logobar">
+  <div class="wrap">
+    <div class="logobar-in">
+      <span class="logobar-label">Платформе Reforce доверяют <strong>2 800+</strong> корпоративных клиентов</span>
+      <div class="logobar-sep"></div>
+      <span class="lb-tag">Банки</span>
+      <span class="lb-tag">Ритейл-сети</span>
+      <span class="lb-tag">ЧОПы</span>
+      <span class="lb-tag">Гостиндустрия</span>
+      <span class="lb-tag">Промышленность</span>
+    </div>
+  </div>
+</div>
 
 <!-- SEGMENTS -->
 <section class="seg" id="segments">
@@ -448,6 +551,70 @@ button { cursor: pointer; border: none; font-family: inherit; }
         </ul>
         <span class="seg-link">Стать партнёром →</span>
       </div>
+      <div class="seg-card reveal" data-d="4" onclick="openModal()">
+        <div class="seg-ico"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+        <div class="seg-title">Для отраслей</div>
+        <p class="seg-desc">Банки, ритейл, гостиницы, промышленность. Отраслевые решения с учётом специфики и нормативных требований.</p>
+        <ul class="seg-list">
+          <li>Банки и финансовые учреждения</li>
+          <li>Торговые сети и ритейл</li>
+          <li>Отели и гостиничный бизнес</li>
+          <li>Промышленные объекты</li>
+        </ul>
+        <span class="seg-link">Обсудить задачу →</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- СТАНДАРТ REFORCE -->
+<section class="standard">
+  <div class="wrap">
+    <div class="standard-hd">
+      <p class="overline">Стандарт качества</p>
+      <h2 class="reveal">Единый стандарт Reforce</h2>
+      <p>Каждый партнёр проходит проверку и работает по единому регламенту. Вы получаете одинаково высокое качество — в Москве, Казани или Краснодаре.</p>
+    </div>
+    <div class="std-grid">
+      <div class="std-card reveal" data-d="1">
+        <div class="std-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        </div>
+        <div class="std-num">01 — Регламент</div>
+        <div class="std-title">Единый регламент работы</div>
+        <p class="std-desc">Все партнёры работают по единому стандарту монтажа, подключения и реагирования. Отступление от регламента — основание для приостановки заявок.</p>
+        <ul class="std-items">
+          <li>Монтаж по схеме Reforce</li>
+          <li>Тестирование перед сдачей объекта</li>
+          <li>Обязательный инструктаж клиента</li>
+        </ul>
+      </div>
+      <div class="std-card reveal" data-d="2">
+        <div class="std-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+        </div>
+        <div class="std-num">02 — Сертификация</div>
+        <div class="std-title">Сертификация партнёров</div>
+        <p class="std-desc">Каждый партнёр проходит первичную проверку лицензии и квалификации. Ежегодная ресертификация обязательна для всех участников сети.</p>
+        <ul class="std-items">
+          <li>Проверка лицензии ЧОП</li>
+          <li>Аттестация монтажников</li>
+          <li>Ежегодная ресертификация</li>
+        </ul>
+      </div>
+      <div class="std-card reveal" data-d="3">
+        <div class="std-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        </div>
+        <div class="std-num">03 — Аудит</div>
+        <div class="std-title">Непрерывный аудит качества</div>
+        <p class="std-desc">Рейтинг каждого партнёра обновляется в реальном времени на основе оценок клиентов, SLA-метрик и данных пульта. Система прозрачна.</p>
+        <ul class="std-items">
+          <li>Оценка клиента после каждого монтажа</li>
+          <li>Мониторинг SLA в реальном времени</li>
+          <li>Публичный рейтинг партнёра</li>
+        </ul>
+      </div>
     </div>
   </div>
 </section>
@@ -456,9 +623,12 @@ button { cursor: pointer; border: none; font-family: inherit; }
 <section class="quiz-sec" id="quiz">
   <div class="wrap">
     <div class="quiz-hd">
-      <p class="overline">Конфигуратор</p>
+      <div class="quiz-ai-badge">
+        <div class="quiz-ai-dot">✦</div>
+        AI-подбор решения
+      </div>
       <h2>Подберём охрану под вас</h2>
-      <p>2 вопроса — и вы увидите подходящие пакеты с ценами</p>
+      <p>2 вопроса — искусственный интеллект подберёт оптимальный пакет с ценами</p>
     </div>
     <div class="quiz-box">
       <div class="q-prog">
@@ -501,7 +671,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
       <!-- Step 2 -->
       <div class="q-step" id="qs2">
         <div class="q-title">Что важнее всего?</div>
-        <p class="q-hint">Выберите главную задачу</p>
+        <p class="q-hint">Выберите главную задачу — мы настроим приоритеты пакета</p>
         <div class="q-opts">
           <div class="q-opt" onclick="pick(2,'intrusion',this)">
             <div class="q-oi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
@@ -520,7 +690,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
           </div>
           <div class="q-opt" onclick="pick(2,'personal',this)">
             <div class="q-oi"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
-            <div class="q-ot"><div class="q-ot-h">Безопасность близких</div><div class="q-ot-d">Кнопка жизни, SOS</div></div>
+            <div class="q-ot"><div class="q-ot-h">Безопасность близких</div><div class="q-ot-d">Кнопка жизни, SOS, пожилые</div></div>
             <div class="q-ck"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
           </div>
         </div>
@@ -540,12 +710,12 @@ button { cursor: pointer; border: none; font-family: inherit; }
           <div class="res-card">
             <div class="res-name" id="rn1">Базовая охрана</div>
             <div class="res-price">от 800 ₽<span>/мес</span></div>
-            <div class="res-equip">+ оборудование от 8 025 ₽</div>
+            <div class="res-equip">+ оборудование от 8 025 ₽ единоразово</div>
             <ul class="res-list">
               <li>Охранная сигнализация</li>
               <li>Мониторинг 24/7</li>
-              <li>Push-уведомления</li>
-              <li>Выезд ГБР при сигнале</li>
+              <li>Push-уведомления на телефон</li>
+              <li>Реагирование ГБР при сигнале</li>
             </ul>
             <div class="res-btns">
               <button class="rb-pr" onclick="openModal('Базовая охрана')">Оформить</button>
@@ -556,12 +726,13 @@ button { cursor: pointer; border: none; font-family: inherit; }
             <div class="res-badge"><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Рекомендуем</div>
             <div class="res-name" id="rn2">Охрана + видео</div>
             <div class="res-price">от 1 100 ₽<span>/мес</span></div>
-            <div class="res-equip">+ оборудование от 11 500 ₽</div>
+            <div class="res-equip">+ оборудование от 11 500 ₽ единоразово</div>
             <ul class="res-list">
               <li>Всё из базового пакета</li>
               <li>2 камеры с онлайн-просмотром</li>
-              <li>Архив записей 30 дней</li>
+              <li>Запись и архив 30 дней</li>
               <li>Видеоверификация сигнала</li>
+              <li>Приложение для iOS и Android</li>
             </ul>
             <div class="res-btns">
               <button class="rb-pr" onclick="openModal('Охрана + видео')">Оформить</button>
@@ -571,12 +742,13 @@ button { cursor: pointer; border: none; font-family: inherit; }
           <div class="res-card">
             <div class="res-name" id="rn3">Умный дом</div>
             <div class="res-price">от 1 600 ₽<span>/мес</span></div>
-            <div class="res-equip">+ оборудование от 19 900 ₽</div>
+            <div class="res-equip">+ оборудование от 19 900 ₽ единоразово</div>
             <ul class="res-list">
-              <li>Охрана + видео + климат</li>
-              <li>Управление светом и розетками</li>
-              <li>Датчики протечки и дыма</li>
+              <li>Всё из пакета «Охрана + видео»</li>
+              <li>Управление климатом и светом</li>
               <li>Автоматические сценарии</li>
+              <li>Умные замки и датчики</li>
+              <li>Контроль потребления энергии</li>
             </ul>
             <div class="res-btns">
               <button class="rb-pr" onclick="openModal('Умный дом')">Оформить</button>
@@ -627,6 +799,69 @@ button { cursor: pointer; border: none; font-family: inherit; }
   </div>
 </section>
 
+<!-- FEATURED B2B CASE -->
+<section class="feat-case">
+  <div class="wrap">
+    <div class="feat-case-inner">
+      <div>
+        <p class="feat-case-label">Кейс — Ритейл</p>
+        <h2 class="reveal">142 магазина.<br>Один договор.<br>−92% ложных тревог</h2>
+        <p class="feat-case-intro">Федеральная сеть перевела охрану всех точек на Reforce за 3 месяца. Видеоаналитика заменила ручную верификацию — операционная нагрузка упала в 12 раз.</p>
+        <div class="feat-metrics">
+          <div class="feat-m reveal" data-d="1">
+            <div class="feat-m-num">−92%</div>
+            <div class="feat-m-lbl">ложных<br>тревог</div>
+          </div>
+          <div class="feat-m reveal" data-d="2">
+            <div class="feat-m-num">4.2 мин</div>
+            <div class="feat-m-lbl">среднее время<br>ГБР</div>
+          </div>
+          <div class="feat-m reveal" data-d="3">
+            <div class="feat-m-num">142</div>
+            <div class="feat-m-lbl">объекта<br>в сети</div>
+          </div>
+        </div>
+        <button class="btn btn-outline-w sz-md" onclick="window.location='business.html'">Охрана для бизнеса →</button>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-tag">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/></svg>
+          Ритейл
+        </div>
+        <div class="feat-org">Сеть магазинов «Продторг»</div>
+        <div class="feat-org-meta">142 точки · 18 городов · с Reforce с 2023</div>
+        <div class="feat-tl">
+          <div class="feat-tl-item">
+            <div class="feat-tl-line"><div class="feat-tl-dot"></div><div class="feat-tl-seg"></div></div>
+            <div class="feat-tl-body">
+              <div class="feat-tl-t">Единый договор для всей сети</div>
+              <div class="feat-tl-d">Один договор вместо 142 отдельных с региональными ЧОП — единое управление доступами, одна абонентская плата</div>
+            </div>
+          </div>
+          <div class="feat-tl-item">
+            <div class="feat-tl-line"><div class="feat-tl-dot"></div><div class="feat-tl-seg"></div></div>
+            <div class="feat-tl-body">
+              <div class="feat-tl-t">Видеоаналитика вместо человека</div>
+              <div class="feat-tl-d">Система верифицирует тревоги автоматически. Кассир задержался — это не угроза. Реальные инциденты — 8% от сигналов</div>
+            </div>
+          </div>
+          <div class="feat-tl-item">
+            <div class="feat-tl-line"><div class="feat-tl-dot"></div></div>
+            <div class="feat-tl-body">
+              <div class="feat-tl-t">Сводная отчётность по всей сети</div>
+              <div class="feat-tl-d">Финдиректор видит все объекты в одном отчёте — не нужно собирать данные от каждого региона вручную</div>
+            </div>
+          </div>
+        </div>
+        <div class="feat-result" style="margin-top:16px">
+          <span style="font-size:18px;flex-shrink:0">✅</span>
+          <div class="feat-result-lbl">Экономия на ложных выездах ГБР — 2.4 млн ₽ в год</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- PARTNERS -->
 <section class="prtnr" id="partners">
   <div class="wrap">
@@ -654,8 +889,8 @@ button { cursor: pointer; border: none; font-family: inherit; }
           </li>
         </ul>
         <div class="prtnr-btns">
-          <button class="btn btn-red sz-md" onclick="window.location='partners.html'">Стать партнёром</button>
-          <button class="btn btn-outline-w sz-md" onclick="openModal()">Задать вопрос</button>
+          <button class="btn btn-red sz-md" onclick="window.location='partners.html'">Подать заявку на партнёрство</button>
+          <button class="btn btn-outline-w sz-md" onclick="window.location='partners.html'">Подробнее о партнёрстве</button>
         </div>
       </div>
       <div class="prtnr-stats">
@@ -664,12 +899,16 @@ button { cursor: pointer; border: none; font-family: inherit; }
           <div class="pstat-desc"><strong>Партнёров на платформе</strong><span>в 100+ городах России</span></div>
         </div>
         <div class="pstat reveal" data-d="2">
-          <div class="pstat-num" data-countup>70К+</div>
+          <div class="pstat-num" data-countup>70 042</div>
           <div class="pstat-desc"><strong>Объектов под охраной</strong><span>прирост +15% ежеквартально</span></div>
         </div>
         <div class="pstat reveal" data-d="3">
           <div class="pstat-num" data-countup>96%</div>
           <div class="pstat-desc"><strong>SLA по реагированию</strong><span>контроль в реальном времени</span></div>
+        </div>
+        <div class="pstat reveal" data-d="4">
+          <div class="pstat-num" data-countup>250+</div>
+          <div class="pstat-desc"><strong>Экипажей ГБР</strong><span>в сети партнёров</span></div>
         </div>
       </div>
     </div>
@@ -681,13 +920,14 @@ button { cursor: pointer; border: none; font-family: inherit; }
   <div class="wrap">
     <div class="proof-hd">
       <p class="overline" style="margin-bottom:10px">Доверие</p>
-      <h2 class="reveal">Reforce выбирают</h2>
+      <h2 class="reveal">70 042 объекта. Каждый под охраной.</h2>
     </div>
     <div class="proof-nums">
-      <div class="pnum reveal" data-d="1"><div class="pnum-n" data-countup>70 000+</div><div class="pnum-l">объектов под мониторингом</div></div>
+      <div class="pnum reveal" data-d="1"><div class="pnum-n" data-countup>70 042</div><div class="pnum-l">объектов под мониторингом</div></div>
       <div class="pnum reveal" data-d="2"><div class="pnum-n" data-countup>100+</div><div class="pnum-l">городов присутствия</div></div>
-      <div class="pnum reveal" data-d="3"><div class="pnum-n" data-countup>120+</div><div class="pnum-l">сертифицированных партнёров</div></div>
-      <div class="pnum reveal" data-d="4"><div class="pnum-n" data-countup>85%</div><div class="pnum-l">клиентов рекомендуют</div></div>
+      <div class="pnum reveal" data-d="3"><div class="pnum-n" data-countup>250+</div><div class="pnum-l">экипажей ГБР</div></div>
+      <div class="pnum reveal" data-d="4"><div class="pnum-n" data-countup>120+</div><div class="pnum-l">сертифицированных партнёров</div></div>
+      <div class="pnum reveal" data-d="5"><div class="pnum-n" data-countup>85%</div><div class="pnum-l">рекомендуют нас</div></div>
       <div class="pnum reveal" data-d="1"><div class="pnum-n" data-countup>96%</div><div class="pnum-l">SLA соблюдён</div></div>
     </div>
     <div class="rv-grid">
@@ -785,7 +1025,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
       </div>
       <div class="faq-it">
         <button class="faq-q" onclick="tFaq(this)">Что происходит, когда сигнализация срабатывает? <span class="faq-ch">▼</span></button>
-        <div class="faq-a">Пульт получает сигнал, вам приходит уведомление. Оператор звонит в течение минуты. При подтверждении угрозы — направляется группа реагирования. При ложном сигнале — просто информируем, без паники.</div>
+        <div class="faq-a">Пульт получает сигнал, вам приходит уведомление. Оператор звонит в течение минуты. При подтверждении угрозы — направляем группу реагирования. При ложном сигнале — просто информируем, без паники.</div>
       </div>
       <div class="faq-it">
         <button class="faq-q" onclick="tFaq(this)">Цена фиксированная или может вырасти? <span class="faq-ch">▼</span></button>

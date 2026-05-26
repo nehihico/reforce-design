@@ -190,11 +190,19 @@ button{cursor:pointer;border:none;font-family:inherit}
 .modal-x{position:absolute;top:14px;right:14px;width:30px;height:30px;background:var(--n100);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer}
 
 @media(max-width:960px){
-  .hero-inner,.calc-inner,.reqs-inner{grid-template-columns:1fr}
+  .hero-inner,.calc-inner,.reqs-inner,.model-panel.active,.prm-wrap,.std-p-inner,.franchise-inner{grid-template-columns:1fr}
   .ben-grid{grid-template-columns:1fr}
+  .who-grid,.mc-grid,.arch-grid,.arch-grid.cols-3{grid-template-columns:1fr 1fr}
   .join-steps{grid-template-columns:1fr 1fr}
   .pr-grid{grid-template-columns:1fr 1fr}
   .partner-flow{display:none}
+  .prm-mobile{display:none}
+}
+@media(max-width:640px){
+  .who-grid,.mc-grid,.arch-grid,.arch-grid.cols-3{grid-template-columns:1fr}
+  .hero h1,.arch-hd h2,.fr-title{font-size:28px}
+  .join-step::after{display:none}
+  .pr-grid,.join-steps{grid-template-columns:1fr}
 }
 @media(max-width:640px){
   .hero h1,.calc-content h2{font-size:32px}
@@ -202,6 +210,191 @@ button{cursor:pointer;border:none;font-family:inherit}
   .join-step::after{display:none}
   .pr-grid{grid-template-columns:1fr}
 }
+
+/* FOOTER */
+.footer{background:var(--dark);padding:56px 0 28px;border-top:1px solid rgba(255,255,255,.06)}
+.ft-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;padding-bottom:44px;border-bottom:1px solid rgba(255,255,255,.07)}
+.ft-brand{display:flex;align-items:center;gap:9px;margin-bottom:14px}
+.ft-brand-ic{width:34px;height:34px;background:var(--red);border-radius:9px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;font-weight:800}
+.ft-brand-n{font-size:19px;font-weight:700;color:#fff}
+.ft-desc{font-size:14px;color:rgba(255,255,255,.36);line-height:1.6;max-width:280px;margin-bottom:20px}
+.ft-tel{font-size:18px;font-weight:600;color:#fff}
+.ft-tel-n{font-size:12px;color:rgba(255,255,255,.28);margin-top:3px}
+.ft-col-t{font-size:12px;font-weight:600;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
+.ft-links{list-style:none;display:flex;flex-direction:column;gap:9px}
+.ft-links a{font-size:14px;color:rgba(255,255,255,.4);transition:color .13s}
+.ft-links a:hover{color:rgba(255,255,255,.75)}
+.ft-bot{display:flex;align-items:center;justify-content:space-between;padding-top:24px;flex-wrap:wrap;gap:10px}
+.ft-copy{font-size:13px;color:rgba(255,255,255,.22)}
+.ft-legal{display:flex;gap:18px;flex-wrap:wrap}
+.ft-legal a{font-size:12px;color:rgba(255,255,255,.22);transition:color .13s}
+.ft-legal a:hover{color:rgba(255,255,255,.45)}
+
+/* ─── TOP STRIP ─── */
+.topstrip{background:rgba(14,14,26,.98);border-bottom:1px solid rgba(255,255,255,.06);height:34px;display:flex;align-items:center;overflow:hidden}
+.topstrip-inner{display:flex;align-items:center;white-space:nowrap;animation:marquee 32s linear infinite}
+.topstrip-item{display:inline-flex;align-items:center;gap:6px;padding:0 22px;font-size:11.5px;color:rgba(255,255,255,.42)}
+.topstrip-item strong{color:rgba(255,255,255,.78);font-weight:600}
+.ts-sep{width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,.18);flex-shrink:0}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ─── PARTNERSHIP MODELS ─── */
+.models{background:#fff;padding:72px 0}
+.models-hd{text-align:center;margin-bottom:40px}
+.models-hd h2{font-size:32px;font-weight:700;margin-bottom:10px}
+.models-hd p{font-size:16px;color:var(--n600);max-width:480px;margin:0 auto}
+.models-tabs-wrap{display:flex;justify-content:center;margin-bottom:36px}
+.models-tabs-inner{display:inline-flex;gap:4px;background:var(--n50);border:1px solid var(--n100);border-radius:100px;padding:4px}
+.model-tab{padding:9px 22px;font-size:14px;font-weight:500;color:var(--n600);background:none;border:none;border-radius:100px;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
+.model-tab.active{background:#fff;color:var(--red);font-weight:600;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.model-panel{display:none}
+.model-panel.active{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start}
+.model-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(212,43,43,.07);border:1px solid rgba(212,43,43,.12);border-radius:100px;padding:4px 12px;font-size:12px;color:var(--red);font-weight:600;margin-bottom:16px}
+.model-info h3{font-size:24px;font-weight:700;margin-bottom:10px;line-height:1.25}
+.model-info p{font-size:15px;color:var(--n600);line-height:1.7;margin-bottom:20px}
+.model-perks{list-style:none;display:flex;flex-direction:column;gap:14px;margin-bottom:22px}
+.model-perk{display:flex;align-items:flex-start;gap:10px}
+.mperk-ic{width:22px;height:22px;border-radius:6px;background:rgba(52,199,89,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:var(--green);font-weight:700;margin-top:1px}
+.mperk-tx strong{display:block;font-size:14px;font-weight:600;margin-bottom:2px}
+.mperk-tx span{font-size:13px;color:var(--n600)}
+.model-who{font-size:13px;color:var(--n600);background:var(--n50);border-radius:10px;padding:12px 14px;line-height:1.6}
+.model-flow{background:var(--n50);border:1px solid var(--n100);border-radius:20px;padding:24px}
+.mf-title{font-size:12px;font-weight:600;color:var(--n600);text-transform:uppercase;letter-spacing:.5px;margin-bottom:18px}
+.mf-step{display:flex;gap:12px}
+.mf-line{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.mf-dot{width:28px;height:28px;border-radius:50%;background:var(--red);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.mf-seg{width:2px;background:var(--n100);flex:1;min-height:16px;margin:4px 0}
+.mf-step:last-child .mf-seg{display:none}
+.mf-body{padding-bottom:18px}
+.mf-name{font-size:14px;font-weight:600;margin-bottom:2px}
+.mf-desc{font-size:13px;color:var(--n600);line-height:1.5}
+.mf-badge{display:inline-flex;margin-top:5px;font-size:11px;font-weight:600;color:var(--red);background:rgba(212,43,43,.07);border-radius:100px;padding:2px 9px}
+
+/* ─── PRM MOCKUP ─── */
+.prm-sec{background:var(--n50);padding:72px 0}
+.prm-hd{text-align:center;margin-bottom:48px}
+.prm-hd h2{font-size:32px;font-weight:700;margin-bottom:10px}
+.prm-hd p{font-size:16px;color:var(--n600);max-width:520px;margin:0 auto}
+.prm-wrap{display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:start}
+.prm-desktop{background:var(--dark);border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.09);box-shadow:0 20px 56px rgba(0,0,0,.22)}
+.prm-tbar{background:rgba(255,255,255,.04);padding:9px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.06)}
+.prm-dots{display:flex;gap:5px}
+.prm-dr{width:10px;height:10px;border-radius:50%;background:#FF5F56}
+.prm-dy{width:10px;height:10px;border-radius:50%;background:#FFBD2E}
+.prm-dg{width:10px;height:10px;border-radius:50%;background:#27C93F}
+.prm-url-bar{flex:1;background:rgba(255,255,255,.05);border-radius:5px;height:22px;display:flex;align-items:center;padding:0 10px;font-size:10px;color:rgba(255,255,255,.22);margin:0 8px}
+.prm-body{display:grid;grid-template-columns:185px 1fr;min-height:360px}
+.prm-sidebar{background:rgba(255,255,255,.025);border-right:1px solid rgba(255,255,255,.06);padding:14px 10px;display:flex;flex-direction:column;gap:3px}
+.prm-sb-logo{font-size:12px;font-weight:700;color:#fff;padding:7px 9px;margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.prm-sb-ic{width:20px;height:20px;background:var(--red);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#fff;flex-shrink:0}
+.prm-nav-it{padding:7px 9px;border-radius:7px;font-size:11px;color:rgba(255,255,255,.42);display:flex;align-items:center;gap:7px}
+.prm-nav-it.on{background:rgba(255,255,255,.08);color:#fff}
+.prm-main{padding:18px}
+.prm-main-hd{font-size:13px;font-weight:700;color:#fff;margin-bottom:14px}
+.prm-s-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+.prm-sc{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:10px}
+.prm-sn{font-size:16px;font-weight:700;color:#fff;margin-bottom:1px}
+.prm-sl{font-size:9px;color:rgba(255,255,255,.32);margin-bottom:3px}
+.prm-sd{font-size:9px}.prm-sd.up{color:var(--green)}.prm-sd.dw{color:var(--red)}
+.prm-events-hd{font-size:10px;font-weight:600;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+.prm-ev-row{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;padding:7px 8px;border-radius:7px;font-size:10px;margin-bottom:3px}
+.prm-ev-row:hover{background:rgba(255,255,255,.04)}
+.prm-ev-name{color:rgba(255,255,255,.65);font-weight:500}
+.st-ok{padding:2px 7px;border-radius:100px;font-size:9px;font-weight:600;background:rgba(52,199,89,.12);color:var(--green)}
+.st-warn{padding:2px 7px;border-radius:100px;font-size:9px;font-weight:600;background:rgba(255,149,0,.12);color:var(--orange)}
+.prm-ev-time{color:rgba(255,255,255,.22);font-size:9px}
+.prm-mobile{background:var(--dark);border-radius:22px;border:1.5px solid rgba(255,255,255,.1);overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,.18)}
+.prm-mob-notch{width:54px;height:5px;background:rgba(255,255,255,.08);border-radius:3px;margin:10px auto 4px}
+.prm-mob-bar{padding:0 14px 8px;display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.35)}
+.prm-mob-scr{padding:14px}
+.prm-mob-t{font-size:12px;font-weight:700;color:#fff;margin-bottom:12px}
+.prm-mob-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+.prm-mob-c{background:rgba(255,255,255,.05);border-radius:10px;padding:10px}
+.prm-mob-cn{font-size:15px;font-weight:700;color:#fff;margin-bottom:2px}
+.prm-mob-cl{font-size:9px;color:rgba(255,255,255,.3)}
+.prm-mob-ev{display:flex;flex-direction:column;gap:5px}
+.prm-mob-ei{background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px;font-size:10px;color:rgba(255,255,255,.5);display:flex;align-items:center;justify-content:space-between}
+.prm-mob-et{font-size:9px;color:rgba(255,255,255,.2);flex-shrink:0}
+
+/* ─── PLATFORM ARCHITECTURE ─── */
+.arch{background:var(--dark);padding:80px 0}
+.arch-hd{text-align:center;margin-bottom:44px}
+.arch-overline{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.3);margin-bottom:12px}
+.arch-hd h2{font-size:34px;font-weight:700;color:#fff;letter-spacing:-.3px;margin-bottom:12px}
+.arch-hd p{font-size:16px;color:rgba(255,255,255,.42);max-width:560px;margin:0 auto;line-height:1.65}
+.arch-tabs-wrap{display:flex;justify-content:center;margin-bottom:36px;overflow-x:auto;padding-bottom:2px}
+.arch-tabs{display:inline-flex;gap:3px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:4px;flex-shrink:0}
+.arch-tab{padding:8px 16px;font-size:13px;font-weight:500;color:rgba(255,255,255,.42);background:none;border:none;border-radius:10px;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
+.arch-tab.active{background:rgba(255,255,255,.1);color:#fff;font-weight:600}
+.arch-panel{display:none}
+.arch-panel.active{display:block}
+.arch-panel-intro{font-size:15px;color:rgba(255,255,255,.4);line-height:1.7;max-width:640px;margin:0 0 24px}
+.arch-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.arch-grid.cols-3{grid-template-columns:repeat(3,1fr)}
+.arch-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:22px;transition:border-color .2s}
+.arch-card:hover{border-color:rgba(255,255,255,.18)}
+.arch-card-badge{display:inline-flex;background:rgba(212,43,43,.1);border:1px solid rgba(212,43,43,.18);border-radius:8px;padding:3px 10px;font-size:11px;font-weight:600;color:var(--red);margin-bottom:12px}
+.arch-card-badge.ai{background:rgba(0,122,255,.1);border-color:rgba(0,122,255,.2);color:var(--blue)}
+.arch-card-badge.growth{background:rgba(52,199,89,.1);border-color:rgba(52,199,89,.2);color:var(--green)}
+.arch-card-name{font-size:17px;font-weight:700;color:#fff;margin-bottom:6px}
+.arch-card-desc{font-size:13px;color:rgba(255,255,255,.42);line-height:1.6;margin-bottom:12px}
+.arch-card-items{list-style:none;display:flex;flex-direction:column;gap:6px}
+.arch-card-item{font-size:12px;color:rgba(255,255,255,.5);display:flex;align-items:flex-start;gap:7px;line-height:1.5}
+.arch-card-item::before{content:'';width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.25);flex-shrink:0;margin-top:5px}
+.arch-prm-link{display:inline-flex;margin-top:12px;font-size:12px;font-weight:600;color:var(--red);background:rgba(212,43,43,.08);border-radius:100px;padding:4px 12px;cursor:pointer;transition:background .15s}
+.arch-prm-link:hover{background:rgba(212,43,43,.14)}
+
+/* ─── FRANCHISE ─── */
+.franchise{background:#fff;padding:72px 0}
+.franchise-inner{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.fr-flag{display:inline-flex;align-items:center;gap:6px;background:rgba(212,43,43,.07);border:1px solid rgba(212,43,43,.12);border-radius:100px;padding:5px 14px;font-size:12px;font-weight:600;color:var(--red);margin-bottom:20px}
+.fr-title{font-size:32px;font-weight:700;line-height:1.15;letter-spacing:-.3px;margin-bottom:14px}
+.fr-sub{font-size:15px;color:var(--n600);line-height:1.7;margin-bottom:28px}
+.fr-ctas{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px}
+.fr-items{display:flex;flex-direction:column;gap:11px}
+.fr-item{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;background:var(--n50);border:1px solid var(--n100);border-radius:14px}
+.fr-ic{width:34px;height:34px;border-radius:10px;background:rgba(212,43,43,.07);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.fr-tx strong{display:block;font-size:14px;font-weight:600;margin-bottom:2px}
+.fr-tx span{font-size:13px;color:var(--n600);line-height:1.5}
+.fr-who{background:var(--n50);border:1.5px solid var(--n100);border-radius:20px;padding:24px}
+.fr-who-title{font-size:11px;font-weight:600;color:var(--n600);text-transform:uppercase;letter-spacing:.6px;margin-bottom:16px}
+.fr-who-item{background:#fff;border:1px solid var(--n100);border-radius:12px;padding:14px;margin-bottom:10px}
+.fr-who-item:last-child{margin-bottom:0}
+.fr-who-name{font-size:14px;font-weight:700;margin-bottom:4px}
+.fr-who-desc{font-size:13px;color:var(--n600);line-height:1.55}
+
+/* ─── WHO CAN BE PARTNER ─── */
+.who-sec{background:var(--n50);padding:72px 0}
+.who-hd{text-align:center;margin-bottom:48px}
+.who-hd h2{font-size:32px;font-weight:700;margin-bottom:10px}
+.who-hd p{font-size:16px;color:var(--n600);max-width:520px;margin:0 auto}
+.who-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.who-card{background:#fff;border:1.5px solid var(--n100);border-radius:22px;padding:28px;transition:all .2s}
+.who-card:hover{border-color:var(--red);box-shadow:0 6px 20px rgba(0,0,0,.07);transform:translateY(-2px)}
+.who-icon{width:52px;height:52px;background:rgba(212,43,43,.07);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:18px}
+.who-title{font-size:18px;font-weight:700;margin-bottom:10px}
+.who-desc{font-size:14px;color:var(--n600);line-height:1.65}
+.who-tag{display:inline-flex;margin-top:14px;padding:4px 12px;border-radius:100px;font-size:12px;font-weight:600;background:rgba(212,43,43,.07);color:var(--red)}
+
+/* ─── MODELS COMMON ─── */
+.models-common{margin-top:44px;padding-top:36px;border-top:1px solid var(--n100)}
+.mc-label{font-size:11px;font-weight:600;color:var(--n600);text-transform:uppercase;letter-spacing:.6px;margin-bottom:18px;text-align:center}
+.mc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.mc-item{background:var(--n50);border:1px solid var(--n100);border-radius:14px;padding:16px}
+.mc-ic{width:32px;height:32px;background:rgba(52,199,89,.1);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;margin-bottom:10px}
+.mc-text{font-size:13px;color:var(--n900);line-height:1.55}
+
+/* ─── STANDARD REFORCE PARTNER ─── */
+.std-p{background:var(--dark);padding:72px 0}
+.std-p-inner{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center}
+.std-p-label{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:rgba(255,255,255,.35);margin-bottom:14px}
+.std-p-title{font-size:34px;font-weight:700;color:#fff;line-height:1.2;letter-spacing:-.3px;margin-bottom:16px}
+.std-p-text{font-size:16px;color:rgba(255,255,255,.5);line-height:1.7}
+.std-p-items{display:flex;flex-direction:column;gap:12px}
+.std-p-item{display:flex;align-items:flex-start;gap:12px;padding:16px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px}
+.std-p-ic{width:36px;height:36px;background:rgba(212,43,43,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.std-p-tx strong{display:block;font-size:14px;font-weight:600;color:#fff;margin-bottom:2px}
+.std-p-tx span{font-size:13px;color:rgba(255,255,255,.4);line-height:1.5}
 
 /* ─── ANIMATIONS ─── */
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
@@ -214,6 +407,32 @@ button{cursor:pointer;border:none;font-family:inherit}
 </style>
 </head>
 <body>
+
+<!-- TOP STRIP -->
+<div class="topstrip">
+  <div class="topstrip-inner">
+    <span class="topstrip-item"><strong>120+</strong> партнёров уже работают в сети</span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Средний доход партнёра — <strong>от 150 000 ₽</strong> в месяц</span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Онбординг — <strong>4 рабочих дня</strong></span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Входной барьер — <strong>нулевой</strong></span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Поддержка партнёров <strong>24 / 7</strong></span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item"><strong>120+</strong> партнёров уже работают в сети</span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Средний доход партнёра — <strong>от 150 000 ₽</strong> в месяц</span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Онбординг — <strong>4 рабочих дня</strong></span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Входной барьер — <strong>нулевой</strong></span>
+    <span class="ts-sep"></span>
+    <span class="topstrip-item">Поддержка партнёров <strong>24 / 7</strong></span>
+    <span class="ts-sep"></span>
+  </div>
+</div>
 
 <!-- HEADER -->
 <header class="hdr">
@@ -257,8 +476,8 @@ button{cursor:pointer;border:none;font-family:inherit}
         <h1>Вы охраняете —<br>мы находим<br><em>клиентов</em></h1>
         <p class="hero-sub">Reforce — технологическая платформа для ЧОП. Берём на себя маркетинг, заявки и ПО. Вы занимаетесь охраной. Вместе — сильнее.</p>
         <div class="hero-ctas">
-          <button class="btn btn-red btn-lg" onclick="scrollToForm()">Стать партнёром</button>
-          <button class="btn btn-outline-w btn-lg" onclick="openModal()">Задать вопрос</button>
+          <button class="btn btn-red btn-lg" onclick="scrollToForm()">Подать заявку на партнёрство</button>
+          <button class="btn btn-outline-w btn-lg" onclick="window.location='#'">Подробнее о партнёрстве</button>
         </div>
         <div class="hero-social">
           <div><div class="hs-num" data-countup>120+</div><div class="hs-label">партнёров</div></div>
@@ -294,6 +513,192 @@ button{cursor:pointer;border:none;font-family:inherit}
               <div class="pf-result-text">Партнёр получает нового долгосрочного клиента</div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO CAN BE PARTNER -->
+<section class="who-sec">
+  <div class="container">
+    <div class="who-hd reveal">
+      <p class="ben-overline">Кто может стать партнёром</p>
+      <h2>Три типа партнёров платформы</h2>
+      <p>Reforce работает с разными форматами охранного бизнеса — от полного цикла до технического подрядчика</p>
+    </div>
+    <div class="who-grid">
+      <div class="who-card reveal" data-d="1">
+        <div class="who-icon">🛡️</div>
+        <div class="who-title">ЧОП полного цикла</div>
+        <div class="who-desc">Охранные и технические услуги: реагирование, постовая охрана, монтаж, ТО. Юрлицо с лицензией Росгвардии.</div>
+        <div class="who-tag">Агентская модель</div>
+      </div>
+      <div class="who-card reveal" data-d="2">
+        <div class="who-icon">🚔</div>
+        <div class="who-title">Только охранные услуги</div>
+        <div class="who-desc">Лицензированная ЧОП с собственными экипажами ГБР или постовыми. Монтаж и ТО — через техпартнёров платформы.</div>
+        <div class="who-tag">Агентская или соисполнительство</div>
+      </div>
+      <div class="who-card reveal" data-d="3">
+        <div class="who-icon">🔧</div>
+        <div class="who-title">Технический подрядчик</div>
+        <div class="who-desc">Монтаж, ТО, ремонт оборудования. Без лицензии Росгвардии. Подходит ООО, ИП и самозанятым.</div>
+        <div class="who-tag">Соисполнительство</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARTNERSHIP MODELS -->
+<section class="models">
+  <div class="container">
+    <div class="models-hd">
+      <p class="overline">Форматы партнёрства</p>
+      <h2>Две модели работы — выберите свою</h2>
+      <p>Формат зависит от вашего положения на рынке и роли, которую хотите занять в сети</p>
+    </div>
+    <div class="models-tabs-wrap">
+      <div class="models-tabs-inner">
+        <button class="model-tab active" onclick="switchModel('agent',this)">Хочу получать клиентов</button>
+        <button class="model-tab" onclick="switchModel('exec',this)">Хочу расширить географию</button>
+      </div>
+    </div>
+    <!-- Агентская модель -->
+    <div class="model-panel active" id="model-agent">
+      <div class="model-info">
+        <div class="model-badge">Агентская модель</div>
+        <h3>Получаете клиентов — обслуживаете их сами</h3>
+        <p>Reforce привлекает клиентов через сайт и рекламу. Вы получаете заявки на монтаж и берёте клиента на долгосрочное обслуживание. Reforce — платформа и поток. Вы — исполнитель и оператор.</p>
+        <ul class="model-perks">
+          <li class="model-perk">
+            <div class="mperk-ic">✓</div>
+            <div class="mperk-tx"><strong>Готовые заявки без рекламного бюджета</strong><span>Клиент уже принял решение — вам остаётся приехать и смонтировать</span></div>
+          </li>
+          <li class="model-perk">
+            <div class="mperk-ic">✓</div>
+            <div class="mperk-tx"><strong>Долгосрочный доход с каждого объекта</strong><span>Ежемесячная доля абонентской платы — пока клиент платит, вы зарабатываете</span></div>
+          </li>
+          <li class="model-perk">
+            <div class="mperk-ic">✓</div>
+            <div class="mperk-tx"><strong>ПО пульта и ЛК без дополнительных затрат</strong><span>Лицензия входит в договор — платформа, приложение, API включены</span></div>
+          </li>
+        </ul>
+        <div class="model-who"><strong>Кому подходит:</strong> региональные ЧОП, которые хотят увеличить клиентскую базу без вложений в маркетинг.</div>
+      </div>
+      <div class="model-flow">
+        <div class="mf-title">Как это работает</div>
+        <div class="mf-step">
+          <div class="mf-line"><div class="mf-dot">1</div><div class="mf-seg"></div></div>
+          <div class="mf-body">
+            <div class="mf-name">Клиент оформляет охрану на сайте</div>
+            <div class="mf-desc">Выбирает пакет, заполняет адрес, оплачивает монтаж онлайн — без вашего участия</div>
+            <span class="mf-badge">Онлайн</span>
+          </div>
+        </div>
+        <div class="mf-step">
+          <div class="mf-line"><div class="mf-dot">2</div><div class="mf-seg"></div></div>
+          <div class="mf-body">
+            <div class="mf-name">Система назначает вас</div>
+            <div class="mf-desc">Алгоритм выбирает партнёра по геолокации и рейтингу</div>
+            <span class="mf-badge">Автоматически, 30 сек</span>
+          </div>
+        </div>
+        <div class="mf-step">
+          <div class="mf-line"><div class="mf-dot">3</div><div class="mf-seg"></div></div>
+          <div class="mf-body">
+            <div class="mf-name">Вы монтируете и подключаете</div>
+            <div class="mf-desc">Монтаж по стандарту Reforce, постановка на пульт, инструктаж клиента</div>
+            <span class="mf-badge">1 рабочий день</span>
+          </div>
+        </div>
+        <div class="mf-step">
+          <div class="mf-line"><div class="mf-dot">4</div></div>
+          <div class="mf-body">
+            <div class="mf-name">Клиент ваш — долгосрочно</div>
+            <div class="mf-desc">Оплата за монтаж + ежемесячная доля абонентской платы</div>
+            <span class="mf-badge">Пассивный ежемесячный доход</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Соисполнительство -->
+    <div class="model-panel" id="model-exec">
+      <div class="model-info">
+        <div class="model-badge" style="background:rgba(0,122,255,.07);border-color:rgba(0,122,255,.15);color:var(--blue)">Соисполнительство</div>
+        <h3>Выполняете задачи в регионе для партнёра из другого города</h3>
+        <p>Когда у партнёра Reforce из другого города появляется клиент в вашем регионе — вы его исполнитель на месте. Получаете оплату за монтаж и ГБР без привлечения собственных клиентов.</p>
+        <ul class="model-perks">
+          <li class="model-perk">
+            <div class="mperk-ic" style="background:rgba(0,122,255,.1);color:var(--blue)">✓</div>
+            <div class="mperk-tx"><strong>Доход без маркетинга и клиентского сервиса</strong><span>Вы только выполняете — партнёр управляет клиентом сам</span></div>
+          </li>
+          <li class="model-perk">
+            <div class="mperk-ic" style="background:rgba(0,122,255,.1);color:var(--blue)">✓</div>
+            <div class="mperk-tx"><strong>Загрузка экипажей в часы простоя</strong><span>Получайте монтажи и выезды ГБР когда собственных заказов не хватает</span></div>
+          </li>
+          <li class="model-perk">
+            <div class="mperk-ic" style="background:rgba(0,122,255,.1);color:var(--blue)">✓</div>
+            <div class="mperk-tx"><strong>Рейтинг открывает агентскую модель</strong><span>Высокий рейтинг соисполнителя — прямой путь к собственному потоку клиентов</span></div>
+          </li>
+        </ul>
+        <div class="model-who"><strong>Кому подходит:</strong> охранные предприятия в регионах, которые хотят загрузить экипажи без вложений в продвижение.</div>
+      </div>
+      <div class="model-flow">
+        <div class="mf-title">Как это работает</div>
+        <div class="mf-step">
+          <div class="mf-line"><div class="mf-dot" style="background:var(--blue)">1</div><div class="mf-seg"></div></div>
+          <div class="mf-body">
+            <div class="mf-name">Партнёр получает клиента в вашем городе</div>
+            <div class="mf-desc">У действующего партнёра появляется заявка в регионе, где нет его экипажа</div>
+            <span class="mf-badge" style="background:rgba(0,122,255,.07);color:var(--blue)">Автоматически</span>
+          </div>
+        </div>
+        <div class="mf-step">
+          <div class="mf-line"><div class="mf-dot" style="background:var(--blue)">2</div><div class="mf-seg"></div></div>
+          <div class="mf-body">
+            <div class="mf-name">Система назначает вас соисполнителем</div>
+            <div class="mf-desc">Выбор по рейтингу, геолокации и доступности — всё автоматически</div>
+            <span class="mf-badge" style="background:rgba(0,122,255,.07);color:var(--blue)">30 секунд</span>
+          </div>
+        </div>
+        <div class="mf-step">
+          <div class="mf-line"><div class="mf-dot" style="background:var(--blue)">3</div><div class="mf-seg"></div></div>
+          <div class="mf-body">
+            <div class="mf-name">Вы выполняете монтаж или выезд ГБР</div>
+            <div class="mf-desc">Клиент — за партнёром, оплата за работу — вам напрямую через платформу</div>
+            <span class="mf-badge" style="background:rgba(0,122,255,.07);color:var(--blue)">По факту выполнения</span>
+          </div>
+        </div>
+        <div class="mf-step">
+          <div class="mf-line"><div class="mf-dot" style="background:var(--blue)">4</div></div>
+          <div class="mf-body">
+            <div class="mf-name">Рейтинг растёт — открывает агентскую модель</div>
+            <div class="mf-desc">Высокий рейтинг соисполнителя даёт доступ к собственному потоку клиентов</div>
+            <span class="mf-badge" style="background:rgba(0,122,255,.07);color:var(--blue)">Следующий уровень</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Common for both models -->
+    <div class="models-common reveal">
+      <div class="mc-label">Что входит в обе модели</div>
+      <div class="mc-grid">
+        <div class="mc-item">
+          <div class="mc-ic">✅</div>
+          <div class="mc-text">Сертификация по стандарту Reforce и регулярный аудит</div>
+        </div>
+        <div class="mc-item">
+          <div class="mc-ic">📣</div>
+          <div class="mc-text">Маркетинговая поддержка и co-branding с платформой</div>
+        </div>
+        <div class="mc-item">
+          <div class="mc-ic">🚀</div>
+          <div class="mc-text">Старт партнёрства за 14 дней — без капитальных вложений</div>
+        </div>
+        <div class="mc-item">
+          <div class="mc-ic">🎓</div>
+          <div class="mc-text">Обучение операторов — в составе платформенной услуги «Контроль качества ГБР»</div>
         </div>
       </div>
     </div>
@@ -337,6 +742,223 @@ button{cursor:pointer;border:none;font-family:inherit}
   </div>
 </section>
 
+<!-- PLATFORM ARCHITECTURE -->
+<section class="arch">
+  <div class="container">
+    <div class="arch-hd reveal">
+      <div class="arch-overline">Архитектура платформы</div>
+      <h2>Один контракт — пять групп модулей</h2>
+      <p>Reforce — федеральная платформа из связанных модулей. Подключайте только нужное: все модули уже интегрированы между собой и с типовыми системами партнёра (1С, CRM, биллинг).</p>
+    </div>
+    <div class="arch-tabs-wrap">
+      <div class="arch-tabs">
+        <button class="arch-tab active" onclick="switchArch('ops',this)">Операционные сервисы</button>
+        <button class="arch-tab" onclick="switchArch('ai',this)">Reforce AI</button>
+        <button class="arch-tab" onclick="switchArch('biz',this)">Управление бизнесом</button>
+        <button class="arch-tab" onclick="switchArch('supp',this)">Сопровождение</button>
+        <button class="arch-tab" onclick="switchArch('growth',this)">Рост бизнеса</button>
+      </div>
+    </div>
+
+    <!-- Операционные сервисы -->
+    <div class="arch-panel active" id="arch-ops">
+      <p class="arch-panel-intro">Инфраструктура мониторинга, диспетчеризации, контроля постов и общения с клиентами. Подключаем партнёра к федеральному ПЦО и сети операторов.</p>
+      <div class="arch-grid">
+        <div class="arch-card">
+          <div class="arch-card-badge">Reforce Monitor</div>
+          <div class="arch-card-name">Мониторинг объектов на нашем пульте</div>
+          <div class="arch-card-desc">Подключаем ваш пульт к централизованному ПЦО. Наши операторы принимают сигналы и передают тревоги вашему ГБР — в любом из 4 режимов.</div>
+          <ul class="arch-card-items">
+            <li class="arch-card-item">Круглосуточный 24/7 или только ночное обслуживание</li>
+            <li class="arch-card-item">По графику партнёра: выходные, отдельные часы</li>
+            <li class="arch-card-item">99,97% uptime · SLA по времени реакции</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-badge">Reforce Dispatch</div>
+          <div class="arch-card-name">Диспетчеризация ГБР</div>
+          <div class="arch-card-desc">Центр маршрутизирует ваши экипажи на тревоги. AI выбирает ближайший доступный наряд с учётом нагрузки и SLA.</div>
+          <ul class="arch-card-items">
+            <li class="arch-card-item">GPS-трекинг всех экипажей</li>
+            <li class="arch-card-item">AI-маршрутизация по нагрузке</li>
+            <li class="arch-card-item">Отчёт по каждому выезду в PRM</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-badge">Reforce Inspect</div>
+          <div class="arch-card-name">Контроль постовой охраны</div>
+          <div class="arch-card-desc">Независимые скрытые проверки, видеоаудит постов, контроль регламентов. Отчёты доступны и партнёру, и его клиенту.</div>
+          <ul class="arch-card-items">
+            <li class="arch-card-item">Скрытые проверки ≥ 4 раза в год</li>
+            <li class="arch-card-item">Видеоаудит и фотофиксация</li>
+            <li class="arch-card-item">Метрики качества постов</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-badge">Reforce Contact Center</div>
+          <div class="arch-card-name">Колл-центр для ваших клиентов</div>
+          <div class="arch-card-desc">Переадресуете номер ЧОП в наш центр — принимаем звонки клиентов, консультируем, фиксируем обращения под вашим брендом (white-label).</div>
+          <ul class="arch-card-items">
+            <li class="arch-card-item">Под брендом партнёра (white-label)</li>
+            <li class="arch-card-item">Решение типовых обращений на нашей стороне</li>
+            <li class="arch-card-item">Запись звонков и метрики SLA</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reforce AI -->
+    <div class="arch-panel" id="arch-ai">
+      <p class="arch-panel-intro">Собственный AI-стек платформы, тренированный на 70 000+ объектов. Подключите к своим клиентам без капитальных вложений в собственную разработку.</p>
+      <div class="arch-grid cols-3">
+        <div class="arch-card">
+          <div class="arch-card-badge ai">AI · Vision</div>
+          <div class="arch-card-name">Видеоаналитика</div>
+          <div class="arch-card-desc">Распознавание людей, животных, транспорта, подозрительного поведения. Снижение ложных тревог в 10–15 раз.</div>
+          <ul class="arch-card-items">
+            <li class="arch-card-item">Классификация событий в реальном времени</li>
+            <li class="arch-card-item">Интеграция с любыми IP-камерами</li>
+            <li class="arch-card-item">Поведенческая аналитика</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-badge ai">AI · Predict</div>
+          <div class="arch-card-name">Прогноз тревог и рисков</div>
+          <div class="arch-card-desc">Платформа учится на сигналах сети и предсказывает паттерны: сезонные риски, аномалии, прогноз false-positive по объекту.</div>
+          <ul class="arch-card-items">
+            <li class="arch-card-item">Score риска по каждому объекту</li>
+            <li class="arch-card-item">Раннее предупреждение оператора</li>
+            <li class="arch-card-item">Снижение false-positive с 6% до 0,4%</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-badge ai">AI · Assistant</div>
+          <div class="arch-card-name">AI-ассистент клиента</div>
+          <div class="arch-card-desc">Чат-бот 24/7 для клиентов: отвечает на 87% запросов на уровне оператора. Снижает нагрузку на ваш колл-центр.</div>
+          <ul class="arch-card-items">
+            <li class="arch-card-item">Под брендом партнёра (white-label)</li>
+            <li class="arch-card-item">Эскалация к оператору по сложным запросам</li>
+            <li class="arch-card-item">Аналитика обращений</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Управление бизнесом -->
+    <div class="arch-panel" id="arch-biz">
+      <p class="arch-panel-intro">CRM, биллинг, обучение и личный кабинет партнёра. Готовая отраслевая система — не нужно собирать решение из универсальных продуктов.</p>
+      <div class="arch-grid">
+        <div class="arch-card">
+          <div class="arch-card-badge">Reforce CRM</div>
+          <div class="arch-card-name">Клиенты и сделки</div>
+          <div class="arch-card-desc">Воронка от заявки до договора, профили клиентов, история обращений, аналитика конверсии. Интеграция с 1С УПП.</div>
+          <ul class="arch-card-items">
+            <li class="arch-card-item">Готовая для отрасли воронка</li>
+            <li class="arch-card-item">Интеграция 1С УПП / Битрикс24 / AmoCRM</li>
+            <li class="arch-card-item">Лиды от Reforce поступают автоматически</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-badge">Reforce Billing</div>
+          <div class="arch-card-name">Биллинг и счета</div>
+          <div class="arch-card-desc">Автоматическое выставление счетов по подпискам, контроль платежей, e-sign договоров, интеграция с эквайрингом.</div>
+          <ul class="arch-card-items">
+            <li class="arch-card-item">Подписочный и разовый биллинг</li>
+            <li class="arch-card-item">Договоры с e-sign по 63-ФЗ</li>
+            <li class="arch-card-item">Эквайринг ЮKassa / CloudPayments</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-badge">Reforce Academy</div>
+          <div class="arch-card-name">Обучение и сертификация</div>
+          <div class="arch-card-desc">Готовые курсы по стандарту Reforce, тестирование персонала, реестр сертифицированных сотрудников.</div>
+          <ul class="arch-card-items">
+            <li class="arch-card-item">Курсы для операторов, ГБР, постовых</li>
+            <li class="arch-card-item">Обязательное тестирование раз в полгода</li>
+            <li class="arch-card-item">Реестр сотрудников по 47 пунктам</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-badge">Reforce PRM</div>
+          <div class="arch-card-name">Личный кабинет партнёра</div>
+          <div class="arch-card-desc">Единая панель управления: объекты, выезды, финансы, аналитика. Мобильный доступ для директора и бухгалтера.</div>
+          <ul class="arch-card-items">
+            <li class="arch-card-item">Дашборд, объекты и уведомления в реальном времени</li>
+            <li class="arch-card-item">Финансы и взаиморасчёты с контрагентами</li>
+          </ul>
+          <span class="arch-prm-link" onclick="document.querySelector('.prm-sec').scrollIntoView({behavior:'smooth'})">Подробнее о PRM ↓</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Сопровождение -->
+    <div class="arch-panel" id="arch-supp">
+      <p class="arch-panel-intro">Команда Reforce юридически, финансово и операционно сопровождает каждого партнёра. Не «купили — забыли», а постоянная поддержка от наших служб.</p>
+      <div class="arch-grid">
+        <div class="arch-card">
+          <div class="arch-card-badge">Reforce Legal</div>
+          <div class="arch-card-name">Юридическое сопровождение</div>
+          <div class="arch-card-desc">Юристы платформы поддерживают вас в спорах с клиентами, договорной работе, проверках Росгвардии, лицензировании и регламентах.</div>
+          <ul class="arch-card-items">
+            <li class="arch-card-item">Поддержка в спорах с клиентами</li>
+            <li class="arch-card-item">Шаблоны и review договоров</li>
+            <li class="arch-card-item">Сопровождение проверок Росгвардии</li>
+            <li class="arch-card-item">Помощь с лицензированием</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-badge">Reforce Finance</div>
+          <div class="arch-card-name">Финансовое сопровождение</div>
+          <div class="arch-card-desc">Управленческий учёт, оптимизация налогов, закрытие кассовых разрывов, лизинг оборудования и закупки на платформе.</div>
+          <ul class="arch-card-items">
+            <li class="arch-card-item">Управленческий учёт под отрасль</li>
+            <li class="arch-card-item">Закрытие кассовых разрывов</li>
+            <li class="arch-card-item">Лизинг и закупки оборудования</li>
+            <li class="arch-card-item">Налоговая оптимизация</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Рост бизнеса -->
+    <div class="arch-panel" id="arch-growth">
+      <p class="arch-panel-intro">Поток клиентов с B2C-каналов Reforce, доступ к федеральным контрактам, расчёт финмодели и стратегическое сопровождение масштабирования.</p>
+      <div class="arch-grid cols-3">
+        <div class="arch-card">
+          <div class="arch-card-badge growth">Leads</div>
+          <div class="arch-card-name">Поток клиентов</div>
+          <div class="arch-card-desc">B2C-клиенты из платформы Reforce поступают вам в CRM автоматически с предоплаченным онлайн-договором.</div>
+          <ul class="arch-card-items">
+            <li class="arch-card-item">Распределение по геолокации</li>
+            <li class="arch-card-item">SLA принятия лида: 30 минут</li>
+            <li class="arch-card-item">Прозрачная комиссия платформы</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-badge growth">Network</div>
+          <div class="arch-card-name">Федеральные контракты</div>
+          <div class="arch-card-desc">Включаем вас в сетевые контракты с крупными клиентами (ретейл, сети, производство) на «последней миле».</div>
+          <ul class="arch-card-items">
+            <li class="arch-card-item">Сетевой клиент в вашем регионе</li>
+            <li class="arch-card-item">Единые цены и SLA по сети</li>
+            <li class="arch-card-item">Биллинг через Reforce</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-badge growth">Finmodel</div>
+          <div class="arch-card-name">Расчёт финмодели</div>
+          <div class="arch-card-desc">Инструмент расчёта окупаемости подключения. Город, экипажи, средний чек → прогноз доходов через 12 мес.</div>
+          <ul class="arch-card-items">
+            <li class="arch-card-item">Сценарии: консервативный / реалистичный</li>
+            <li class="arch-card-item">Учёт капитальных затрат</li>
+            <li class="arch-card-item">Доступен до подписания соглашения</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- CALCULATOR -->
 <section class="calc-section">
   <div class="container">
@@ -368,6 +990,200 @@ button{cursor:pointer;border:none;font-family:inherit}
           <div class="calc-result-sub" id="calc-sub">монтаж 120 000 ₽ + абонплата 36 000 ₽</div>
         </div>
         <p class="calc-disclaimer">Ориентировочный расчёт. Точные условия — в партнёрском договоре.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FRANCHISE -->
+<section class="franchise">
+  <div class="container">
+    <div class="franchise-inner">
+      <div class="reveal">
+        <div class="fr-flag">Reforce Franchise</div>
+        <h2 class="fr-title">Откройте новое охранное предприятие под брендом Reforce</h2>
+        <p class="fr-sub">Готовая инфраструктура, бренд, регламенты и помощь в получении лицензии Росгвардии. Для предпринимателей и команд, которые открывают охранный бизнес с нуля или хотят перезапуститься под сильным брендом.</p>
+        <div class="fr-ctas">
+          <button class="btn btn-red" onclick="scrollToForm()">Узнать про франшизу</button>
+          <button class="btn btn-ghost" onclick="scrollToForm()">Скачать презентацию</button>
+        </div>
+        <div class="fr-who">
+          <div class="fr-who-title">Кому подходит франшиза</div>
+          <div class="fr-who-item">
+            <div class="fr-who-name">Предпринимателю</div>
+            <div class="fr-who-desc">Хочется открыть охранный бизнес, но нет опыта в отрасли. Reforce даёт готовую инфраструктуру и сопровождение «под ключ».</div>
+          </div>
+          <div class="fr-who-item">
+            <div class="fr-who-name">Команде охранников</div>
+            <div class="fr-who-desc">Группа опытных охранников хочет запустить своё ЧОП. Платформа помогает с лицензией, регламентами и первыми клиентами.</div>
+          </div>
+          <div class="fr-who-item">
+            <div class="fr-who-name">Действующему ЧОПу</div>
+            <div class="fr-who-desc">Работает локально под собственным брендом, но хочет перезапуститься под сильным федеральным именем и получить весь инструментарий платформы.</div>
+          </div>
+        </div>
+      </div>
+      <div class="fr-items reveal" data-d="1">
+        <div class="fr-item">
+          <div class="fr-ic">🏷️</div>
+          <div class="fr-tx">
+            <strong>Бренд и фирменный стиль Reforce</strong>
+            <span>Используете название, логотип, маркетинговые материалы и сайт с первого дня</span>
+          </div>
+        </div>
+        <div class="fr-item">
+          <div class="fr-ic">⚖️</div>
+          <div class="fr-tx">
+            <strong>Помощь в получении лицензии Росгвардии</strong>
+            <span>Юристы платформы готовят документы, сопровождают подачу и проверку</span>
+          </div>
+        </div>
+        <div class="fr-item">
+          <div class="fr-ic">📋</div>
+          <div class="fr-tx">
+            <strong>Готовые регламенты и стандарт качества</strong>
+            <span>SOPs для операторов, диспетчеров, ГБР, постовых, бухгалтерии — без необходимости писать с нуля</span>
+          </div>
+        </div>
+        <div class="fr-item">
+          <div class="fr-ic">🖥️</div>
+          <div class="fr-tx">
+            <strong>Полная инфраструктура платформы</strong>
+            <span>PRM, ПЦО, AI, биллинг, контакт-центр, юридическое и финансовое сопровождение</span>
+          </div>
+        </div>
+        <div class="fr-item">
+          <div class="fr-ic">🎓</div>
+          <div class="fr-tx">
+            <strong>Обучение команды в Reforce Academy</strong>
+            <span>Курсы по стандарту платформы для всех ролей с обязательной сертификацией</span>
+          </div>
+        </div>
+        <div class="fr-item">
+          <div class="fr-ic">📲</div>
+          <div class="fr-tx">
+            <strong>Поток клиентов с первого месяца</strong>
+            <span>Подключение к воронке лидов платформы по геолокации франчайзи</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRM MOCKUP -->
+<section class="prm-sec">
+  <div class="container">
+    <div class="prm-hd">
+      <p class="overline">Инструмент партнёра</p>
+      <h2 class="reveal">Ваш рабочий кабинет — PRM</h2>
+      <p>Все объекты, выезды ГБР, финансы и рейтинг — в одном интерфейсе. Работает с компьютера и телефона.</p>
+    </div>
+    <div class="prm-wrap">
+      <!-- Desktop mockup -->
+      <div class="prm-desktop reveal">
+        <div class="prm-tbar">
+          <div class="prm-dots">
+            <div class="prm-dr"></div><div class="prm-dy"></div><div class="prm-dg"></div>
+          </div>
+          <div class="prm-url-bar">partner.reforce.group/dashboard</div>
+        </div>
+        <div class="prm-body">
+          <div class="prm-sidebar">
+            <div class="prm-sb-logo"><div class="prm-sb-ic">R</div>PRM</div>
+            <div class="prm-nav-it on">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              Дашборд
+            </div>
+            <div class="prm-nav-it">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              Объекты
+            </div>
+            <div class="prm-nav-it">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Выезды ГБР
+            </div>
+            <div class="prm-nav-it">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              Финансы
+            </div>
+            <div class="prm-nav-it">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              Клиенты
+            </div>
+            <div style="flex:1"></div>
+            <div class="prm-nav-it" style="color:rgba(212,43,43,.55)">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+              Поддержка
+            </div>
+          </div>
+          <div class="prm-main">
+            <div class="prm-main-hd">Добрый день, ЧОО «Щит» — Май 2026</div>
+            <div class="prm-s-row">
+              <div class="prm-sc">
+                <div class="prm-sn">247</div>
+                <div class="prm-sl">Объектов</div>
+                <div class="prm-sd up">+12 в мае</div>
+              </div>
+              <div class="prm-sc">
+                <div class="prm-sn">3</div>
+                <div class="prm-sl">Выезды сегодня</div>
+                <div class="prm-sd up">SLA: 4.1 мин</div>
+              </div>
+              <div class="prm-sc">
+                <div class="prm-sn">189К ₽</div>
+                <div class="prm-sl">Доход в мае</div>
+                <div class="prm-sd up">+18% к апр.</div>
+              </div>
+              <div class="prm-sc">
+                <div class="prm-sn">4.8★</div>
+                <div class="prm-sl">Рейтинг</div>
+                <div class="prm-sd up">Топ 12%</div>
+              </div>
+            </div>
+            <div class="prm-events-hd">Последние события</div>
+            <div class="prm-ev-row">
+              <div class="prm-ev-name">Ул. Мира 14, Магазин</div>
+              <span class="st-ok">На охране</span>
+              <span class="prm-ev-time">18:42</span>
+            </div>
+            <div class="prm-ev-row">
+              <div class="prm-ev-name">Садовая 3, Офис</div>
+              <span class="st-warn">Тревога</span>
+              <span class="prm-ev-time">17:31</span>
+            </div>
+            <div class="prm-ev-row">
+              <div class="prm-ev-name">Ленина 88, Склад</div>
+              <span class="st-ok">На охране</span>
+              <span class="prm-ev-time">09:15</span>
+            </div>
+            <div class="prm-ev-row">
+              <div class="prm-ev-name">Пр. Победы 12, ТЦ</div>
+              <span class="st-ok">На охране</span>
+              <span class="prm-ev-time">08:47</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Mobile mockup -->
+      <div class="prm-mobile reveal" data-d="1">
+        <div class="prm-mob-notch"></div>
+        <div class="prm-mob-bar"><span>9:41</span><span style="letter-spacing:2px">●●●</span></div>
+        <div class="prm-mob-scr">
+          <div class="prm-mob-t">Дашборд · Май 2026</div>
+          <div class="prm-mob-grid">
+            <div class="prm-mob-c"><div class="prm-mob-cn">247</div><div class="prm-mob-cl">объектов</div></div>
+            <div class="prm-mob-c"><div class="prm-mob-cn">4.8★</div><div class="prm-mob-cl">рейтинг</div></div>
+            <div class="prm-mob-c"><div class="prm-mob-cn">189К</div><div class="prm-mob-cl">доход ₽</div></div>
+            <div class="prm-mob-c"><div class="prm-mob-cn">3</div><div class="prm-mob-cl">выезды</div></div>
+          </div>
+          <div class="prm-mob-ev">
+            <div class="prm-mob-ei">Ул. Мира 14 — тревога <span class="prm-mob-et">18:42</span></div>
+            <div class="prm-mob-ei">Новая заявка: Советская 5 <span class="prm-mob-et">16:30</span></div>
+            <div class="prm-mob-ei">Оплата: 43 200 ₽ зачислена <span class="prm-mob-et">14:10</span></div>
+            <div class="prm-mob-ei">Монтаж — оценка 4.9★ <span class="prm-mob-et">11:05</span></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -405,6 +1221,49 @@ button{cursor:pointer;border:none;font-family:inherit}
         <div class="join-step-title">Онбординг и старт</div>
         <p class="join-step-desc">Доступ к платформе, обучение, первые заявки. Выделенный менеджер помогает на старте.</p>
         <div class="join-step-time">🚀 1–2 дня</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STANDARD REFORCE PARTNER -->
+<section class="std-p">
+  <div class="container">
+    <div class="std-p-inner">
+      <div class="reveal">
+        <div class="std-p-label">Стандарт Reforce</div>
+        <h2 class="std-p-title">Единый стандарт<br>для всей сети</h2>
+        <p class="std-p-text">Партнёры платформы проходят обязательную сертификацию: проверка лицензий, оборудования, времени реагирования, дисциплины смен. Когда сигнал попадает в систему Reforce — он отрабатывается по единому стандарту, который мы контролируем через регулярный аудит.</p>
+      </div>
+      <div class="std-p-items reveal" data-d="1">
+        <div class="std-p-item">
+          <div class="std-p-ic">📋</div>
+          <div class="std-p-tx">
+            <strong>Проверка лицензий</strong>
+            <span>Юридическая валидация лицензии Росгвардии и сопутствующих документов до допуска к объектам</span>
+          </div>
+        </div>
+        <div class="std-p-item">
+          <div class="std-p-ic">⚡</div>
+          <div class="std-p-tx">
+            <strong>Стандарт времени реагирования</strong>
+            <span>Максимум 4,2 минуты от тревоги до прибытия экипажа — контроль по каждому выезду</span>
+          </div>
+        </div>
+        <div class="std-p-item">
+          <div class="std-p-ic">🔍</div>
+          <div class="std-p-tx">
+            <strong>Аудит оборудования</strong>
+            <span>Проверка монтажа, исправности датчиков и соответствия стандарту установки перед подключением</span>
+          </div>
+        </div>
+        <div class="std-p-item">
+          <div class="std-p-ic">📅</div>
+          <div class="std-p-tx">
+            <strong>Регулярный аудит дисциплины</strong>
+            <span>Дисциплина смен, дежурства, журнал выездов — анализ по каждому партнёру ежеквартально</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -599,6 +1458,52 @@ button{cursor:pointer;border:none;font-family:inherit}
   </div>
 </section>
 
+<footer class="footer">
+  <div class="container">
+    <div class="ft-top">
+      <div>
+        <div class="ft-brand"><div class="ft-brand-ic">R</div><span class="ft-brand-n">Reforce</span></div>
+        <p class="ft-desc">Федеральная платформа безопасности. Охрана дома и бизнеса — онлайн, без офиса.</p>
+        <div class="ft-tel">8 800 555-75-55</div>
+        <div class="ft-tel-n">звонок бесплатный · круглосуточно</div>
+      </div>
+      <div>
+        <div class="ft-col-t">Услуги</div>
+        <ul class="ft-links">
+          <li><a href="home.html">Для дома</a></li>
+          <li><a href="business.html">Для бизнеса</a></li>
+          <li><a href="partners.html">Партнёрам</a></li>
+          <li><a href="main.html#quiz">Подобрать охрану</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="ft-col-t">Компания</div>
+        <ul class="ft-links">
+          <li><a href="#">О Reforce</a></li>
+          <li><a href="main.html#how">Как это работает</a></li>
+          <li><a href="#">Карьера</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="ft-col-t">Поддержка</div>
+        <ul class="ft-links">
+          <li><a href="#">Личный кабинет</a></li>
+          <li><a href="#">Приложение</a></li>
+          <li><a href="#">info@reforce.group</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ft-bot">
+      <span class="ft-copy">© 2026 ООО «Рефорс». Все права защищены.</span>
+      <div class="ft-legal">
+        <a href="#">Политика конфиденциальности</a>
+        <a href="#">Обработка персональных данных</a>
+        <a href="#">Пользовательское соглашение</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
 <!-- MODAL -->
 <div class="modal-overlay" id="modal">
   <div class="modal" id="modalContent">
@@ -615,6 +1520,20 @@ button{cursor:pointer;border:none;font-family:inherit}
 </div>
 
 <script>
+function switchModel(id, el) {
+  document.querySelectorAll('.model-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.model-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('model-' + id).classList.add('active');
+}
+
+function switchArch(id, el) {
+  document.querySelectorAll('.arch-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.arch-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('arch-' + id).classList.add('active');
+}
+
 function scrollToForm() {
   document.getElementById('partner-form').scrollIntoView({behavior:'smooth', block:'start'});
   setTimeout(() => document.querySelector('.reqs-form input').focus(), 600);
