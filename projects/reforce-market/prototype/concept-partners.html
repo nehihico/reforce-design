@@ -126,6 +126,32 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .join-d { font-size: 13px; color: var(--n600); line-height: 1.65; margin-bottom: 14px; }
 .join-badge { display: inline-flex; font-size: 12px; font-weight: 600; color: var(--red); background: rgba(212,43,43,.07); border-radius: 100px; padding: 4px 12px; }
 
+/* PRM */
+.prm { padding: 96px 48px; border-top: 1px solid var(--border); background: var(--n50); }
+.prm-hd { margin-bottom: 48px; }
+.prm-hd .section-sub { max-width: 520px; margin-top: 16px; }
+.prm-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+.prm-visual { background: var(--dark); border-radius: 24px; padding: 40px; position: relative; overflow: hidden; }
+.prm-visual::before { content: ''; position: absolute; top: -60px; right: -60px; width: 280px; height: 280px; background: radial-gradient(circle, rgba(212,43,43,.09) 0%, transparent 65%); pointer-events: none; }
+.prm-visual-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: rgba(255,255,255,.3); margin-bottom: 32px; display: block; }
+.prm-visual-label em { color: rgba(212,43,43,.85); font-style: normal; }
+.prm-schema { display: flex; flex-direction: column; gap: 12px; }
+.prm-row { display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07); border-radius: 14px; padding: 14px 18px; }
+.prm-row-ic { width: 36px; height: 36px; border-radius: 10px; background: rgba(212,43,43,.12); border: 1px solid rgba(212,43,43,.2); display: flex; align-items: center; justify-content: center; color: var(--red); flex-shrink: 0; }
+.prm-row-t { font-size: 14px; font-weight: 600; color: #fff; }
+.prm-row-s { font-size: 12px; color: rgba(255,255,255,.35); margin-top: 2px; }
+.prm-platform-badge { margin-top: 16px; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 12px 18px; }
+.prm-platform-dot { width: 8px; height: 8px; border-radius: 50%; background: #34C759; flex-shrink: 0; }
+.prm-platform-t { font-size: 13px; color: rgba(255,255,255,.5); }
+.prm-platform-t strong { color: rgba(255,255,255,.8); font-weight: 600; }
+.prm-items { display: flex; flex-direction: column; gap: 20px; }
+.prm-item { background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 28px 28px 28px 24px; display: flex; gap: 20px; align-items: flex-start; transition: border-color .2s; }
+.prm-item:hover { border-color: #d0d0d0; }
+.prm-item-num { font-size: 13px; font-weight: 800; color: var(--red); min-width: 28px; padding-top: 2px; }
+.prm-item-t { font-size: 15px; font-weight: 700; margin-bottom: 6px; color: var(--dark); }
+.prm-item-d { font-size: 13px; color: var(--n600); line-height: 1.65; }
+@media (max-width: 1024px) { .prm { padding: 72px 24px; } .prm-inner { grid-template-columns: 1fr; } }
+
 /* INCOME */
 .income { background: var(--dark); padding: 96px 48px; }
 .income-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
@@ -420,6 +446,92 @@ button { cursor: pointer; border: none; font-family: inherit; }
       <div class="model-income">
         <div class="model-income-label">Средний доход</div>
         <div class="model-income-value">от 250 000 ₽/мес</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRM -->
+<section class="prm" id="prm">
+  <div class="prm-hd reveal">
+    <span class="label"><em>ИНФРАСТРУКТУРА</em></span>
+    <h2 class="section-title">Как выглядит<br>ваш ПРМ</h2>
+    <p class="section-sub">Пункт реагирования и мониторинга — это ваша операционная база. Платформа Reforce берёт на себя всю цифровую начинку: вы управляете людьми и техникой.</p>
+  </div>
+  <div class="prm-inner">
+    <div class="prm-visual reveal" data-d="1">
+      <span class="prm-visual-label"><em>ПРМ</em> · Пункт реагирования и мониторинга</span>
+      <div class="prm-schema">
+        <div class="prm-row">
+          <div class="prm-row-ic">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <div>
+            <div class="prm-row-t">Диспетчерский центр</div>
+            <div class="prm-row-s">Мониторинг объектов 24/7</div>
+          </div>
+        </div>
+        <div class="prm-row">
+          <div class="prm-row-ic">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg>
+          </div>
+          <div>
+            <div class="prm-row-t">Группа быстрого реагирования</div>
+            <div class="prm-row-s">2+ экипажа в зоне покрытия</div>
+          </div>
+        </div>
+        <div class="prm-row">
+          <div class="prm-row-ic">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <div class="prm-row-t">Лицензия ЧОП</div>
+            <div class="prm-row-s">Действующая лицензия охранного предприятия</div>
+          </div>
+        </div>
+        <div class="prm-row">
+          <div class="prm-row-ic">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </div>
+          <div>
+            <div class="prm-row-t">Мобильное приложение операторов</div>
+            <div class="prm-row-s">Управление нарядами и тревогами</div>
+          </div>
+        </div>
+      </div>
+      <div class="prm-platform-badge">
+        <div class="prm-platform-dot"></div>
+        <div class="prm-platform-t"><strong>Платформа Reforce</strong> — ПЦО, диспетчеризация, биллинг, CRM</div>
+      </div>
+    </div>
+    <div class="prm-items">
+      <div class="prm-item reveal" data-d="1">
+        <div class="prm-item-num">01</div>
+        <div>
+          <div class="prm-item-t">Диспетчерский центр</div>
+          <div class="prm-item-d">Помещение с операторскими местами, подключёнными к платформе ПЦО Reforce. Операторы принимают тревоги, верифицируют их и ставят задачи экипажам ГБР.</div>
+        </div>
+      </div>
+      <div class="prm-item reveal" data-d="2">
+        <div class="prm-item-num">02</div>
+        <div>
+          <div class="prm-item-t">Группа быстрого реагирования</div>
+          <div class="prm-item-d">Минимум 2 экипажа с лицензированными сотрудниками. Платформа автоматически назначает ближайший экипаж при тревоге — время прибытия отображается в реальном времени.</div>
+        </div>
+      </div>
+      <div class="prm-item reveal" data-d="3">
+        <div class="prm-item-num">03</div>
+        <div>
+          <div class="prm-item-t">Программно-аппаратный комплекс</div>
+          <div class="prm-item-d">Оборудование Reforce для ПЦО: серверная часть, SIM-пул, ретрансляторы. Поставляется и настраивается командой Reforce — никаких дополнительных подрядчиков.</div>
+        </div>
+      </div>
+      <div class="prm-item reveal">
+        <div class="prm-item-num">04</div>
+        <div>
+          <div class="prm-item-t">Зона покрытия</div>
+          <div class="prm-item-d">Вы получаете эксклюзивную зону ответственности на карте платформы. Все заявки из этой зоны назначаются автоматически — без конкуренции с другими партнёрами.</div>
+        </div>
       </div>
     </div>
   </div>
