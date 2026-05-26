@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reforce — Охрана бизнеса</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Helvetica Neue', sans-serif; background: #fff; color: #0d0d0d; -webkit-font-smoothing: antialiased; }
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; border: none; font-family: inherit; }
+
+:root { --red: #D42B2B; --dark: #111; --border: #e8e8e8; --n50: #f8f8f8; --n400: #999; --n600: #555; }
+
+.label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--n400); margin-bottom: 20px; display: block; }
+.label em { color: var(--red); font-style: normal; }
+.section-title { font-size: 48px; font-weight: 800; line-height: 1.05; letter-spacing: -2px; }
+.section-sub { font-size: 16px; color: var(--n600); line-height: 1.7; }
+
+.btn-red { background: var(--red); color: #fff; border-radius: 100px; padding: 14px 28px; font-size: 15px; font-weight: 600; transition: opacity .12s; display: inline-flex; align-items: center; gap: 8px; }
+.btn-red:hover { opacity: .88; }
+.btn-dark { background: var(--dark); color: #fff; border-radius: 100px; padding: 14px 28px; font-size: 15px; font-weight: 600; transition: opacity .12s; }
+.btn-dark:hover { opacity: .8; }
+.btn-outline { background: none; border: 1.5px solid var(--border); color: #444; border-radius: 100px; padding: 14px 28px; font-size: 15px; font-weight: 500; transition: border-color .12s, color .12s; }
+.btn-outline:hover { border-color: #aaa; color: var(--dark); }
+
+/* NAV */
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 68px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: #fff; z-index: 100; }
+.nav-logo { font-size: 16px; font-weight: 800; letter-spacing: -.5px; }
+.nav-logo em { color: var(--red); font-style: normal; }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a { font-size: 14px; font-weight: 600; color: var(--n600); transition: color .12s; }
+.nav-links a:hover, .nav-links a.active { color: var(--dark); }
+.nav-r { display: flex; align-items: center; gap: 8px; }
+.btn-nav-ghost { font-size: 13.5px; color: var(--n600); background: none; border-radius: 100px; padding: 9px 16px; transition: background .12s; display: inline-flex; align-items: center; gap: 4px; }
+.btn-nav-ghost:hover { background: var(--n50); }
+.btn-nav-dark { background: var(--dark); color: #fff; border-radius: 100px; padding: 10px 22px; font-size: 13.5px; font-weight: 600; transition: opacity .12s; }
+.btn-nav-dark:hover { opacity: .8; }
+
+/* HERO */
+.hero { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 68px); }
+.hero-l { padding: 64px 56px 64px 48px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--border); }
+.hero-h1 { font-size: 64px; font-weight: 800; line-height: 1.0; letter-spacing: -3px; margin-bottom: 24px; }
+.hero-h1 em { color: var(--red); font-style: normal; }
+.hero-desc { font-size: 17px; color: var(--n600); line-height: 1.7; max-width: 420px; margin-bottom: 40px; }
+.hero-ctas { display: flex; gap: 12px; align-items: center; }
+.hero-stats { display: flex; gap: 0; border-top: 1px solid var(--border); padding-top: 28px; margin-top: 48px; }
+.hstat { flex: 1; border-right: 1px solid var(--border); padding-right: 20px; margin-right: 20px; }
+.hstat:last-child { border-right: none; margin-right: 0; padding-right: 0; }
+.hstat-n { font-size: 28px; font-weight: 800; letter-spacing: -1.5px; }
+.hstat-n em { color: var(--red); font-style: normal; }
+.hstat-l { font-size: 11px; color: var(--n400); margin-top: 4px; line-height: 1.45; }
+
+/* HERO RIGHT — DASHBOARD */
+.hero-r { background: var(--dark); padding: 48px; display: flex; flex-direction: column; gap: 0; position: relative; overflow: hidden; }
+.hero-r::before { content: ''; position: absolute; top: -80px; right: -80px; width: 360px; height: 360px; background: radial-gradient(circle, rgba(212,43,43,.08) 0%, transparent 65%); pointer-events: none; }
+.dash { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.09); border-radius: 20px; overflow: hidden; position: relative; z-index: 1; }
+.dash-tbar { background: rgba(255,255,255,.05); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,.06); }
+.dash-tbar-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.8); }
+.dash-tbar-btn { font-size: 11px; color: var(--red); background: rgba(212,43,43,.12); border-radius: 8px; padding: 5px 12px; font-weight: 600; }
+.dash-body { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.dash-obj { background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.07); border-radius: 14px; padding: 14px 16px; }
+.dash-obj-row { display: flex; align-items: center; justify-content: space-between; }
+.dash-obj-name { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.85); }
+.dash-obj-addr { font-size: 11px; color: rgba(255,255,255,.3); margin-top: 2px; }
+.dash-st { font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 100px; flex-shrink: 0; }
+.st-on { background: rgba(52,199,89,.12); color: #34C759; }
+.st-off { background: rgba(255,255,255,.06); color: rgba(255,255,255,.35); }
+.dash-access { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.06); border-radius: 14px; padding: 14px 16px; }
+.dash-acc-title { font-size: 11px; font-weight: 600; color: rgba(255,255,255,.3); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 12px; }
+.dash-person { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.05); }
+.dash-person:last-child { border-bottom: none; }
+.dash-person-name { font-size: 13px; font-weight: 600; color: rgba(255,255,255,.75); }
+.dash-person-role { font-size: 11px; color: rgba(255,255,255,.3); margin-top: 2px; }
+.dash-revoke { font-size: 11px; color: var(--red); background: rgba(212,43,43,.1); border-radius: 8px; padding: 4px 10px; font-weight: 600; flex-shrink: 0; }
+.dash-actions { display: flex; gap: 8px; margin-top: 10px; }
+.dash-action-btn { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); border-radius: 10px; padding: 7px 14px; font-size: 12px; color: rgba(255,255,255,.55); transition: background .12s; flex: 1; justify-content: center; }
+.dash-action-btn:hover { background: rgba(255,255,255,.1); color: rgba(255,255,255,.85); }
+
+/* FEATURES */
+.features { padding: 96px 48px; border-top: 1px solid var(--border); }
+.feat-hd { margin-bottom: 56px; }
+.feat-hd .section-sub { max-width: 480px; margin-top: 16px; }
+.feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.feat-card { border: 1.5px solid var(--border); border-radius: 22px; padding: 28px; transition: border-color .2s, transform .2s; }
+.feat-card:hover { border-color: #bbb; transform: translateY(-3px); }
+.feat-ic { width: 44px; height: 44px; border-radius: 12px; background: var(--n50); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--n600); margin-bottom: 18px; }
+.feat-name { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+.feat-desc { font-size: 13.5px; color: var(--n600); line-height: 1.65; margin-bottom: 14px; }
+.feat-tag { font-size: 11.5px; font-weight: 600; color: var(--red); }
+
+/* CASE */
+.case { background: var(--dark); padding: 96px 48px; }
+.case-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+.case .label { color: rgba(255,255,255,.3); }
+.case .label em { color: rgba(212,43,43,.9); }
+.case .section-title { color: #fff; margin-bottom: 16px; }
+.case-sub { font-size: 16px; color: rgba(255,255,255,.45); line-height: 1.7; margin-bottom: 32px; max-width: 420px; }
+.case-badge { display: inline-flex; align-items: center; background: rgba(212,43,43,.08); border: 1px solid rgba(212,43,43,.15); border-radius: 100px; padding: 5px 14px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,.7); margin-bottom: 24px; }
+.case-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.case-metric { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); border-radius: 18px; padding: 24px; }
+.case-metric-n { font-size: 40px; font-weight: 800; color: #fff; letter-spacing: -2px; line-height: 1; margin-bottom: 6px; }
+.case-metric-n em { color: var(--red); font-style: normal; }
+.case-metric-l { font-size: 13px; color: rgba(255,255,255,.4); line-height: 1.5; }
+
+/* INDUSTRIES */
+.industries { padding: 96px 48px; border-top: 1px solid var(--border); background: var(--n50); }
+.ind-hd { margin-bottom: 56px; }
+.ind-hd .section-sub { max-width: 480px; margin-top: 16px; }
+.ind-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.ind-card { background: #fff; border: 1.5px solid var(--border); border-radius: 20px; padding: 24px; transition: border-color .2s, transform .2s; cursor: pointer; }
+.ind-card:hover, .ind-card.on { border-color: var(--red); transform: translateY(-2px); }
+.ind-ic { width: 44px; height: 44px; background: var(--n50); border: 1px solid var(--border); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--n600); margin-bottom: 16px; }
+.ind-card:hover .ind-ic, .ind-card.on .ind-ic { background: rgba(212,43,43,.07); border-color: rgba(212,43,43,.15); color: var(--red); }
+.ind-name { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+.ind-sub { font-size: 12.5px; color: var(--n400); }
+
+/* FOOTER */
+.footer { background: var(--dark); padding: 64px 48px 32px; }
+.ft-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 56px; padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,.07); }
+.ft-logo { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: -.5px; margin-bottom: 12px; }
+.ft-logo em { color: var(--red); font-style: normal; }
+.ft-desc { font-size: 14px; color: rgba(255,255,255,.35); line-height: 1.65; max-width: 260px; margin-bottom: 24px; }
+.ft-tel { font-size: 18px; font-weight: 700; color: #fff; }
+.ft-tel-sub { font-size: 12px; color: rgba(255,255,255,.28); margin-top: 4px; }
+.ft-col-t { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,.35); margin-bottom: 16px; }
+.ft-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.ft-links a { font-size: 14px; color: rgba(255,255,255,.45); transition: color .12s; }
+.ft-links a:hover { color: rgba(255,255,255,.8); }
+.ft-bot { display: flex; align-items: center; justify-content: space-between; padding-top: 28px; flex-wrap: wrap; gap: 10px; }
+.ft-copy { font-size: 13px; color: rgba(255,255,255,.22); }
+.ft-legal { display: flex; gap: 20px; }
+.ft-legal a { font-size: 12px; color: rgba(255,255,255,.22); transition: color .12s; }
+.ft-legal a:hover { color: rgba(255,255,255,.5); }
+
+/* FLOATING BAR */
+.float-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+  background: #fff; border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 32px rgba(0,0,0,.1);
+  padding: 14px 48px;
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  transform: translateY(100%); transition: transform .35s cubic-bezier(.4,0,.2,1);
+}
+.float-bar.visible { transform: translateY(0); }
+.float-bar-l { display: flex; flex-direction: column; gap: 2px; }
+.float-bar-title { font-size: 15px; font-weight: 700; color: var(--dark); }
+.float-bar-sub { font-size: 13px; color: var(--n400); }
+.float-bar-btn {
+  background: var(--red); color: #fff; border-radius: 100px;
+  padding: 12px 28px; font-size: 14px; font-weight: 600;
+  cursor: pointer; border: none; font-family: inherit;
+  transition: opacity .12s; white-space: nowrap; flex-shrink: 0;
+}
+.float-bar-btn:hover { opacity: .88; }
+@media (max-width: 640px) {
+  .float-bar { padding: 12px 20px; }
+  .float-bar-title { font-size: 14px; }
+  .float-bar-sub { display: none; }
+  .float-bar-btn { padding: 10px 20px; font-size: 13px; }
+}
+
+/* ANIMATIONS */
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity 280ms ease, transform 280ms ease; }
+.reveal.in { opacity: 1; transform: none; }
+[data-d="1"] { transition-delay: 80ms; }
+[data-d="2"] { transition-delay: 160ms; }
+[data-d="3"] { transition-delay: 240ms; }
+[data-d="4"] { transition-delay: 320ms; }
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .hero { grid-template-columns: 1fr; min-height: auto; }
+  .hero-l { border-right: none; border-bottom: 1px solid var(--border); padding: 48px 24px; }
+  .hero-r { padding: 48px 24px; }
+  .case-inner { grid-template-columns: 1fr; }
+  .feat-grid { grid-template-columns: 1fr 1fr; }
+  .ind-grid { grid-template-columns: 1fr 1fr; }
+  .ft-top { grid-template-columns: 1fr 1fr; }
+  .nav, .features, .case, .industries { padding-left: 24px; padding-right: 24px; }
+}
+@media (max-width: 640px) {
+  .hero-h1 { font-size: 44px; letter-spacing: -2px; }
+  .section-title { font-size: 36px; letter-spacing: -1.5px; }
+  .hero-stats { flex-wrap: wrap; gap: 16px; }
+  .hstat { border-right: none; }
+  .feat-grid, .case-metrics, .ind-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .nav-phone { display: none; }
+  .ft-top { grid-template-columns: 1fr; }
+}
+/* ─── MODALS ─── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 300; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.modal-overlay.open { display: flex; }
+.modal { background: #fff; border-radius: 24px; padding: 40px; max-width: 480px; width: calc(100% - 48px); box-shadow: 0 24px 80px rgba(0,0,0,.2); position: relative; }
+.modal-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%; background: var(--n50); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; color: var(--n600); transition: background .12s; }
+.modal-close:hover { background: var(--border); }
+.modal-h { font-size: 22px; font-weight: 800; letter-spacing: -.5px; margin-bottom: 8px; }
+.modal-sub { font-size: 14px; color: var(--n600); line-height: 1.6; margin-bottom: 24px; }
+.modal-form { display: flex; flex-direction: column; gap: 10px; }
+.m-input { width: 100%; height: 48px; border: 1.5px solid var(--border); border-radius: 12px; padding: 0 16px; font-size: 15px; font-family: inherit; outline: none; transition: border-color .15s; color: var(--dark); background: #fff; box-sizing: border-box; }
+.m-input:focus { border-color: var(--red); }
+.m-submit { width: 100%; height: 50px; background: var(--red); color: #fff; border-radius: 100px; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; border: none; transition: opacity .12s; margin-top: 4px; }
+.m-submit:hover { opacity: .88; }
+.m-note { font-size: 12px; color: var(--n400); text-align: center; line-height: 1.5; }
+.city-list { display: flex; flex-direction: column; gap: 4px; max-height: 220px; overflow-y: auto; margin-top: 4px; }
+.city-opt { text-align: left; background: var(--n50); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; font-size: 14px; font-weight: 500; color: var(--dark); cursor: pointer; transition: background .12s; font-family: inherit; width: 100%; }
+.city-opt:hover { background: var(--border); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="concept-main.html">/<em>REFORCE</em></a>
+  <div class="nav-links">
+    <a href="concept-main.html">Главная</a>
+    <a href="concept-home.html">Для дома</a>
+    <a href="concept-business.html" class="active">Для бизнеса</a>
+    <a href="concept-partners.html">Партнёрам</a>
+    <a href="concept-contacts.html">Контакты</a>
+  </div>
+  <div class="nav-r">
+    <button class="btn-nav-ghost" onclick="openCityModal()">📍 Москва</button>
+    <a href="tel:88005557555" class="btn-nav-ghost nav-phone">8 800 555-75-55</a>
+    <button class="btn-nav-ghost">Войти</button>
+    <button class="btn-nav-dark">Оформить охрану →</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-l">
+    <div>
+      <span class="label"><em>ДЛЯ БИЗНЕСА</em></span>
+      <h1 class="hero-h1">Охрана бизнеса —<br>как <em>статья расходов,</em><br>о которой не думаешь</h1>
+      <p class="hero-desc">Оформите онлайн, платите по автоплатежу. Уволили сотрудника — отозвали доступ за 30 секунд. Никаких звонков в офис охраны.</p>
+      <div class="hero-ctas">
+        <button class="btn-red" onclick="openOrderModal()">Оформить охрану →</button>
+        <button class="btn-outline" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Смотреть решения</button>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="hstat">
+        <div class="hstat-n">30 <em>сек</em></div>
+        <div class="hstat-l">отозвать<br>доступ</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-n">1 <em>день</em></div>
+        <div class="hstat-l">до охраны<br>с монтажом</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-n">0 <em>₽</em></div>
+        <div class="hstat-l">звонков<br>в офис охраны</div>
+      </div>
+      <div class="hstat">
+        <div class="hstat-n">24<em>/7</em></div>
+        <div class="hstat-l">мониторинг<br>без выходных</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-r">
+    <div class="dash">
+      <div class="dash-tbar">
+        <span class="dash-tbar-title">Мои объекты · 2 активных</span>
+        <button class="dash-tbar-btn">+ Добавить</button>
+      </div>
+      <div class="dash-body">
+        <div class="dash-obj">
+          <div class="dash-obj-row">
+            <div>
+              <div class="dash-obj-name">Магазин на Садовой</div>
+              <div class="dash-obj-addr">Москва, ул. Садовая-Кудринская, 17</div>
+            </div>
+            <span class="dash-st st-on">● Под охраной</span>
+          </div>
+        </div>
+        <div class="dash-obj">
+          <div class="dash-obj-row">
+            <div>
+              <div class="dash-obj-name">Склад Люберцы</div>
+              <div class="dash-obj-addr">Люберцы, Проспект Мира, 5</div>
+            </div>
+            <span class="dash-st st-off">○ Снят</span>
+          </div>
+        </div>
+        <div class="dash-access">
+          <div class="dash-acc-title">Доступы · Магазин на Садовой</div>
+          <div class="dash-person">
+            <div>
+              <div class="dash-person-name">Анна Петрова</div>
+              <div class="dash-person-role">Продавец · постановка/снятие</div>
+            </div>
+            <button class="dash-revoke">Отозвать</button>
+          </div>
+          <div class="dash-person">
+            <div>
+              <div class="dash-person-name">Игорь Смирнов</div>
+              <div class="dash-person-role">Охранник · только постановка</div>
+            </div>
+            <button class="dash-revoke">Отозвать</button>
+          </div>
+        </div>
+        <div class="dash-actions">
+          <button class="dash-action-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+            Камеры
+          </button>
+          <button class="dash-action-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Документы
+          </button>
+          <button class="dash-action-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Оплата
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="feat-hd reveal">
+    <span class="label"><em>ВОЗМОЖНОСТИ</em></span>
+    <h2 class="section-title">Всё под контролем —<br>без звонков в офис</h2>
+    <p class="section-sub">Управляйте охраной своего бизнеса самостоятельно, в любое время, с любого устройства.</p>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card reveal" data-d="1">
+      <div class="feat-ic">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+      </div>
+      <div class="feat-name">Доступы за 30 секунд</div>
+      <p class="feat-desc">Выдайте или отзовите доступ прямо в приложении. Уволенный сотрудник теряет доступ немедленно.</p>
+      <div class="feat-tag">Уникально для Reforce</div>
+    </div>
+    <div class="feat-card reveal" data-d="2">
+      <div class="feat-ic">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      </div>
+      <div class="feat-name">Мультиобъект в одном экране</div>
+      <p class="feat-desc">Все объекты и их статусы — на одном экране. Без переключений между аккаунтами.</p>
+    </div>
+    <div class="feat-card reveal" data-d="3">
+      <div class="feat-ic">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+      </div>
+      <div class="feat-name">Автоплатёж без мыслей</div>
+      <p class="feat-desc">Привяжите карту один раз — абонентская плата списывается автоматически. Уведомление за 3 дня.</p>
+    </div>
+    <div class="feat-card reveal" data-d="1">
+      <div class="feat-ic">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+      </div>
+      <div class="feat-name">Видеонаблюдение онлайн</div>
+      <p class="feat-desc">Смотрите камеры в реальном времени с телефона или ноутбука. Архив 30 дней.</p>
+    </div>
+    <div class="feat-card reveal" data-d="2">
+      <div class="feat-ic">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <div class="feat-name">Умные уведомления</div>
+      <p class="feat-desc">Только о важном: сигнал тревоги, ГБР направлена, открытие вне расписания. Не отвлекаем по мелочам.</p>
+    </div>
+    <div class="feat-card reveal" data-d="3">
+      <div class="feat-ic">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <div class="feat-name">Документы для бухгалтерии</div>
+      <p class="feat-desc">Акты и счета автоматически появляются в ЛК. Скачайте и отправьте без запроса у менеджера.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CASE -->
+<section class="case">
+  <div class="case-inner">
+    <div class="reveal">
+      <span class="label"><em>КЕЙС</em></span>
+      <div class="case-badge">Ретейл · 142 магазина</div>
+      <h2 class="section-title" style="color:#fff">−92%<br>ложных тревог</h2>
+      <p class="case-sub">Федеральная ретейл-сеть перевела 142 магазина на платформу Reforce. За 6 месяцев — сокращение ложных выездов ГБР в 12 раз благодаря AI Vision.</p>
+      <button style="display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:600;color:rgba(255,255,255,.4);background:none;border:none;cursor:pointer;font-family:inherit;padding:0;transition:color .15s" onmouseover="this.style.color='rgba(255,255,255,.7)'" onmouseout="this.style.color='rgba(255,255,255,.4)'">Читать полный кейс →</button>
+    </div>
+    <div class="case-metrics reveal" data-d="1">
+      <div class="case-metric">
+        <div class="case-metric-n">142</div>
+        <div class="case-metric-l">магазина подключено за 3 недели</div>
+      </div>
+      <div class="case-metric">
+        <div class="case-metric-n">−92<em>%</em></div>
+        <div class="case-metric-l">ложных тревог после AI Vision</div>
+      </div>
+      <div class="case-metric">
+        <div class="case-metric-n">4.2 <em>мин</em></div>
+        <div class="case-metric-l">среднее время прибытия ГБР</div>
+      </div>
+      <div class="case-metric">
+        <div class="case-metric-n">30 <em>сек</em></div>
+        <div class="case-metric-l">выдача и отзыв доступов</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INDUSTRIES -->
+<section class="industries">
+  <div class="ind-hd reveal">
+    <span class="label"><em>СЕГМЕНТЫ</em></span>
+    <h2 class="section-title">Для вашего типа бизнеса</h2>
+    <p class="section-sub">Подберём пакет под ваш сегмент — с учётом специфики объекта и режима работы.</p>
+  </div>
+  <div class="ind-grid">
+    <div class="ind-card reveal on" data-d="1">
+      <div class="ind-ic">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      </div>
+      <div class="ind-name">Ретейл</div>
+      <div class="ind-sub">Магазины, шоурумы</div>
+    </div>
+    <div class="ind-card reveal" data-d="2">
+      <div class="ind-ic">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+      </div>
+      <div class="ind-name">Офисы</div>
+      <div class="ind-sub">БЦ, коворкинги</div>
+    </div>
+    <div class="ind-card reveal" data-d="3">
+      <div class="ind-ic">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      </div>
+      <div class="ind-name">Склады</div>
+      <div class="ind-sub">Логистика, производство</div>
+    </div>
+    <div class="ind-card reveal" data-d="4">
+      <div class="ind-ic">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      </div>
+      <div class="ind-name">Сети</div>
+      <div class="ind-sub">100+ объектов, единый договор</div>
+    </div>
+  </div>
+</section>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modalOrder" onclick="if(event.target===this)closeModal('modalOrder')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalOrder')">✕</button>
+    <div class="modal-h">Оформить охрану</div>
+    <div class="modal-sub" id="modalOrderSub">Оставьте заявку — менеджер свяжется в течение 15 минут</div>
+    <div class="modal-form">
+      <input class="m-input" type="text" placeholder="Ваше имя">
+      <input class="m-input" type="tel" placeholder="Телефон">
+      <button class="m-submit" onclick="submitModal('modalOrder')">Отправить заявку</button>
+      <div class="m-note">Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности</div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modalCall" onclick="if(event.target===this)closeModal('modalCall')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalCall')">✕</button>
+    <div class="modal-h">Заказать звонок</div>
+    <div class="modal-sub">Перезвоним в течение 15 минут в рабочее время</div>
+    <div class="modal-form">
+      <input class="m-input" type="text" placeholder="Ваше имя">
+      <input class="m-input" type="tel" placeholder="Телефон">
+      <button class="m-submit" onclick="submitModal('modalCall')">Перезвоните мне</button>
+      <div class="m-note">Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности</div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modalPartner" onclick="if(event.target===this)closeModal('modalPartner')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalPartner')">✕</button>
+    <div class="modal-h">Стать партнёром</div>
+    <div class="modal-sub">Расскажите о себе — менеджер пришлёт условия партнёрства</div>
+    <div class="modal-form">
+      <input class="m-input" type="text" placeholder="Ваше имя">
+      <input class="m-input" type="tel" placeholder="Телефон">
+      <input class="m-input" type="text" placeholder="Компания (необязательно)">
+      <button class="m-submit" onclick="submitModal('modalPartner')">Отправить заявку</button>
+      <div class="m-note">Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности</div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modalCity" onclick="if(event.target===this)closeModal('modalCity')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalCity')">✕</button>
+    <div class="modal-h">Выберите город</div>
+    <div class="modal-sub">Покажем доступные тарифы и условия для вашего региона</div>
+    <div class="city-list">
+      <button class="city-opt" onclick="selectCity('Москва')">Москва</button>
+      <button class="city-opt" onclick="selectCity('Санкт-Петербург')">Санкт-Петербург</button>
+      <button class="city-opt" onclick="selectCity('Екатеринбург')">Екатеринбург</button>
+      <button class="city-opt" onclick="selectCity('Новосибирск')">Новосибирск</button>
+      <button class="city-opt" onclick="selectCity('Казань')">Казань</button>
+      <button class="city-opt" onclick="selectCity('Краснодар')">Краснодар</button>
+      <button class="city-opt" onclick="selectCity('Ростов-на-Дону')">Ростов-на-Дону</button>
+      <button class="city-opt" onclick="selectCity('Другой город')">Другой город</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modalSuccess" onclick="if(event.target===this)closeModal('modalSuccess')">
+  <div class="modal" style="text-align:center;padding:56px 40px;">
+    <div style="font-size:48px;margin-bottom:16px;color:var(--red)">✓</div>
+    <div class="modal-h">Заявка принята!</div>
+    <div class="modal-sub" style="margin:8px auto 32px;max-width:300px;">Менеджер свяжется с вами в течение 15 минут</div>
+    <button class="m-submit" style="max-width:200px;margin:0 auto;" onclick="closeModal('modalSuccess')">Отлично</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="ft-top">
+    <div>
+      <div class="ft-logo">/<em>REFORCE</em></div>
+      <p class="ft-desc">Платформа безопасности для дома, бизнеса и охранных предприятий. Работаем с 2018 года.</p>
+      <div class="ft-tel">8 800 555-00-00</div>
+      <div class="ft-tel-sub">Бесплатно · 24/7</div>
+    </div>
+    <div>
+      <div class="ft-col-t">Продукты</div>
+      <ul class="ft-links">
+        <li><a href="concept-home.html">Для дома</a></li>
+        <li><a href="concept-business.html">Для бизнеса</a></li>
+        <li><a href="concept-partners.html">Партнёрам</a></li>
+        <li><a href="#">Приложение</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="ft-col-t">Компания</div>
+      <ul class="ft-links">
+        <li><a href="#">О Reforce</a></li>
+        <li><a href="#">Стандарт качества</a></li>
+        <li><a href="#">Пресс-центр</a></li>
+        <li><a href="#">Вакансии</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="ft-col-t">Поддержка</div>
+      <ul class="ft-links">
+        <li><a href="#">Помощь</a></li>
+        <li><a href="#">Личный кабинет</a></li>
+        <li><a href="#">Документы</a></li>
+        <li><a href="#">Контакты</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="ft-bot">
+    <span class="ft-copy">© 2025 Reforce Group. Все права защищены.</span>
+    <div class="ft-legal">
+      <a href="#">Политика конфиденциальности</a>
+      <a href="#">Пользовательское соглашение</a>
+      <a href="#">Оферта</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+var floatBar = document.getElementById('floatBar');
+window.addEventListener('scroll', function() {
+  var nearBottom = (window.scrollY + window.innerHeight) > (document.documentElement.scrollHeight - 120);
+  if (window.scrollY > 400 && !nearBottom) floatBar.classList.add('visible');
+  else floatBar.classList.remove('visible');
+}, { passive: true });
+
+// Modals
+function openOrderModal(name) {
+  var sub = document.getElementById('modalOrderSub');
+  if (name && sub) sub.textContent = 'Тариф «' + name + '» — менеджер свяжется в течение 15 минут';
+  document.getElementById('modalOrder').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function openCallModal() {
+  document.getElementById('modalCall').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function openPartnerModal() {
+  document.getElementById('modalPartner').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function openCityModal() {
+  document.getElementById('modalCity').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+function submitModal(id) {
+  closeModal(id);
+  document.getElementById('modalSuccess').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function selectCity(city) {
+  document.querySelectorAll('.nav-r .btn-nav-ghost').forEach(function(btn) {
+    if (btn.textContent.startsWith('📍')) btn.textContent = '📍 ' + city;
+  });
+  closeModal('modalCity');
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(function(m) { m.classList.remove('open'); document.body.style.overflow = ''; });
+});
+</script>
+
+<!-- FLOATING BAR -->
+<div class="float-bar" id="floatBar">
+  <div class="float-bar-l">
+    <div class="float-bar-title">Охрана бизнеса — оформите онлайн</div>
+    <div class="float-bar-sub">Подберём решение под ваш тип объекта</div>
+  </div>
+  <button class="float-bar-btn" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">Смотреть решения →</button>
+</div>
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reforce — Контакты</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Helvetica Neue', sans-serif; background: #fff; color: #0d0d0d; -webkit-font-smoothing: antialiased; }
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; border: none; font-family: inherit; }
+
+:root { --red: #D42B2B; --dark: #111; --border: #e8e8e8; --n50: #f8f8f8; --n400: #999; --n600: #555; }
+
+.label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--n400); margin-bottom: 20px; display: block; }
+.label em { color: var(--red); font-style: normal; }
+.section-title { font-size: 48px; font-weight: 800; line-height: 1.05; letter-spacing: -2px; }
+.section-sub { font-size: 16px; color: var(--n600); line-height: 1.7; }
+
+.btn-red { background: var(--red); color: #fff; border-radius: 100px; padding: 14px 28px; font-size: 15px; font-weight: 600; transition: opacity .12s; display: inline-flex; align-items: center; gap: 8px; }
+.btn-red:hover { opacity: .88; }
+.btn-outline { background: none; border: 1.5px solid var(--border); color: #444; border-radius: 100px; padding: 14px 28px; font-size: 15px; font-weight: 500; transition: border-color .12s, color .12s; }
+.btn-outline:hover { border-color: #aaa; color: var(--dark); }
+
+/* NAV */
+.nav { display: flex; align-items: center; justify-content: space-between; padding: 0 48px; height: 68px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: #fff; z-index: 100; }
+.nav-logo { font-size: 16px; font-weight: 800; letter-spacing: -.5px; }
+.nav-logo em { color: var(--red); font-style: normal; }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a { font-size: 14px; font-weight: 600; color: var(--n600); transition: color .12s; }
+.nav-links a:hover, .nav-links a.active { color: var(--dark); }
+.nav-r { display: flex; align-items: center; gap: 8px; }
+.btn-nav-ghost { font-size: 13.5px; color: var(--n600); background: none; border-radius: 100px; padding: 9px 16px; transition: background .12s; display: inline-flex; align-items: center; gap: 4px; }
+.btn-nav-ghost:hover { background: var(--n50); }
+.btn-nav-dark { background: var(--dark); color: #fff; border-radius: 100px; padding: 10px 22px; font-size: 13.5px; font-weight: 600; transition: opacity .12s; }
+.btn-nav-dark:hover { opacity: .8; }
+
+/* HERO */
+.hero { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 68px); }
+.hero-l { padding: 64px 56px 64px 48px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--border); }
+.hero-h1 { font-size: 64px; font-weight: 800; line-height: 1.0; letter-spacing: -3px; margin-bottom: 24px; }
+.hero-h1 em { color: var(--red); font-style: normal; }
+.hero-desc { font-size: 17px; color: var(--n600); line-height: 1.7; max-width: 400px; margin-bottom: 48px; }
+
+.contacts-list { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--border); padding-top: 40px; margin-top: 40px; }
+.contact-row { display: flex; align-items: flex-start; gap: 20px; padding: 24px 0; border-bottom: 1px solid var(--border); }
+.contact-row:last-child { border-bottom: none; }
+.contact-ic { width: 40px; height: 40px; border-radius: 11px; background: var(--n50); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--n600); flex-shrink: 0; margin-top: 2px; }
+.contact-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--n400); margin-bottom: 6px; }
+.contact-value { font-size: 18px; font-weight: 700; color: var(--dark); letter-spacing: -.3px; }
+.contact-sub { font-size: 13px; color: var(--n400); margin-top: 4px; }
+
+/* HERO RIGHT — FORM */
+.hero-r { background: var(--dark); padding: 56px 48px; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+.hero-r::before { content: ''; position: absolute; bottom: -80px; right: -80px; width: 360px; height: 360px; background: radial-gradient(circle, rgba(212,43,43,.07) 0%, transparent 65%); pointer-events: none; }
+.form-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: rgba(255,255,255,.28); margin-bottom: 28px; }
+.form-title { font-size: 26px; font-weight: 800; color: #fff; letter-spacing: -.5px; margin-bottom: 8px; }
+.form-sub { font-size: 14px; color: rgba(255,255,255,.4); line-height: 1.6; margin-bottom: 32px; }
+.form-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.form-field { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 14px 18px; font-size: 14px; color: #fff; font-family: inherit; outline: none; transition: border-color .15s; }
+.form-field::placeholder { color: rgba(255,255,255,.25); }
+.form-field:focus { border-color: rgba(255,255,255,.25); background: rgba(255,255,255,.08); }
+.form-field.full { width: 100%; }
+textarea.form-field { resize: none; height: 100px; line-height: 1.55; }
+select.form-field { cursor: pointer; }
+select.form-field option { background: #1a1a1a; color: #fff; }
+.form-submit { width: 100%; background: var(--red); color: #fff; border-radius: 100px; padding: 15px; font-size: 15px; font-weight: 600; font-family: inherit; transition: opacity .12s; margin-top: 8px; }
+.form-submit:hover { opacity: .88; }
+.form-note { font-size: 12px; color: rgba(255,255,255,.22); text-align: center; margin-top: 12px; line-height: 1.5; }
+
+/* OFFICES */
+.offices { padding: 96px 48px; border-top: 1px solid var(--border); background: var(--n50); }
+.offices-hd { margin-bottom: 56px; }
+.offices-hd .section-sub { max-width: 480px; margin-top: 16px; }
+.offices-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.office-card { background: #fff; border: 1.5px solid var(--border); border-radius: 22px; padding: 28px; transition: border-color .2s; }
+.office-card:hover { border-color: #bbb; }
+.office-city { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+.office-type { display: inline-flex; font-size: 11px; font-weight: 600; color: var(--red); background: rgba(212,43,43,.07); border-radius: 100px; padding: 3px 10px; margin-bottom: 16px; }
+.office-addr { font-size: 14px; color: var(--n600); line-height: 1.6; margin-bottom: 12px; }
+.office-tel { font-size: 15px; font-weight: 600; color: var(--dark); }
+.office-hours { font-size: 12px; color: var(--n400); margin-top: 4px; }
+
+/* FOOTER */
+.footer { background: var(--dark); padding: 64px 48px 32px; }
+.ft-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 56px; padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,.07); }
+.ft-logo { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: -.5px; margin-bottom: 12px; }
+.ft-logo em { color: var(--red); font-style: normal; }
+.ft-desc { font-size: 14px; color: rgba(255,255,255,.35); line-height: 1.65; max-width: 260px; margin-bottom: 24px; }
+.ft-tel { font-size: 18px; font-weight: 700; color: #fff; }
+.ft-tel-sub { font-size: 12px; color: rgba(255,255,255,.28); margin-top: 4px; }
+.ft-col-t { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,.35); margin-bottom: 16px; }
+.ft-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.ft-links a { font-size: 14px; color: rgba(255,255,255,.45); transition: color .12s; }
+.ft-links a:hover { color: rgba(255,255,255,.8); }
+.ft-bot { display: flex; align-items: center; justify-content: space-between; padding-top: 28px; flex-wrap: wrap; gap: 10px; }
+.ft-copy { font-size: 13px; color: rgba(255,255,255,.22); }
+.ft-legal { display: flex; gap: 20px; }
+.ft-legal a { font-size: 12px; color: rgba(255,255,255,.22); transition: color .12s; }
+.ft-legal a:hover { color: rgba(255,255,255,.5); }
+
+/* ANIMATIONS */
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity 280ms ease, transform 280ms ease; }
+.reveal.in { opacity: 1; transform: none; }
+[data-d="1"] { transition-delay: 80ms; }
+[data-d="2"] { transition-delay: 160ms; }
+[data-d="3"] { transition-delay: 240ms; }
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .hero { grid-template-columns: 1fr; min-height: auto; }
+  .hero-l { border-right: none; border-bottom: 1px solid var(--border); padding: 48px 24px; }
+  .hero-r { padding: 48px 24px; }
+  .offices-grid { grid-template-columns: 1fr 1fr; }
+  .ft-top { grid-template-columns: 1fr 1fr; }
+  .nav, .offices { padding-left: 24px; padding-right: 24px; }
+}
+@media (max-width: 640px) {
+  .hero-h1 { font-size: 44px; letter-spacing: -2px; }
+  .form-row { grid-template-columns: 1fr; }
+  .offices-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .nav-phone { display: none; }
+  .ft-top { grid-template-columns: 1fr; }
+}
+/* ─── MODALS ─── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 300; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.modal-overlay.open { display: flex; }
+.modal { background: #fff; border-radius: 24px; padding: 40px; max-width: 480px; width: calc(100% - 48px); box-shadow: 0 24px 80px rgba(0,0,0,.2); position: relative; }
+.modal-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; border-radius: 50%; background: var(--n50); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 14px; cursor: pointer; color: var(--n600); transition: background .12s; }
+.modal-close:hover { background: var(--border); }
+.modal-h { font-size: 22px; font-weight: 800; letter-spacing: -.5px; margin-bottom: 8px; }
+.modal-sub { font-size: 14px; color: var(--n600); line-height: 1.6; margin-bottom: 24px; }
+.modal-form { display: flex; flex-direction: column; gap: 10px; }
+.m-input { width: 100%; height: 48px; border: 1.5px solid var(--border); border-radius: 12px; padding: 0 16px; font-size: 15px; font-family: inherit; outline: none; transition: border-color .15s; color: var(--dark); background: #fff; box-sizing: border-box; }
+.m-input:focus { border-color: var(--red); }
+.m-submit { width: 100%; height: 50px; background: var(--red); color: #fff; border-radius: 100px; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; border: none; transition: opacity .12s; margin-top: 4px; }
+.m-submit:hover { opacity: .88; }
+.m-note { font-size: 12px; color: var(--n400); text-align: center; line-height: 1.5; }
+.city-list { display: flex; flex-direction: column; gap: 4px; max-height: 220px; overflow-y: auto; margin-top: 4px; }
+.city-opt { text-align: left; background: var(--n50); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; font-size: 14px; font-weight: 500; color: var(--dark); cursor: pointer; transition: background .12s; font-family: inherit; width: 100%; }
+.city-opt:hover { background: var(--border); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-logo" href="concept-main.html">/<em>REFORCE</em></a>
+  <div class="nav-links">
+    <a href="concept-main.html">Главная</a>
+    <a href="concept-home.html">Для дома</a>
+    <a href="concept-business.html">Для бизнеса</a>
+    <a href="concept-partners.html">Партнёрам</a>
+    <a href="concept-contacts.html" class="active">Контакты</a>
+  </div>
+  <div class="nav-r">
+    <button class="btn-nav-ghost" onclick="openCityModal()">📍 Москва</button>
+    <a href="tel:88005557555" class="btn-nav-ghost nav-phone">8 800 555-75-55</a>
+    <button class="btn-nav-ghost">Войти</button>
+    <button class="btn-nav-dark" onclick="document.querySelector('.form-field').focus()">Написать нам →</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-l">
+    <div>
+      <span class="label"><em>КОНТАКТЫ</em></span>
+      <h1 class="hero-h1">Свяжитесь<br>с нами — ответим<br><em>быстро</em></h1>
+      <p class="hero-desc">Работаем с 9:00 до 21:00 по Москве. Экстренные вопросы по действующей охране — круглосуточно на линии 8 800.</p>
+    </div>
+    <div class="contacts-list">
+      <div class="contact-row">
+        <div class="contact-ic">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.61 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.29 6.29l.91-.91a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </div>
+        <div>
+          <div class="contact-label">Телефон</div>
+          <div class="contact-value">8 800 555-00-00</div>
+          <div class="contact-sub">Бесплатно по России · 24/7 для клиентов</div>
+        </div>
+      </div>
+      <div class="contact-row">
+        <div class="contact-ic">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <div>
+          <div class="contact-label">Email</div>
+          <div class="contact-value">hello@reforce.group</div>
+          <div class="contact-sub">Ответим в течение рабочего дня</div>
+        </div>
+      </div>
+      <div class="contact-row">
+        <div class="contact-ic">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div>
+          <div class="contact-label">Головной офис</div>
+          <div class="contact-value">Москва</div>
+          <div class="contact-sub">Пресненская наб., 12, БЦ «Башня Федерация»</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-r">
+    <div class="form-tag">ОСТАВИТЬ ЗАЯВКУ</div>
+    <div class="form-title">Напишите нам</div>
+    <p class="form-sub">Расскажите о задаче — подберём решение и перезвоним в удобное время.</p>
+    <div class="form-row">
+      <input class="form-field" type="text" placeholder="Имя">
+      <input class="form-field" type="tel" placeholder="Телефон">
+    </div>
+    <div class="form-group">
+      <select class="form-field full">
+        <option value="" disabled selected>Тема обращения</option>
+        <option>Охрана дома / квартиры</option>
+        <option>Охрана бизнеса</option>
+        <option>Стать партнёром</option>
+        <option>Техническая поддержка</option>
+        <option>Другое</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <textarea class="form-field full" placeholder="Сообщение (необязательно)"></textarea>
+    </div>
+    <button class="form-submit">Отправить заявку</button>
+    <p class="form-note">Нажимая «Отправить», вы соглашаетесь с политикой конфиденциальности. Не передаём данные третьим лицам.</p>
+  </div>
+</section>
+
+<!-- OFFICES -->
+<section class="offices">
+  <div class="offices-hd reveal">
+    <span class="label"><em>ОФИСЫ</em></span>
+    <h2 class="section-title">Мы рядом<br>в 100+ городах</h2>
+    <p class="section-sub">Головной офис в Москве, региональные представительства по всей России.</p>
+  </div>
+  <div class="offices-grid">
+    <div class="office-card reveal" data-d="1">
+      <div class="office-city">Москва</div>
+      <div class="office-type">Головной офис</div>
+      <p class="office-addr">Пресненская наб., 12<br>БЦ «Башня Федерация», 34 этаж</p>
+      <div class="office-tel">+7 (495) 555-00-00</div>
+      <div class="office-hours">Пн–Пт: 9:00–21:00</div>
+    </div>
+    <div class="office-card reveal" data-d="2">
+      <div class="office-city">Санкт-Петербург</div>
+      <div class="office-type">Региональный офис</div>
+      <p class="office-addr">Невский пр., 28<br>БЦ «Невский», 5 этаж</p>
+      <div class="office-tel">+7 (812) 555-00-01</div>
+      <div class="office-hours">Пн–Пт: 9:00–21:00</div>
+    </div>
+    <div class="office-card reveal" data-d="3">
+      <div class="office-city">Екатеринбург</div>
+      <div class="office-type">Региональный офис</div>
+      <p class="office-addr">ул. Малышева, 51<br>БЦ «Clever Park», 3 этаж</p>
+      <div class="office-tel">+7 (343) 555-00-02</div>
+      <div class="office-hours">Пн–Пт: 9:00–21:00</div>
+    </div>
+  </div>
+</section>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modalOrder" onclick="if(event.target===this)closeModal('modalOrder')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalOrder')">✕</button>
+    <div class="modal-h">Оформить охрану</div>
+    <div class="modal-sub" id="modalOrderSub">Оставьте заявку — менеджер свяжется в течение 15 минут</div>
+    <div class="modal-form">
+      <input class="m-input" type="text" placeholder="Ваше имя">
+      <input class="m-input" type="tel" placeholder="Телефон">
+      <button class="m-submit" onclick="submitModal('modalOrder')">Отправить заявку</button>
+      <div class="m-note">Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности</div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modalCall" onclick="if(event.target===this)closeModal('modalCall')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalCall')">✕</button>
+    <div class="modal-h">Заказать звонок</div>
+    <div class="modal-sub">Перезвоним в течение 15 минут в рабочее время</div>
+    <div class="modal-form">
+      <input class="m-input" type="text" placeholder="Ваше имя">
+      <input class="m-input" type="tel" placeholder="Телефон">
+      <button class="m-submit" onclick="submitModal('modalCall')">Перезвоните мне</button>
+      <div class="m-note">Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности</div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modalPartner" onclick="if(event.target===this)closeModal('modalPartner')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalPartner')">✕</button>
+    <div class="modal-h">Стать партнёром</div>
+    <div class="modal-sub">Расскажите о себе — менеджер пришлёт условия партнёрства</div>
+    <div class="modal-form">
+      <input class="m-input" type="text" placeholder="Ваше имя">
+      <input class="m-input" type="tel" placeholder="Телефон">
+      <input class="m-input" type="text" placeholder="Компания (необязательно)">
+      <button class="m-submit" onclick="submitModal('modalPartner')">Отправить заявку</button>
+      <div class="m-note">Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности</div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modalCity" onclick="if(event.target===this)closeModal('modalCity')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modalCity')">✕</button>
+    <div class="modal-h">Выберите город</div>
+    <div class="modal-sub">Покажем доступные тарифы и условия для вашего региона</div>
+    <div class="city-list">
+      <button class="city-opt" onclick="selectCity('Москва')">Москва</button>
+      <button class="city-opt" onclick="selectCity('Санкт-Петербург')">Санкт-Петербург</button>
+      <button class="city-opt" onclick="selectCity('Екатеринбург')">Екатеринбург</button>
+      <button class="city-opt" onclick="selectCity('Новосибирск')">Новосибирск</button>
+      <button class="city-opt" onclick="selectCity('Казань')">Казань</button>
+      <button class="city-opt" onclick="selectCity('Краснодар')">Краснодар</button>
+      <button class="city-opt" onclick="selectCity('Ростов-на-Дону')">Ростов-на-Дону</button>
+      <button class="city-opt" onclick="selectCity('Другой город')">Другой город</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="modalSuccess" onclick="if(event.target===this)closeModal('modalSuccess')">
+  <div class="modal" style="text-align:center;padding:56px 40px;">
+    <div style="font-size:48px;margin-bottom:16px;color:var(--red)">✓</div>
+    <div class="modal-h">Заявка принята!</div>
+    <div class="modal-sub" style="margin:8px auto 32px;max-width:300px;">Менеджер свяжется с вами в течение 15 минут</div>
+    <button class="m-submit" style="max-width:200px;margin:0 auto;" onclick="closeModal('modalSuccess')">Отлично</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="ft-top">
+    <div>
+      <div class="ft-logo">/<em>REFORCE</em></div>
+      <p class="ft-desc">Платформа безопасности для дома, бизнеса и охранных предприятий. Работаем с 2018 года.</p>
+      <div class="ft-tel">8 800 555-00-00</div>
+      <div class="ft-tel-sub">Бесплатно · 24/7</div>
+    </div>
+    <div>
+      <div class="ft-col-t">Продукты</div>
+      <ul class="ft-links">
+        <li><a href="concept-home.html">Для дома</a></li>
+        <li><a href="concept-business.html">Для бизнеса</a></li>
+        <li><a href="concept-partners.html">Партнёрам</a></li>
+        <li><a href="#">Приложение</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="ft-col-t">Компания</div>
+      <ul class="ft-links">
+        <li><a href="concept-contacts.html">Контакты</a></li>
+        <li><a href="#">Стандарт качества</a></li>
+        <li><a href="#">Пресс-центр</a></li>
+        <li><a href="#">Вакансии</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="ft-col-t">Поддержка</div>
+      <ul class="ft-links">
+        <li><a href="#">Помощь</a></li>
+        <li><a href="#">Личный кабинет</a></li>
+        <li><a href="#">Документы</a></li>
+        <li><a href="concept-contacts.html">Написать нам</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="ft-bot">
+    <span class="ft-copy">© 2025 Reforce Group. Все права защищены.</span>
+    <div class="ft-legal">
+      <a href="#">Политика конфиденциальности</a>
+      <a href="#">Пользовательское соглашение</a>
+      <a href="#">Оферта</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+document.querySelector('.form-submit').addEventListener('click', function() {
+  this.textContent = 'Заявка отправлена ✓';
+  this.style.background = '#34C759';
+  this.disabled = true;
+});
+
+// Modals
+function openOrderModal(name) {
+  var sub = document.getElementById('modalOrderSub');
+  if (name && sub) sub.textContent = 'Тариф «' + name + '» — менеджер свяжется в течение 15 минут';
+  document.getElementById('modalOrder').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function openCallModal() {
+  document.getElementById('modalCall').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function openPartnerModal() {
+  document.getElementById('modalPartner').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function openCityModal() {
+  document.getElementById('modalCity').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+function submitModal(id) {
+  closeModal(id);
+  document.getElementById('modalSuccess').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function selectCity(city) {
+  document.querySelectorAll('.nav-r .btn-nav-ghost').forEach(function(btn) {
+    if (btn.textContent.startsWith('📍')) btn.textContent = '📍 ' + city;
+  });
+  closeModal('modalCity');
+}
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(function(m) { m.classList.remove('open'); document.body.style.overflow = ''; });
+});
+</script>
+</body>
+</html>
