@@ -3,1639 +3,184 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reforce — Безопасность как сервис</title>
+<title>Reforce — Навигация по прототипам</title>
 <style>
-  /* ── TOKENS ────────────────────────────────────────────── */
-  :root {
-    --brand-red:      #D42B2B;
-    --brand-red-dark: #BC2525;
-    --brand-dark:     #1A1A2E;
-    --brand-white:    #FFFFFF;
+:root {
+  --red: #D42B2B;
+  --dark: #111;
+  --border: #e8e8e8;
+  --n50: #f8f8f8;
+  --n400: #999;
+  --n600: #555;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
+  background: var(--n50); color: var(--dark);
+  min-height: 100vh; padding: 64px 48px;
+  -webkit-font-smoothing: antialiased;
+}
+a { text-decoration: none; color: inherit; }
 
-    --neutral-900: #1C1C1E;
-    --neutral-600: #636366;
-    --neutral-300: #C7C7CC;
-    --neutral-100: #F2F2F7;
-    --neutral-50:  #F9F9FB;
+.page-header { margin-bottom: 56px; }
+.page-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.4px; color: var(--n400); margin-bottom: 14px; display: block; }
+.page-title { font-size: 40px; font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; }
+.page-title em { color: var(--red); font-style: normal; }
+.page-sub { font-size: 15px; color: var(--n600); margin-top: 12px; line-height: 1.6; }
 
-    --green:  #34C759;
-    --blue:   #007AFF;
-    --orange: #FF9500;
+.section { margin-bottom: 48px; }
+.section-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px;
+  color: var(--n400); margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+}
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-    --r-sm: 10px;
-    --r-md: 12px;
-    --r-lg: 16px;
-    --r-xl: 20px;
-    --r-2xl: 24px;
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
 
-    --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
-    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
-    --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
-  }
+.card {
+  background: #fff; border: 1px solid var(--border); border-radius: 18px;
+  padding: 24px 24px 20px; display: flex; flex-direction: column; gap: 14px;
+  transition: border-color .18s, box-shadow .18s;
+}
+.card:hover { border-color: #ccc; box-shadow: 0 4px 24px rgba(0,0,0,.07); }
+.card.new { border-color: var(--red); }
+.card.new:hover { box-shadow: 0 4px 24px rgba(212,43,43,.12); }
 
-  /* ── RESET ─────────────────────────────────────────────── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif;
-    color: var(--neutral-900);
-    background: var(--brand-white);
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-  }
-  img { display: block; max-width: 100%; }
-  a { color: inherit; text-decoration: none; }
-  button { cursor: pointer; border: none; font-family: inherit; }
+.card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.card-badge {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px;
+  padding: 3px 9px; border-radius: 100px; flex-shrink: 0; margin-top: 2px;
+}
+.badge-new { background: rgba(212,43,43,.09); color: var(--red); }
+.badge-old { background: rgba(0,0,0,.05); color: var(--n400); }
+.badge-doc { background: rgba(52,199,89,.09); color: #1a8a3c; }
 
-  /* ── LAYOUT ─────────────────────────────────────────────── */
-  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
-  .section { padding: 80px 0; }
+.card-name { font-size: 16px; font-weight: 700; }
+.card-desc { font-size: 13px; color: var(--n600); line-height: 1.55; }
 
-  /* ── TYPOGRAPHY ─────────────────────────────────────────── */
-  .overline {
-    font-size: 11px; font-weight: 500; letter-spacing: 0.8px;
-    text-transform: uppercase; color: var(--neutral-600);
-  }
-  .display { font-size: 48px; font-weight: 700; line-height: 1.15; letter-spacing: -0.5px; }
-  .title-1  { font-size: 32px; font-weight: 700; line-height: 1.25; letter-spacing: -0.3px; }
-  .title-2  { font-size: 22px; font-weight: 700; line-height: 1.3; letter-spacing: -0.3px; }
-  .title-3  { font-size: 17px; font-weight: 600; line-height: 1.4; }
-  .body-1   { font-size: 16px; font-weight: 400; line-height: 1.6; }
-  .body-2   { font-size: 14px; font-weight: 400; line-height: 1.5; color: var(--neutral-600); }
-  .caption  { font-size: 12px; color: var(--neutral-600); }
+.card-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 600; color: var(--dark);
+  background: var(--n50); border: 1px solid var(--border);
+  border-radius: 10px; padding: 8px 14px;
+  transition: background .12s, border-color .12s;
+  margin-top: auto;
+}
+.card-link:hover { background: #efefef; border-color: #d0d0d0; }
+.card.new .card-link { background: var(--red); color: #fff; border-color: var(--red); }
+.card.new .card-link:hover { opacity: .88; }
+.card-link svg { flex-shrink: 0; }
 
-  /* ── BUTTONS ─────────────────────────────────────────────── */
-  .btn {
-    display: inline-flex; align-items: center; justify-content: center;
-    gap: 8px; padding: 0 28px; height: 48px; border-radius: var(--r-lg);
-    font-size: 15px; font-weight: 600; transition: all 0.15s ease;
-  }
-  .btn-primary {
-    background: var(--brand-red); color: #fff;
-  }
-  .btn-primary:hover { background: var(--brand-red-dark); transform: translateY(-1px); box-shadow: var(--shadow-md); }
-  .btn-secondary {
-    background: var(--neutral-100); color: var(--neutral-900);
-  }
-  .btn-secondary:hover { background: #E5E5EA; }
-  .btn-outline {
-    background: transparent; color: var(--brand-red);
-    border: 1.5px solid var(--brand-red);
-  }
-  .btn-outline:hover { background: rgba(212,43,43,0.06); }
-  .btn-lg { height: 56px; padding: 0 36px; font-size: 17px; border-radius: var(--r-xl); }
-  .btn-sm { height: 36px; padding: 0 16px; font-size: 13px; }
+.placeholder {
+  background: repeating-linear-gradient(-45deg, transparent, transparent 4px, rgba(0,0,0,.025) 4px, rgba(0,0,0,.025) 8px);
+  border: 1.5px dashed #d0d0d0; border-radius: 18px;
+  padding: 24px; display: flex; flex-direction: column; gap: 8px;
+}
+.placeholder-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--n400); }
+.placeholder-text { font-size: 14px; color: var(--n400); }
 
-  /* ── HEADER ──────────────────────────────────────────────── */
-  .header {
-    position: sticky; top: 0; z-index: 20;
-    background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid var(--neutral-100);
-    height: 64px; display: flex; align-items: center;
-  }
-  .header-inner {
-    display: flex; align-items: center; justify-content: space-between;
-    width: 100%;
-  }
-  .logo {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 20px; font-weight: 700; color: var(--neutral-900);
-  }
-  .logo-icon {
-    width: 32px; height: 32px; background: var(--brand-red);
-    border-radius: 8px; display: flex; align-items: center; justify-content: center;
-    color: white; font-size: 16px; font-weight: 800;
-  }
-  .nav { display: flex; align-items: center; gap: 4px; }
-  .nav-link {
-    padding: 8px 14px; border-radius: var(--r-sm);
-    font-size: 14px; font-weight: 500; color: var(--neutral-900);
-    transition: background 0.15s;
-  }
-  .nav-link:hover { background: var(--neutral-100); }
-  .nav-link.active { color: var(--brand-red); }
-  .header-actions { display: flex; align-items: center; gap: 12px; }
-  .city-btn {
-    display: flex; align-items: center; gap: 4px;
-    font-size: 13px; color: var(--neutral-600);
-    padding: 6px 10px; border-radius: var(--r-sm);
-    background: var(--neutral-50); border: 1px solid var(--neutral-300);
-    cursor: pointer; transition: background 0.15s;
-  }
-  .city-btn:hover { background: var(--neutral-100); }
-
-  /* ── HERO ───────────────────────────────────────────────── */
-  .hero {
-    background: var(--brand-dark);
-    padding: 80px 0 0;
-    overflow: hidden;
-    position: relative;
-  }
-  .hero::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse 60% 80% at 70% 50%, rgba(212,43,43,0.12) 0%, transparent 70%);
-    pointer-events: none;
-  }
-  .hero-inner {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 48px; align-items: end; position: relative;
-  }
-  .hero-content { padding-bottom: 72px; }
-  .hero-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 100px; padding: 6px 14px; margin-bottom: 28px;
-    font-size: 13px; color: rgba(255,255,255,0.7);
-  }
-  .hero-badge-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; }
-  .hero h1 {
-    font-size: 52px; font-weight: 700; line-height: 1.1;
-    letter-spacing: -0.8px; color: #fff; margin-bottom: 20px;
-  }
-  .hero h1 span { color: var(--brand-red); }
-  .hero-desc {
-    font-size: 18px; line-height: 1.6; color: rgba(255,255,255,0.65);
-    max-width: 480px; margin-bottom: 36px;
-  }
-  .hero-cta { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-  .hero-phone {
-    display: flex; align-items: center; gap: 6px;
-    color: rgba(255,255,255,0.5); font-size: 14px;
-    margin-top: 20px;
-  }
-  .hero-stats {
-    display: flex; gap: 32px; margin-top: 48px;
-    padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.08);
-  }
-  .hero-stat-num { font-size: 28px; font-weight: 700; color: #fff; }
-  .hero-stat-label { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 2px; }
-  .hero-image {
-    position: relative; display: flex; justify-content: center; align-items: flex-end;
-  }
-  .hero-phone-mockup {
-    width: 280px; height: 560px;
-    background: linear-gradient(160deg, #2a2a3e 0%, #1a1a2e 100%);
-    border-radius: 40px; border: 2px solid rgba(255,255,255,0.1);
-    box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
-    overflow: hidden; position: relative;
-    display: flex; flex-direction: column;
-  }
-  .phone-status-bar {
-    padding: 12px 20px 8px;
-    display: flex; justify-content: space-between; align-items: center;
-    font-size: 11px; color: rgba(255,255,255,0.6);
-  }
-  .phone-screen { padding: 12px 16px; flex: 1; display: flex; flex-direction: column; gap: 12px; }
-  .phone-greeting { font-size: 16px; color: rgba(255,255,255,0.9); font-weight: 600; }
-  .phone-greeting span { color: rgba(255,255,255,0.5); font-weight: 400; font-size: 13px; }
-  .phone-object-card {
-    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 20px; padding: 16px;
-  }
-  .phone-obj-name { font-size: 14px; color: rgba(255,255,255,0.9); font-weight: 600; margin-bottom: 4px; }
-  .phone-obj-address { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
-  .phone-armed-btn {
-    width: 100%; height: 44px; border-radius: 14px;
-    background: rgba(52,199,89,0.15); border: 1px solid rgba(52,199,89,0.3);
-    color: #34C759; font-size: 14px; font-weight: 600;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  .status-dot { width: 7px; height: 7px; background: #34C759; border-radius: 50%; animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
-  .phone-events { display: flex; flex-direction: column; gap: 6px; }
-  .phone-event {
-    background: rgba(255,255,255,0.04); border-radius: 10px; padding: 8px 10px;
-    display: flex; align-items: center; gap: 8px; font-size: 11px;
-  }
-  .phone-event-icon { font-size: 14px; }
-  .phone-event-text { color: rgba(255,255,255,0.6); }
-  .phone-event-time { margin-left: auto; color: rgba(255,255,255,0.3); font-size: 10px; }
-  .hero-glow {
-    position: absolute; bottom: -60px; left: 50%;
-    transform: translateX(-50%);
-    width: 300px; height: 200px;
-    background: radial-gradient(ellipse, rgba(212,43,43,0.3) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  /* ── SEGMENTS ───────────────────────────────────────────── */
-  .segments { background: var(--neutral-50); padding: 64px 0; }
-  .segments-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .segment-card {
-    background: #fff; border-radius: var(--r-xl);
-    padding: 32px 28px; border: 1.5px solid var(--neutral-100);
-    transition: all 0.2s ease; cursor: pointer;
-    position: relative; overflow: hidden;
-  }
-  .segment-card:hover {
-    border-color: var(--brand-red);
-    box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
-  }
-  .segment-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    background: var(--brand-red); opacity: 0; transition: opacity 0.2s;
-  }
-  .segment-card:hover::before { opacity: 1; }
-  .segment-icon {
-    width: 48px; height: 48px; border-radius: 12px;
-    background: var(--neutral-50); display: flex; align-items: center; justify-content: center;
-    font-size: 22px; margin-bottom: 20px;
-  }
-  .segment-title { font-size: 20px; font-weight: 700; margin-bottom: 10px; }
-  .segment-desc { font-size: 14px; color: var(--neutral-600); line-height: 1.6; margin-bottom: 20px; }
-  .segment-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
-  .segment-list li {
-    display: flex; align-items: center; gap: 8px;
-    font-size: 14px; color: var(--neutral-900);
-  }
-  .segment-list li::before {
-    content: ''; width: 5px; height: 5px; border-radius: 50%;
-    background: var(--brand-red); flex-shrink: 0;
-  }
-  .segment-link {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 14px; font-weight: 600; color: var(--brand-red);
-    transition: gap 0.15s;
-  }
-  .segment-card:hover .segment-link { gap: 10px; }
-
-  /* ── QUIZ ────────────────────────────────────────────────── */
-  .quiz-section { background: var(--brand-dark); padding: 80px 0; }
-  .quiz-header { text-align: center; margin-bottom: 48px; }
-  .quiz-header .overline { color: rgba(255,255,255,0.4); margin-bottom: 12px; }
-  .quiz-header h2 { font-size: 38px; font-weight: 700; color: #fff; margin-bottom: 12px; letter-spacing: -0.4px; }
-  .quiz-header p { font-size: 16px; color: rgba(255,255,255,0.55); }
-  .quiz-container {
-    max-width: 720px; margin: 0 auto;
-    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 28px; padding: 40px; position: relative;
-  }
-  .quiz-progress {
-    display: flex; align-items: center; gap: 8px; margin-bottom: 32px;
-  }
-  .quiz-progress-bar {
-    flex: 1; height: 3px; background: rgba(255,255,255,0.08);
-    border-radius: 2px; overflow: hidden;
-  }
-  .quiz-progress-fill {
-    height: 100%; background: var(--brand-red);
-    border-radius: 2px; transition: width 0.4s ease;
-  }
-  .quiz-step-label { font-size: 12px; color: rgba(255,255,255,0.35); white-space: nowrap; }
-  .quiz-step { display: none; }
-  .quiz-step.active { display: block; }
-  .quiz-question {
-    font-size: 24px; font-weight: 700; color: #fff;
-    margin-bottom: 8px; line-height: 1.3;
-  }
-  .quiz-hint { font-size: 14px; color: rgba(255,255,255,0.45); margin-bottom: 28px; }
-  .quiz-options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .quiz-options.cols-1 { grid-template-columns: 1fr; }
-  .quiz-option {
-    background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.08);
-    border-radius: 16px; padding: 18px 20px;
-    display: flex; align-items: center; gap: 14px;
-    cursor: pointer; transition: all 0.15s ease;
-  }
-  .quiz-option:hover {
-    background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2);
-  }
-  .quiz-option.selected {
-    background: rgba(212,43,43,0.12); border-color: var(--brand-red);
-  }
-  .quiz-option-icon {
-    font-size: 28px; width: 48px; height: 48px;
-    background: rgba(255,255,255,0.06); border-radius: 12px;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-  }
-  .quiz-option-text { flex: 1; }
-  .quiz-option-title { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 2px; }
-  .quiz-option-desc { font-size: 12px; color: rgba(255,255,255,0.45); }
-  .quiz-option-check {
-    width: 22px; height: 22px; border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.2);
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    font-size: 11px; color: transparent;
-    transition: all 0.15s;
-  }
-  .quiz-option.selected .quiz-option-check {
-    background: var(--brand-red); border-color: var(--brand-red); color: #fff;
-  }
-  .quiz-actions {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-top: 28px;
-  }
-  .quiz-back {
-    background: none; color: rgba(255,255,255,0.4);
-    font-size: 14px; font-weight: 500; padding: 8px 0;
-    transition: color 0.15s;
-  }
-  .quiz-back:hover { color: rgba(255,255,255,0.7); }
-
-  /* ── RESULTS ─────────────────────────────────────────────── */
-  .quiz-results { display: none; }
-  .quiz-results.active { display: block; }
-  .results-intro {
-    margin-bottom: 28px;
-  }
-  .results-intro h3 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 6px; }
-  .results-intro p { font-size: 14px; color: rgba(255,255,255,0.5); }
-  .results-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-  .result-card {
-    background: rgba(255,255,255,0.04); border: 1.5px solid rgba(255,255,255,0.08);
-    border-radius: 20px; padding: 24px; transition: all 0.2s; cursor: pointer;
-    position: relative;
-  }
-  .result-card.recommended {
-    border-color: var(--brand-red); background: rgba(212,43,43,0.08);
-  }
-  .result-badge {
-    display: inline-flex; align-items: center; gap: 4px;
-    background: var(--brand-red); color: white;
-    font-size: 11px; font-weight: 600; padding: 4px 10px;
-    border-radius: 100px; margin-bottom: 14px;
-  }
-  .result-name { font-size: 17px; font-weight: 700; color: #fff; margin-bottom: 6px; }
-  .result-price-monthly {
-    font-size: 26px; font-weight: 700; color: var(--brand-red); margin-bottom: 2px;
-  }
-  .result-price-equip { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 16px; }
-  .result-includes { list-style: none; display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px; }
-  .result-includes li {
-    display: flex; align-items: flex-start; gap: 8px;
-    font-size: 13px; color: rgba(255,255,255,0.65);
-  }
-  .result-includes li::before {
-    content: '✓'; color: var(--green); font-weight: 700; font-size: 11px; margin-top: 2px; flex-shrink: 0;
-  }
-  .result-actions { display: flex; flex-direction: column; gap: 8px; }
-  .btn-result-primary {
-    width: 100%; height: 44px; background: var(--brand-red); color: #fff;
-    border-radius: 12px; font-size: 14px; font-weight: 600;
-    transition: background 0.15s;
-  }
-  .btn-result-primary:hover { background: var(--brand-red-dark); }
-  .btn-result-secondary {
-    width: 100%; height: 36px; background: rgba(255,255,255,0.06);
-    color: rgba(255,255,255,0.6); border-radius: 10px;
-    font-size: 13px; font-weight: 500; transition: background 0.15s;
-  }
-  .btn-result-secondary:hover { background: rgba(255,255,255,0.10); }
-  .results-restart {
-    text-align: center; margin-top: 24px;
-  }
-  .results-restart button {
-    background: none; color: rgba(255,255,255,0.35); font-size: 13px;
-    text-decoration: underline; text-underline-offset: 3px;
-    transition: color 0.15s;
-  }
-  .results-restart button:hover { color: rgba(255,255,255,0.6); }
-
-  /* ── HOW IT WORKS ─────────────────────────────────────────── */
-  .how { background: var(--neutral-50); }
-  .how-header { text-align: center; margin-bottom: 56px; }
-  .how-header .overline { margin-bottom: 12px; }
-  .how-header h2 { margin-bottom: 10px; }
-  .how-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
-  .how-step {
-    position: relative; display: flex; flex-direction: column;
-  }
-  .how-step-line {
-    position: absolute; top: 28px; left: calc(100% + 12px);
-    width: calc(100% - 24px); height: 1px;
-    background: var(--neutral-300); z-index: 0;
-  }
-  .how-step:last-child .how-step-line { display: none; }
-  .how-num {
-    width: 56px; height: 56px; border-radius: 50%;
-    background: var(--brand-red); color: #fff;
-    font-size: 22px; font-weight: 700;
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 20px; position: relative; z-index: 1;
-  }
-  .how-step-title { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
-  .how-step-desc { font-size: 14px; color: var(--neutral-600); line-height: 1.6; }
-  .how-time {
-    display: inline-flex; align-items: center; gap: 4px;
-    background: rgba(212,43,43,0.08); border-radius: 100px;
-    padding: 4px 10px; margin-top: 10px;
-    font-size: 12px; font-weight: 600; color: var(--brand-red);
-  }
-
-  /* ── PARTNERS ────────────────────────────────────────────── */
-  .partners-section { background: var(--brand-dark); }
-  .partners-section .overline { color: rgba(255,255,255,0.4); margin-bottom: 12px; }
-  .partners-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
-  .partners-content h2 { font-size: 38px; font-weight: 700; color: #fff; margin-bottom: 16px; letter-spacing: -0.4px; }
-  .partners-content p { font-size: 16px; color: rgba(255,255,255,0.55); line-height: 1.7; margin-bottom: 32px; }
-  .partners-benefits { list-style: none; display: flex; flex-direction: column; gap: 16px; margin-bottom: 36px; }
-  .partners-benefits li {
-    display: flex; align-items: flex-start; gap: 12px;
-    font-size: 15px; color: rgba(255,255,255,0.8);
-  }
-  .benefit-icon {
-    width: 36px; height: 36px; border-radius: 10px;
-    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 16px; flex-shrink: 0;
-  }
-  .benefit-text strong { display: block; font-weight: 600; color: #fff; margin-bottom: 2px; }
-  .benefit-text span { font-size: 13px; color: rgba(255,255,255,0.45); }
-  .partners-cards { display: grid; gap: 14px; }
-  .partner-stat-card {
-    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 20px; padding: 24px 28px;
-    display: flex; align-items: center; gap: 20px;
-  }
-  .partner-stat-num { font-size: 36px; font-weight: 700; color: var(--brand-red); white-space: nowrap; }
-  .partner-stat-desc { font-size: 14px; color: rgba(255,255,255,0.5); line-height: 1.5; }
-  .partner-stat-desc strong { color: rgba(255,255,255,0.85); display: block; font-size: 15px; margin-bottom: 2px; }
-
-  /* ── SOCIAL PROOF ────────────────────────────────────────── */
-  .proof { background: var(--brand-white); }
-  .proof-header { text-align: center; margin-bottom: 48px; }
-  .proof-header .overline { margin-bottom: 12px; }
-  .proof-stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 24px; margin-bottom: 64px; }
-  .proof-stat {
-    text-align: center; padding: 24px;
-    background: var(--neutral-50); border-radius: var(--r-xl);
-    border: 1px solid var(--neutral-100);
-  }
-  .proof-stat-num { font-size: 32px; font-weight: 700; color: var(--brand-red); }
-  .proof-stat-label { font-size: 13px; color: var(--neutral-600); margin-top: 6px; line-height: 1.4; }
-  .reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-  .review-card {
-    background: var(--neutral-50); border-radius: var(--r-xl);
-    padding: 24px; border: 1px solid var(--neutral-100);
-  }
-  .review-stars { color: #FFB800; font-size: 14px; margin-bottom: 12px; }
-  .review-text { font-size: 14px; color: var(--neutral-900); line-height: 1.6; margin-bottom: 16px; }
-  .review-author { display: flex; align-items: center; gap: 10px; }
-  .review-avatar {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: var(--neutral-300); display: flex; align-items: center; justify-content: center;
-    font-size: 14px; font-weight: 600; color: var(--neutral-600);
-  }
-  .review-name { font-size: 14px; font-weight: 600; }
-  .review-meta { font-size: 12px; color: var(--neutral-600); }
-
-  /* ── APP CTA ─────────────────────────────────────────────── */
-  .app-section { background: var(--neutral-50); }
-  .app-inner {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 64px; align-items: center;
-  }
-  .app-content h2 { margin-bottom: 16px; }
-  .app-content p { font-size: 16px; color: var(--neutral-600); line-height: 1.7; margin-bottom: 32px; }
-  .app-badges { display: flex; gap: 12px; flex-wrap: wrap; }
-  .app-badge {
-    display: flex; align-items: center; gap: 10px;
-    background: var(--neutral-900); color: #fff;
-    border-radius: 14px; padding: 12px 20px; transition: transform 0.15s;
-  }
-  .app-badge:hover { transform: translateY(-2px); }
-  .app-badge-icon { font-size: 24px; }
-  .app-badge-text { display: flex; flex-direction: column; }
-  .app-badge-label { font-size: 10px; color: rgba(255,255,255,0.5); }
-  .app-badge-store { font-size: 15px; font-weight: 600; }
-  .app-preview {
-    display: flex; justify-content: center; gap: 20px; align-items: flex-end;
-  }
-  .mini-phone {
-    width: 160px; height: 320px;
-    background: var(--neutral-900); border-radius: 28px;
-    border: 2px solid var(--neutral-100);
-    overflow: hidden; display: flex; flex-direction: column;
-    box-shadow: var(--shadow-lg);
-  }
-  .mini-phone-screen { flex: 1; background: #0d0d1a; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 16px; }
-  .mini-phone-status { width: 40px; height: 40px; border-radius: 50%; background: rgba(52,199,89,0.15); border: 2px solid rgba(52,199,89,0.4); display: flex; align-items: center; justify-content: center; font-size: 18px; }
-  .mini-phone-label { font-size: 11px; color: rgba(255,255,255,0.5); text-align: center; }
-  .mini-phone-main { font-size: 14px; font-weight: 700; color: #fff; text-align: center; }
-
-  /* ── FAQ ─────────────────────────────────────────────────── */
-  .faq { background: var(--brand-white); }
-  .faq-header { text-align: center; margin-bottom: 48px; }
-  .faq-list { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 2px; }
-  .faq-item {
-    background: var(--neutral-50); border: 1px solid var(--neutral-100);
-    border-radius: var(--r-lg); overflow: hidden;
-  }
-  .faq-item:first-child { border-radius: 16px 16px 4px 4px; }
-  .faq-item:last-child { border-radius: 4px 4px 16px 16px; }
-  .faq-question {
-    width: 100%; background: none; padding: 20px 24px;
-    display: flex; align-items: center; justify-content: space-between; gap: 16px;
-    font-size: 15px; font-weight: 600; text-align: left; cursor: pointer;
-    transition: background 0.15s;
-  }
-  .faq-question:hover { background: var(--neutral-100); }
-  .faq-chevron {
-    width: 24px; height: 24px; background: var(--neutral-100);
-    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-size: 12px; flex-shrink: 0; transition: transform 0.2s, background 0.15s;
-  }
-  .faq-item.open .faq-chevron { transform: rotate(180deg); background: var(--brand-red); color: #fff; }
-  .faq-answer {
-    display: none; padding: 0 24px 20px;
-    font-size: 14px; color: var(--neutral-600); line-height: 1.7;
-  }
-  .faq-item.open .faq-answer { display: block; }
-
-  /* ── FOOTER ──────────────────────────────────────────────── */
-  .footer { background: var(--brand-dark); padding: 60px 0 32px; }
-  .footer-top {
-    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 48px; padding-bottom: 48px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .footer-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
-  .footer-logo-icon { width: 36px; height: 36px; background: var(--brand-red); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: 800; }
-  .footer-logo-name { font-size: 20px; font-weight: 700; color: #fff; }
-  .footer-desc { font-size: 14px; color: rgba(255,255,255,0.4); line-height: 1.6; max-width: 280px; margin-bottom: 24px; }
-  .footer-phone { font-size: 18px; font-weight: 600; color: #fff; margin-bottom: 4px; }
-  .footer-phone-note { font-size: 12px; color: rgba(255,255,255,0.3); }
-  .footer-col-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
-  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-  .footer-links a { font-size: 14px; color: rgba(255,255,255,0.45); transition: color 0.15s; }
-  .footer-links a:hover { color: rgba(255,255,255,0.8); }
-  .footer-bottom {
-    display: flex; align-items: center; justify-content: space-between;
-    padding-top: 28px; flex-wrap: wrap; gap: 12px;
-  }
-  .footer-copy { font-size: 13px; color: rgba(255,255,255,0.25); }
-  .footer-legal { display: flex; gap: 20px; flex-wrap: wrap; }
-  .footer-legal a { font-size: 12px; color: rgba(255,255,255,0.25); transition: color 0.15s; }
-  .footer-legal a:hover { color: rgba(255,255,255,0.5); }
-
-  /* ── STICKY CTA ──────────────────────────────────────────── */
-  .sticky-cta {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: var(--neutral-900); border-radius: 100px;
-    padding: 12px 8px 12px 20px;
-    display: flex; align-items: center; gap: 12px;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
-    z-index: 100; transition: opacity 0.3s;
-    border: 1px solid rgba(255,255,255,0.08);
-    white-space: nowrap;
-  }
-  .sticky-cta-text { color: rgba(255,255,255,0.7); font-size: 14px; font-weight: 500; }
-  .sticky-cta .btn { height: 40px; font-size: 14px; }
-
-  /* ── MODAL ───────────────────────────────────────────────── */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
-    z-index: 200; display: none; align-items: center; justify-content: center;
-    backdrop-filter: blur(4px);
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: #fff; border-radius: 24px; padding: 40px;
-    max-width: 520px; width: 90%; box-shadow: var(--shadow-lg);
-    position: relative;
-  }
-  .modal-close {
-    position: absolute; top: 16px; right: 16px;
-    width: 32px; height: 32px; background: var(--neutral-100);
-    border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    font-size: 16px; cursor: pointer; transition: background 0.15s;
-  }
-  .modal-close:hover { background: var(--neutral-300); }
-  .modal h3 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
-  .modal p { font-size: 14px; color: var(--neutral-600); margin-bottom: 24px; line-height: 1.6; }
-  .modal-form { display: flex; flex-direction: column; gap: 12px; }
-  .form-input {
-    width: 100%; height: 48px; border: 1.5px solid var(--neutral-300);
-    border-radius: var(--r-lg); padding: 0 16px;
-    font-size: 15px; font-family: inherit;
-    transition: border-color 0.15s; outline: none;
-  }
-  .form-input:focus { border-color: var(--brand-red); }
-  .form-note { font-size: 12px; color: var(--neutral-600); line-height: 1.5; text-align: center; }
-
-  /* ── UX NOTES ────────────────────────────────────────────── */
-  .ux-note {
-    background: rgba(255,149,0,0.08); border: 1px solid rgba(255,149,0,0.2);
-    border-radius: 10px; padding: 12px 16px;
-    font-size: 12px; color: var(--neutral-600); line-height: 1.5;
-    margin-top: 20px;
-  }
-  .ux-note strong { color: var(--orange); }
-
-  /* ── RESPONSIVE ──────────────────────────────────────────── */
-  @media (max-width: 1024px) {
-    .hero-inner { grid-template-columns: 1fr; }
-    .hero-image { display: none; }
-    .segments-grid { grid-template-columns: 1fr; }
-    .how-grid { grid-template-columns: 1fr 1fr; }
-    .proof-stats { grid-template-columns: repeat(3, 1fr); }
-    .reviews-grid { grid-template-columns: 1fr 1fr; }
-    .partners-inner { grid-template-columns: 1fr; }
-    .footer-top { grid-template-columns: 1fr 1fr; }
-    .results-grid { grid-template-columns: 1fr; }
-  }
-  @media (max-width: 768px) {
-    .hero h1 { font-size: 36px; }
-    .quiz-options { grid-template-columns: 1fr; }
-    .how-grid { grid-template-columns: 1fr; }
-    .how-step-line { display: none; }
-    .proof-stats { grid-template-columns: 1fr 1fr; }
-    .reviews-grid { grid-template-columns: 1fr; }
-    .app-inner { grid-template-columns: 1fr; }
-    .footer-top { grid-template-columns: 1fr; }
-    .nav { display: none; }
-    .sticky-cta { bottom: 16px; padding: 10px 6px 10px 16px; }
-    .sticky-cta-text { font-size: 12px; }
-    .display { font-size: 36px; }
-  }
+@media (max-width: 768px) { body { padding: 40px 24px; } }
+@media (max-width: 480px) { .cards { grid-template-columns: 1fr; } body { padding: 32px 16px; } }
 </style>
 </head>
 <body>
 
-<!-- ── HEADER ───────────────────────────────────────────────── -->
-<header class="header">
-  <div class="container">
-    <div class="header-inner">
-      <a href="#" class="logo">
-        <div class="logo-icon">R</div>
-        Reforce
-      </a>
-      <nav class="nav">
-        <a href="#home-section" class="nav-link active">Для дома</a>
-        <a href="#business-section" class="nav-link">Для бизнеса</a>
-        <a href="#partners-section" class="nav-link">Партнёрам</a>
-        <a href="#how" class="nav-link">Как это работает</a>
-      </nav>
-      <div class="header-actions">
-        <button class="city-btn" onclick="openCityModal()">
-          📍 Москва
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <a href="tel:88005557555" class="btn btn-secondary btn-sm">8 800 555-75-55</a>
-        <button class="btn btn-primary btn-sm" onclick="openQuizSection()">Подобрать охрану</button>
-      </div>
-    </div>
-  </div>
-</header>
-
-<!-- ── HERO ─────────────────────────────────────────────────── -->
-<section class="hero">
-  <div class="container">
-    <div class="hero-inner">
-      <div class="hero-content">
-        <div class="hero-badge">
-          <span class="hero-badge-dot"></span>
-          70 000+ объектов под охраной прямо сейчас
-        </div>
-        <h1>Безопасность,<br>которую легко<br><span>настроить</span></h1>
-        <p class="hero-desc">
-          Выберите пакет онлайн, монтаж за 1 день, управление с телефона.
-          Без визита в офис, без бумажной волокиты.
-        </p>
-        <div class="hero-cta">
-          <button class="btn btn-primary btn-lg" onclick="openQuizSection()">
-            Подобрать за 2 минуты
-          </button>
-          <button class="btn btn-secondary btn-lg" onclick="openCallModal()">
-            Заказать звонок
-          </button>
-        </div>
-        <div class="hero-phone">
-          <span>или звоните:</span>
-          <strong>8 800 555-75-55</strong>
-          <span style="color: rgba(255,255,255,0.25)">— звонок бесплатный</span>
-        </div>
-        <div class="hero-stats">
-          <div>
-            <div class="hero-stat-num">96%</div>
-            <div class="hero-stat-label">SLA&nbsp;соблюдён</div>
-          </div>
-          <div>
-            <div class="hero-stat-num">85%</div>
-            <div class="hero-stat-label">NPS клиентов</div>
-          </div>
-          <div>
-            <div class="hero-stat-num">1 день</div>
-            <div class="hero-stat-label">до&nbsp;подключения</div>
-          </div>
-          <div>
-            <div class="hero-stat-num">100+</div>
-            <div class="hero-stat-label">городов присутствия</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="hero-image">
-        <div class="hero-phone-mockup">
-          <div class="phone-status-bar">
-            <span>9:41</span>
-            <span>●●●</span>
-          </div>
-          <div class="phone-screen">
-            <div>
-              <div class="phone-greeting">Добрый вечер</div>
-              <div class="phone-greeting"><span>Все объекты в порядке</span></div>
-            </div>
-            <div class="phone-object-card">
-              <div class="phone-obj-name">🏠 Квартира на Тверской</div>
-              <div class="phone-obj-address">Москва, ул. Тверская, 14</div>
-              <button class="phone-armed-btn">
-                <span class="status-dot"></span>
-                Под охраной
-              </button>
-            </div>
-            <div class="phone-object-card" style="opacity:0.6;">
-              <div class="phone-obj-name">🌲 Дача в Подмосковье</div>
-              <div class="phone-obj-address">Одинцово, ул. Садовая, 3</div>
-              <button class="phone-armed-btn">
-                <span class="status-dot"></span>
-                Под охраной
-              </button>
-            </div>
-            <div class="phone-events">
-              <div class="phone-event">
-                <span class="phone-event-icon">🔔</span>
-                <span class="phone-event-text">Снято с охраны — Андрей</span>
-                <span class="phone-event-time">18:02</span>
-              </div>
-              <div class="phone-event">
-                <span class="phone-event-icon">✅</span>
-                <span class="phone-event-text">Поставлено на охрану</span>
-                <span class="phone-event-time">08:47</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="hero-glow"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── SEGMENTS ──────────────────────────────────────────────── -->
-<section class="segments" id="segments">
-  <div class="container">
-    <div style="text-align:center; margin-bottom:40px;">
-      <p class="overline">Что мы защищаем</p>
-      <h2 class="title-1">Выберите ваш сценарий</h2>
-    </div>
-    <div class="segments-grid">
-
-      <!-- ДЛЯ ДОМА -->
-      <div class="segment-card" id="home-section" onclick="selectSegment('home')">
-        <div class="segment-icon">🏠</div>
-        <div class="segment-title">Для дома</div>
-        <p class="segment-desc">
-          Квартиры, загородные дома, дачи, гаражи. Охрана с мониторингом
-          и реагированием — всё под контролем с телефона.
-        </p>
-        <ul class="segment-list">
-          <li>Охрана квартиры или дома</li>
-          <li>Видеонаблюдение онлайн</li>
-          <li>Экстренный выезд ГБР</li>
-          <li>Умный дом + климат</li>
-          <li>Кнопка жизни для пожилых</li>
-        </ul>
-        <span class="segment-link">Подобрать для дома →</span>
-      </div>
-
-      <!-- ДЛЯ БИЗНЕСА -->
-      <div class="segment-card" id="business-section" onclick="selectSegment('business')">
-        <div class="segment-icon">🏢</div>
-        <div class="segment-title">Для бизнеса</div>
-        <p class="segment-desc">
-          Магазины, офисы, склады, производства. Контроль персонала,
-          видеоаналитика, постовая охрана — без отвлечения от развития бизнеса.
-        </p>
-        <ul class="segment-list">
-          <li>Мониторинг объектов 24/7</li>
-          <li>Видеоаналитика и контроль персонала</li>
-          <li>Постовая охрана и ГБР</li>
-          <li>Управление доступом</li>
-          <li>Несколько объектов в одном ЛК</li>
-        </ul>
-        <span class="segment-link">Подобрать для бизнеса →</span>
-      </div>
-
-      <!-- ПАРТНЁРАМ -->
-      <div class="segment-card" id="partners-section" onclick="selectSegment('partners')">
-        <div class="segment-icon">🤝</div>
-        <div class="segment-title">Партнёрам</div>
-        <p class="segment-desc">
-          Работаете в сфере охраны? Стройте бизнес на технологической
-          платформе Reforce — и получайте клиентов, которых приводим мы.
-        </p>
-        <ul class="segment-list">
-          <li>Готовый поток заявок</li>
-          <li>ПО для пульта и ЛК</li>
-          <li>Поддержка и обучение</li>
-          <li>Инструменты контроля качества</li>
-          <li>Участие в федеральной платформе</li>
-        </ul>
-        <span class="segment-link">Стать партнёром →</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── QUIZ ──────────────────────────────────────────────────── -->
-<section class="quiz-section" id="quiz-anchor">
-  <div class="container">
-    <div class="quiz-header">
-      <p class="overline">Конфигуратор</p>
-      <h2>Подберём охрану под&nbsp;вас</h2>
-      <p>2 вопроса — и вы увидите подходящие пакеты с ценами</p>
-    </div>
-
-    <div class="quiz-container" id="quizContainer">
-      <!-- PROGRESS -->
-      <div class="quiz-progress">
-        <div class="quiz-progress-bar">
-          <div class="quiz-progress-fill" id="quizProgress" style="width:33%"></div>
-        </div>
-        <span class="quiz-step-label" id="quizStepLabel">Шаг 1 из 2</span>
-      </div>
-
-      <!-- STEP 1: Object type -->
-      <div class="quiz-step active" id="step1">
-        <div class="quiz-question">Что нужно защитить?</div>
-        <p class="quiz-hint">Выберите тип объекта — подберём подходящие варианты</p>
-        <div class="quiz-options">
-          <div class="quiz-option" onclick="selectOption(1, 'apartment', this)">
-            <div class="quiz-option-icon">🏠</div>
-            <div class="quiz-option-text">
-              <div class="quiz-option-title">Квартира</div>
-              <div class="quiz-option-desc">В многоквартирном доме</div>
-            </div>
-            <div class="quiz-option-check">✓</div>
-          </div>
-          <div class="quiz-option" onclick="selectOption(1, 'house', this)">
-            <div class="quiz-option-icon">🌲</div>
-            <div class="quiz-option-text">
-              <div class="quiz-option-title">Частный дом или дача</div>
-              <div class="quiz-option-desc">Загородная недвижимость</div>
-            </div>
-            <div class="quiz-option-check">✓</div>
-          </div>
-          <div class="quiz-option" onclick="selectOption(1, 'business', this)">
-            <div class="quiz-option-icon">🏢</div>
-            <div class="quiz-option-text">
-              <div class="quiz-option-title">Бизнес-объект</div>
-              <div class="quiz-option-desc">Магазин, офис, склад</div>
-            </div>
-            <div class="quiz-option-check">✓</div>
-          </div>
-          <div class="quiz-option" onclick="selectOption(1, 'garage', this)">
-            <div class="quiz-option-icon">🚗</div>
-            <div class="quiz-option-text">
-              <div class="quiz-option-title">Гараж или склад</div>
-              <div class="quiz-option-desc">Имущество и транспорт</div>
-            </div>
-            <div class="quiz-option-check">✓</div>
-          </div>
-        </div>
-        <div class="quiz-actions">
-          <span></span>
-          <button class="btn btn-primary" id="step1Next" disabled onclick="goToStep(2)">Далее →</button>
-        </div>
-      </div>
-
-      <!-- STEP 2: Need -->
-      <div class="quiz-step" id="step2">
-        <div class="quiz-question">Что важнее всего?</div>
-        <p class="quiz-hint">Выберите главную задачу — мы настроим приоритеты пакета</p>
-        <div class="quiz-options">
-          <div class="quiz-option" onclick="selectOption(2, 'intrusion', this)">
-            <div class="quiz-option-icon">🔐</div>
-            <div class="quiz-option-text">
-              <div class="quiz-option-title">Защита от проникновения</div>
-              <div class="quiz-option-desc">Сигнализация, ГБР, мониторинг</div>
-            </div>
-            <div class="quiz-option-check">✓</div>
-          </div>
-          <div class="quiz-option" onclick="selectOption(2, 'video', this)">
-            <div class="quiz-option-icon">📹</div>
-            <div class="quiz-option-text">
-              <div class="quiz-option-title">Видеонаблюдение</div>
-              <div class="quiz-option-desc">Камеры, онлайн-просмотр, архив</div>
-            </div>
-            <div class="quiz-option-check">✓</div>
-          </div>
-          <div class="quiz-option" onclick="selectOption(2, 'full', this)">
-            <div class="quiz-option-icon">🛡️</div>
-            <div class="quiz-option-text">
-              <div class="quiz-option-title">Комплексная защита</div>
-              <div class="quiz-option-desc">Охрана + видео + умный дом</div>
-            </div>
-            <div class="quiz-option-check">✓</div>
-          </div>
-          <div class="quiz-option" onclick="selectOption(2, 'personal', this)">
-            <div class="quiz-option-icon">❤️</div>
-            <div class="quiz-option-text">
-              <div class="quiz-option-title">Безопасность близких</div>
-              <div class="quiz-option-desc">Кнопка жизни, SOS, пожилые</div>
-            </div>
-            <div class="quiz-option-check">✓</div>
-          </div>
-        </div>
-        <div class="quiz-actions">
-          <button class="quiz-back" onclick="goToStep(1)">← Назад</button>
-          <button class="btn btn-primary" id="step2Next" disabled onclick="showResults()">Показать варианты →</button>
-        </div>
-      </div>
-
-      <!-- RESULTS -->
-      <div class="quiz-results" id="quizResults">
-        <div class="results-intro">
-          <h3>Вот что подходит именно вам</h3>
-          <p>Подобрано по вашему запросу · Москва · Цены актуальны</p>
-        </div>
-        <div class="results-grid">
-          <div class="result-card" id="result1">
-            <div class="result-name">Базовая охрана</div>
-            <div class="result-price-monthly">от 800 ₽<span style="font-size:14px;font-weight:400;color:rgba(255,255,255,0.4)">/мес</span></div>
-            <div class="result-price-equip">+ оборудование от 8 025 ₽ единоразово</div>
-            <ul class="result-includes">
-              <li>Охранная сигнализация</li>
-              <li>Мониторинг 24/7</li>
-              <li>Push-уведомления на телефон</li>
-              <li>Реагирование ГБР при сигнале</li>
-            </ul>
-            <div class="result-actions">
-              <button class="btn-result-primary" onclick="openOrderModal('Базовая охрана')">Оформить</button>
-              <button class="btn-result-secondary" onclick="openDetailModal('Базовая охрана')">Подробнее</button>
-            </div>
-          </div>
-          <div class="result-card recommended" id="result2">
-            <div class="result-badge">⭐ Рекомендуем</div>
-            <div class="result-name">Охрана + видео</div>
-            <div class="result-price-monthly">от 1 100 ₽<span style="font-size:14px;font-weight:400;color:rgba(255,255,255,0.4)">/мес</span></div>
-            <div class="result-price-equip">+ оборудование от 11 500 ₽ единоразово</div>
-            <ul class="result-includes">
-              <li>Всё из базового пакета</li>
-              <li>2 камеры с онлайн-просмотром</li>
-              <li>Запись и архив 30 дней</li>
-              <li>Видеоверификация сигнала</li>
-              <li>Приложение для iOS и Android</li>
-            </ul>
-            <div class="result-actions">
-              <button class="btn-result-primary" onclick="openOrderModal('Охрана + видео')">Оформить</button>
-              <button class="btn-result-secondary" onclick="openDetailModal('Охрана + видео')">Подробнее</button>
-            </div>
-          </div>
-          <div class="result-card" id="result3">
-            <div class="result-name">Умный дом</div>
-            <div class="result-price-monthly">от 1 600 ₽<span style="font-size:14px;font-weight:400;color:rgba(255,255,255,0.4)">/мес</span></div>
-            <div class="result-price-equip">+ оборудование от 19 900 ₽ единоразово</div>
-            <ul class="result-includes">
-              <li>Всё из пакета «Охрана + видео»</li>
-              <li>Управление климатом и светом</li>
-              <li>Автоматические сценарии</li>
-              <li>Умные замки и датчики</li>
-              <li>Контроль потребления энергии</li>
-            </ul>
-            <div class="result-actions">
-              <button class="btn-result-primary" onclick="openOrderModal('Умный дом')">Оформить</button>
-              <button class="btn-result-secondary" onclick="openDetailModal('Умный дом')">Подробнее</button>
-            </div>
-          </div>
-        </div>
-        <div class="results-restart">
-          <button onclick="restartQuiz()">Начать заново</button>
-        </div>
-        <div class="ux-note">
-          <strong>UX-замечание для прототипа:</strong> результаты должны динамически перестраиваться под выбор (квартира/бизнес, проникновение/видео).
-          Пакет «Рекомендуем» — всегда в центре по визуальному весу.
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── HOW IT WORKS ──────────────────────────────────────────── -->
-<section class="section how" id="how">
-  <div class="container">
-    <div class="how-header">
-      <p class="overline">Процесс</p>
-      <h2 class="title-1">От заявки до охраны — за 24 часа</h2>
-      <p class="body-1" style="color:var(--neutral-600);max-width:480px;margin:10px auto 0;">
-        Никаких долгих согласований. Выбрали — подтвердили — монтажник приехал — приложение готово.
-      </p>
-    </div>
-    <div class="how-grid">
-      <div class="how-step">
-        <div class="how-step-line"></div>
-        <div class="how-num">1</div>
-        <div class="how-step-title">Выберите пакет</div>
-        <p class="how-step-desc">Ответьте на 2 вопроса в конфигураторе — получите 3 варианта с ценами.</p>
-        <div class="how-time">⚡ 2 минуты</div>
-      </div>
-      <div class="how-step">
-        <div class="how-step-line"></div>
-        <div class="how-num">2</div>
-        <div class="how-step-title">Оформите заявку</div>
-        <p class="how-step-desc">Заполните адрес и контакты онлайн. Без визита в офис и бумажных форм.</p>
-        <div class="how-time">📋 5 минут</div>
-      </div>
-      <div class="how-step">
-        <div class="how-step-line"></div>
-        <div class="how-num">3</div>
-        <div class="how-step-title">Монтаж оборудования</div>
-        <p class="how-step-desc">Мастер приедет в удобное время. Стандартная квартира — 2–3 часа.</p>
-        <div class="how-time">🔧 1 рабочий день</div>
-      </div>
-      <div class="how-step">
-        <div class="how-num">4</div>
-        <div class="how-step-title">Управляйте с телефона</div>
-        <p class="how-step-desc">Приложение уже настроено. Поставить на охрану, смотреть камеры, получать уведомления.</p>
-        <div class="how-time">📱 Сразу после монтажа</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── PARTNERS ───────────────────────────────────────────────── -->
-<section class="section partners-section">
-  <div class="container">
-    <div class="partners-inner">
-      <div class="partners-content">
-        <p class="overline">Партнёрам</p>
-        <h2>Работаете в охране?<br>Станьте сильнее вместе с нами</h2>
-        <p>
-          Reforce — технологическая платформа для охранных предприятий (ЧОП).
-          Вы занимаетесь охраной, мы берём на себя технологии, маркетинг и клиентский поток.
-        </p>
-        <ul class="partners-benefits">
-          <li>
-            <div class="benefit-icon">📲</div>
-            <div class="benefit-text">
-              <strong>Готовый поток клиентов</strong>
-              <span>Заявки приходят с сайта — не нужно тратить бюджет на рекламу</span>
-            </div>
-          </li>
-          <li>
-            <div class="benefit-icon">💻</div>
-            <div class="benefit-text">
-              <strong>Платформа под ключ</strong>
-              <span>Пульт мониторинга, личный кабинет для клиентов, мобильное приложение</span>
-            </div>
-          </li>
-          <li>
-            <div class="benefit-icon">📊</div>
-            <div class="benefit-text">
-              <strong>Контроль качества и рейтинги</strong>
-              <span>Система оценок помогает выделиться лучшим партнёрам</span>
-            </div>
-          </li>
-          <li>
-            <div class="benefit-icon">🎓</div>
-            <div class="benefit-text">
-              <strong>Обучение и поддержка</strong>
-              <span>Онбординг, документация, линия поддержки для партнёров</span>
-            </div>
-          </li>
-        </ul>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <button class="btn btn-primary" onclick="openPartnerModal()">Стать партнёром</button>
-          <button class="btn btn-outline" style="color:rgba(255,255,255,0.7);border-color:rgba(255,255,255,0.2);" onclick="openCallModal()">Задать вопрос</button>
-        </div>
-      </div>
-      <div class="partners-cards">
-        <div class="partner-stat-card">
-          <div class="partner-stat-num">120+</div>
-          <div class="partner-stat-desc">
-            <strong>Партнёров на платформе</strong>
-            в 100+ городах России
-          </div>
-        </div>
-        <div class="partner-stat-card">
-          <div class="partner-stat-num">70К</div>
-          <div class="partner-stat-desc">
-            <strong>Объектов под охраной</strong>
-            прирост +15% ежеквартально
-          </div>
-        </div>
-        <div class="partner-stat-card">
-          <div class="partner-stat-num">96%</div>
-          <div class="partner-stat-desc">
-            <strong>SLA по реагированию</strong>
-            контроль в реальном времени
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── SOCIAL PROOF ──────────────────────────────────────────── -->
-<section class="section proof">
-  <div class="container">
-    <div class="proof-header">
-      <p class="overline">Доверие</p>
-      <h2 class="title-1">Reforce выбирают</h2>
-    </div>
-    <div class="proof-stats">
-      <div class="proof-stat">
-        <div class="proof-stat-num">70 000+</div>
-        <div class="proof-stat-label">объектов под мониторингом</div>
-      </div>
-      <div class="proof-stat">
-        <div class="proof-stat-num">100+</div>
-        <div class="proof-stat-label">городов присутствия</div>
-      </div>
-      <div class="proof-stat">
-        <div class="proof-stat-num">120+</div>
-        <div class="proof-stat-label">сертифицированных партнёров</div>
-      </div>
-      <div class="proof-stat">
-        <div class="proof-stat-num">85%</div>
-        <div class="proof-stat-label">NPS — клиенты рекомендуют</div>
-      </div>
-      <div class="proof-stat">
-        <div class="proof-stat-num">96%</div>
-        <div class="proof-stat-label">SLA соблюдён</div>
-      </div>
-    </div>
-    <div class="reviews-grid">
-      <div class="review-card">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">«Поставил охрану за день. Приложение простое — сразу разобрался, даже инструкцию не читал. Камеры смотрю прямо с телефона, когда нахожусь на даче.»</p>
-        <div class="review-author">
-          <div class="review-avatar">В</div>
-          <div>
-            <div class="review-name">Виктор, 54 года</div>
-            <div class="review-meta">Квартира + дача · Москва</div>
-          </div>
-        </div>
-      </div>
-      <div class="review-card">
-        <div class="review-stars">★★★★★</div>
-        <p class="review-text">«Управляем 8 точками. Открываешь приложение — сразу видно статус каждого магазина. Когда уволили кассира, отозвали доступ за 30 секунд без звонков в охрану.»</p>
-        <div class="review-author">
-          <div class="review-avatar">А</div>
-          <div>
-            <div class="review-name">Алина, 32 года</div>
-            <div class="review-meta">Сеть кофеен · 8 объектов</div>
-          </div>
-        </div>
-      </div>
-      <div class="review-card">
-        <div class="review-stars">★★★★☆</div>
-        <p class="review-text">«Сравнивал несколько компаний. Только у Reforce можно оформить полностью онлайн. Установили быстро, всё работает. Оплата автоматически списывается — не надо помнить.»</p>
-        <div class="review-author">
-          <div class="review-avatar">М</div>
-          <div>
-            <div class="review-name">Максим, 38 лет</div>
-            <div class="review-meta">Торговая точка + склад · ИП</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── APP CTA ────────────────────────────────────────────────── -->
-<section class="section app-section">
-  <div class="container">
-    <div class="app-inner">
-      <div class="app-content">
-        <p class="overline" style="margin-bottom:12px;">Мобильное приложение</p>
-        <h2 class="title-1">Охрана в&nbsp;кармане</h2>
-        <p>
-          Смотрите камеры, управляйте постановкой и получайте мгновенные
-          уведомления — всё в одном приложении. Как банковское, только для безопасности.
-        </p>
-        <div class="app-badges">
-          <a href="#" class="app-badge">
-            <div class="app-badge-icon">🍎</div>
-            <div class="app-badge-text">
-              <span class="app-badge-label">Загрузить в</span>
-              <span class="app-badge-store">App Store</span>
-            </div>
-          </a>
-          <a href="#" class="app-badge">
-            <div class="app-badge-icon">▶</div>
-            <div class="app-badge-text">
-              <span class="app-badge-label">Доступно в</span>
-              <span class="app-badge-store">Google Play</span>
-            </div>
-          </a>
-        </div>
-      </div>
-      <div class="app-preview">
-        <div class="mini-phone">
-          <div style="background:#0d0d1a;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:10px;">
-            <div style="font-size:12px;color:rgba(255,255,255,0.3);text-align:center;">Объекты</div>
-            <div style="width:100%;background:rgba(255,255,255,0.06);border-radius:14px;padding:12px;display:flex;align-items:center;gap:8px;">
-              <div style="width:32px;height:32px;border-radius:8px;background:rgba(52,199,89,0.15);border:1px solid rgba(52,199,89,0.3);display:flex;align-items:center;justify-content:center;font-size:14px;">🏠</div>
-              <div>
-                <div style="font-size:12px;color:#fff;font-weight:600;">Квартира</div>
-                <div style="font-size:10px;color:#34C759;">● Под охраной</div>
-              </div>
-            </div>
-            <div style="width:100%;background:rgba(255,255,255,0.04);border-radius:14px;padding:12px;display:flex;align-items:center;gap:8px;opacity:0.7;">
-              <div style="width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;font-size:14px;">🌲</div>
-              <div>
-                <div style="font-size:12px;color:#fff;font-weight:600;">Дача</div>
-                <div style="font-size:10px;color:#34C759;">● Под охраной</div>
-              </div>
-            </div>
-            <div style="width:100%;height:40px;background:rgba(212,43,43,0.15);border:1px solid rgba(212,43,43,0.3);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#D42B2B;font-weight:600;margin-top:4px;">
-              Снять с охраны
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── FAQ ───────────────────────────────────────────────────── -->
-<section class="section faq">
-  <div class="container">
-    <div class="faq-header">
-      <p class="overline">FAQ</p>
-      <h2 class="title-1">Частые вопросы</h2>
-    </div>
-    <div class="faq-list">
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">
-          Можно ли оформить охрану полностью онлайн, без визита в офис?
-          <span class="faq-chevron">▼</span>
-        </button>
-        <div class="faq-answer">
-          Да — и это наше главное отличие от конкурентов. Заполните заявку онлайн,
-          монтажник приедет к вам. Договор и документы подписываются электронно.
-          Ни одна другая охранная компания в России пока не предлагает полностью цифровое оформление.
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">
-          Сколько времени занимает установка?
-          <span class="faq-chevron">▼</span>
-        </button>
-        <div class="faq-answer">
-          Стандартная квартира — 2–3 часа. Загородный дом — 4–6 часов.
-          Монтажник приедет в выбранный вами день, сразу после установки
-          приложение готово к работе.
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">
-          Что происходит, когда сигнализация срабатывает?
-          <span class="faq-chevron">▼</span>
-        </button>
-        <div class="faq-answer">
-          Пульт мониторинга получает сигнал, вам приходит уведомление. Оператор
-          связывается с вами в течение минуты. При подтверждении угрозы —
-          направляется группа быстрого реагирования. При ложном сигнале — просто
-          информируем, никакой паники.
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">
-          Цена фиксированная или может вырасти?
-          <span class="faq-chevron">▼</span>
-        </button>
-        <div class="faq-answer">
-          Абонентская плата фиксируется в договоре. Об изменении тарифов
-          предупреждаем за 30 дней. Стоимость оборудования — разовая,
-          при продлении договора не меняется.
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">
-          Работает ли Reforce в моём городе?
-          <span class="faq-chevron">▼</span>
-        </button>
-        <div class="faq-answer">
-          Мы работаем в 100+ городах России через сеть сертифицированных
-          партнёров. Введите ваш город при оформлении заявки — система
-          автоматически покажет доступных партнёров и актуальные цены.
-        </div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-question" onclick="toggleFaq(this)">
-          Как добавить или убрать доступ для другого человека?
-          <span class="faq-chevron">▼</span>
-        </button>
-        <div class="faq-answer">
-          В приложении: Объект → Доступы → Добавить человека → отправить приглашение.
-          Отозвать доступ — одним нажатием. Никаких звонков в офис, изменение
-          вступает в силу немедленно.
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ── FOOTER ─────────────────────────────────────────────────── -->
-<footer class="footer">
-  <div class="container">
-    <div class="footer-top">
-      <div>
-        <div class="footer-logo">
-          <div class="footer-logo-icon">R</div>
-          <span class="footer-logo-name">Reforce</span>
-        </div>
-        <p class="footer-desc">
-          Федеральная платформа безопасности. Охрана дома и бизнеса — онлайн, без офиса.
-        </p>
-        <div class="footer-phone">8 800 555-75-55</div>
-        <div class="footer-phone-note">звонок бесплатный, круглосуточно</div>
-      </div>
-      <div>
-        <div class="footer-col-title">Услуги</div>
-        <ul class="footer-links">
-          <li><a href="#home-section">Для дома</a></li>
-          <li><a href="#business-section">Для бизнеса</a></li>
-          <li><a href="#partners-section">Партнёрам</a></li>
-          <li><a href="#quiz-anchor">Подобрать охрану</a></li>
-          <li><a href="#">Каталог пакетов</a></li>
-        </ul>
-      </div>
-      <div>
-        <div class="footer-col-title">Компания</div>
-        <ul class="footer-links">
-          <li><a href="#">О Reforce</a></li>
-          <li><a href="#how">Как это работает</a></li>
-          <li><a href="#">Карьера</a></li>
-          <li><a href="#">Пресс-центр</a></li>
-        </ul>
-      </div>
-      <div>
-        <div class="footer-col-title">Поддержка</div>
-        <ul class="footer-links">
-          <li><a href="#">Личный кабинет</a></li>
-          <li><a href="#">Приложение</a></li>
-          <li><a href="#">Помощь</a></li>
-          <li><a href="#">info@reforce.group</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <span class="footer-copy">© 2026 ООО «Рефорс». Все права защищены.</span>
-      <div class="footer-legal">
-        <a href="#">Политика конфиденциальности</a>
-        <a href="#">Обработка персональных данных</a>
-        <a href="#">Пользовательское соглашение</a>
-        <a href="#">Договор охранных услуг</a>
-      </div>
-    </div>
-  </div>
-</footer>
-
-<!-- ── STICKY CTA ─────────────────────────────────────────────── -->
-<div class="sticky-cta" id="stickyCta">
-  <span class="sticky-cta-text">Подобрать охрану за 2 минуты</span>
-  <button class="btn btn-primary" onclick="openQuizSection()">Начать →</button>
+<div class="page-header">
+  <span class="page-label">Reforce · shop.reforce.group · дизайн-спринт</span>
+  <h1 class="page-title">Прототипы<br>и <em>документация</em></h1>
+  <p class="page-sub">Все актуальные ссылки в одном месте. Новый концепт — красная рамка.</p>
 </div>
 
-<!-- ── MODALS ─────────────────────────────────────────────────── -->
-<div class="modal-overlay" id="orderModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('orderModal')">✕</button>
-    <h3>Оформить подключение</h3>
-    <p id="orderModalPackage">Пакет выбран. Оставьте контакты — менеджер свяжется в течение 30 минут и согласует дату монтажа.</p>
-    <div class="modal-form">
-      <input class="form-input" type="text" placeholder="Ваше имя">
-      <input class="form-input" type="tel" placeholder="Телефон" value="+7 ">
-      <input class="form-input" type="text" placeholder="Город">
-      <button class="btn btn-primary" style="width:100%;height:52px;font-size:16px;" onclick="submitOrder()">
-        Отправить заявку
-      </button>
-      <p class="form-note">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных (152-ФЗ)</p>
+<div class="section">
+  <div class="section-label">Новый концепт · v2 · актуально</div>
+  <div class="cards">
+
+    <a href="concept-main.html" class="card new">
+      <div class="card-top"><div class="card-name">Главная</div><span class="card-badge badge-new">v2</span></div>
+      <div class="card-desc">Квиз, сегменты, приложение, FAQ, отзывы. Основная посадочная страница.</div>
+      <div class="card-link">Открыть <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
+    <a href="concept-home.html" class="card new">
+      <div class="card-top"><div class="card-name">Охрана дома</div><span class="card-badge badge-new">v2</span></div>
+      <div class="card-desc">Страница для физлиц — квартиры, дома, дачи, гаражи.</div>
+      <div class="card-link">Открыть <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
+    <a href="concept-business.html" class="card new">
+      <div class="card-top"><div class="card-name">Для бизнеса</div><span class="card-badge badge-new">v2</span></div>
+      <div class="card-desc">Как работает охрана бизнеса, тарифы, кейсы, отзывы.</div>
+      <div class="card-link">Открыть <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
+    <a href="concept-partners.html" class="card new">
+      <div class="card-top"><div class="card-name">Партнёрам</div><span class="card-badge badge-new">v2</span></div>
+      <div class="card-desc">Для ЧОП: модели сотрудничества, онбординг, ПРМ, доходность.</div>
+      <div class="card-link">Открыть <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
+    <a href="concept-contacts.html" class="card new">
+      <div class="card-top"><div class="card-name">Контакты</div><span class="card-badge badge-new">v2</span></div>
+      <div class="card-desc">Офис в Екатеринбурге, форма обращения, присутствие на Урале.</div>
+      <div class="card-link">Открыть <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Прототип заказчиков · референс</div>
+  <div class="cards">
+    <div class="placeholder">
+      <div class="placeholder-label">Ждём ссылку</div>
+      <div class="placeholder-text">Скинь ссылку на прототип заказчиков — добавлю сюда.</div>
     </div>
   </div>
 </div>
 
-<div class="modal-overlay" id="callModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('callModal')">✕</button>
-    <h3>Заказать звонок</h3>
-    <p>Перезвоним в течение 15 минут в рабочее время, или на следующий рабочий день.</p>
-    <div class="modal-form">
-      <input class="form-input" type="text" placeholder="Ваше имя">
-      <input class="form-input" type="tel" placeholder="Телефон" value="+7 ">
-      <button class="btn btn-primary" style="width:100%;height:52px;font-size:16px;" onclick="submitCall()">
-        Жду звонка
-      </button>
-      <p class="form-note">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных (152-ФЗ)</p>
-    </div>
+<div class="section">
+  <div class="section-label">Старый прототип · v1 · архив</div>
+  <div class="cards">
+
+    <a href="main.html" class="card">
+      <div class="card-top"><div class="card-name">Главная v1</div><span class="card-badge badge-old">Архив</span></div>
+      <div class="card-desc">Первая версия. Тёмный pill-nav, другая структура секций и квиза.</div>
+      <div class="card-link">Открыть <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
+    <a href="home.html" class="card">
+      <div class="card-top"><div class="card-name">Дом v1</div><span class="card-badge badge-old">Архив</span></div>
+      <div class="card-desc">Первая версия страницы охраны дома.</div>
+      <div class="card-link">Открыть <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
+    <a href="business.html" class="card">
+      <div class="card-top"><div class="card-name">Бизнес v1</div><span class="card-badge badge-old">Архив</span></div>
+      <div class="card-desc">Первая версия страницы для бизнеса.</div>
+      <div class="card-link">Открыть <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
+    <a href="partners.html" class="card">
+      <div class="card-top"><div class="card-name">Партнёры v1</div><span class="card-badge badge-old">Архив</span></div>
+      <div class="card-desc">Первая версия страницы для партнёров.</div>
+      <div class="card-link">Открыть <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
   </div>
 </div>
 
-<div class="modal-overlay" id="partnerModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('partnerModal')">✕</button>
-    <h3>Стать партнёром Reforce</h3>
-    <p>Расскажите о своей компании — мы свяжемся и расскажем об условиях подключения к платформе.</p>
-    <div class="modal-form">
-      <input class="form-input" type="text" placeholder="Название компании / ЧОП">
-      <input class="form-input" type="text" placeholder="Контактное лицо">
-      <input class="form-input" type="tel" placeholder="Телефон" value="+7 ">
-      <input class="form-input" type="text" placeholder="Город или регион">
-      <button class="btn btn-primary" style="width:100%;height:52px;font-size:16px;" onclick="submitPartner()">
-        Отправить заявку
-      </button>
-      <p class="form-note">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных (152-ФЗ)</p>
-    </div>
+<div class="section">
+  <div class="section-label">Документация · UX-аудит</div>
+  <div class="cards">
+
+    <a href="../audit/concept-ux-audit-print.html" class="card">
+      <div class="card-top"><div class="card-name">UX-аудит концепта</div><span class="card-badge badge-doc">Документ</span></div>
+      <div class="card-desc">Блок-по-блочный аудит нового концепта vs прототип заказчика. Аргументы по каждому решению.</div>
+      <div class="card-link">Открыть <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+    </a>
+
   </div>
 </div>
-
-<div class="modal-overlay" id="cityModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('cityModal')">✕</button>
-    <h3>Выберите ваш город</h3>
-    <p>Мы определим доступных партнёров и актуальные цены в вашем регионе.</p>
-    <div class="modal-form">
-      <input class="form-input" type="text" placeholder="Начните вводить название города..." id="cityInput" oninput="filterCities(this)">
-      <div id="cityList" style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto;">
-        <button class="btn btn-secondary" style="text-align:left;justify-content:flex-start;height:44px;padding:0 16px;" onclick="selectCity('Москва')">📍 Москва</button>
-        <button class="btn btn-secondary" style="text-align:left;justify-content:flex-start;height:44px;padding:0 16px;" onclick="selectCity('Санкт-Петербург')">📍 Санкт-Петербург</button>
-        <button class="btn btn-secondary" style="text-align:left;justify-content:flex-start;height:44px;padding:0 16px;" onclick="selectCity('Екатеринбург')">📍 Екатеринбург</button>
-        <button class="btn btn-secondary" style="text-align:left;justify-content:flex-start;height:44px;padding:0 16px;" onclick="selectCity('Новосибирск')">📍 Новосибирск</button>
-        <button class="btn btn-secondary" style="text-align:left;justify-content:flex-start;height:44px;padding:0 16px;" onclick="selectCity('Краснодар')">📍 Краснодар</button>
-        <button class="btn btn-secondary" style="text-align:left;justify-content:flex-start;height:44px;padding:0 16px;" onclick="selectCity('Казань')">📍 Казань</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="successModal">
-  <div class="modal" style="text-align:center;padding:48px 40px;">
-    <div style="font-size:56px;margin-bottom:16px;">✅</div>
-    <h3 style="font-size:24px;margin-bottom:12px;">Заявка отправлена!</h3>
-    <p>Менеджер свяжется с вами в течение 30 минут. Пока ждёте — скачайте приложение.</p>
-    <div style="display:flex;gap:10px;justify-content:center;margin-top:24px;flex-wrap:wrap;">
-      <a href="#" class="btn btn-primary">Скачать для iOS</a>
-      <a href="#" class="btn btn-secondary">Скачать для Android</a>
-    </div>
-    <button onclick="closeModal('successModal')" style="background:none;color:var(--neutral-600);font-size:14px;margin-top:16px;">Закрыть</button>
-  </div>
-</div>
-
-<!-- ── JS ─────────────────────────────────────────────────────── -->
-<script>
-  // ── QUIZ LOGIC ──────────────────────────────────────────────
-  const answers = {};
-
-  function selectOption(step, value, el) {
-    const container = el.closest('.quiz-options');
-    container.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
-    el.classList.add('selected');
-    answers['step' + step] = value;
-
-    const nextBtn = document.getElementById('step' + step + 'Next');
-    if (nextBtn) { nextBtn.disabled = false; }
-
-    // Auto-advance after short delay for mobile feel
-    setTimeout(() => {
-      if (step === 1) goToStep(2);
-      else if (step === 2) showResults();
-    }, 400);
-  }
-
-  function goToStep(n) {
-    document.querySelectorAll('.quiz-step').forEach(s => s.classList.remove('active'));
-    const step = document.getElementById('step' + n);
-    if (step) step.classList.add('active');
-
-    const fill = document.getElementById('quizProgress');
-    const label = document.getElementById('quizStepLabel');
-    if (n === 1) { fill.style.width = '33%'; label.textContent = 'Шаг 1 из 2'; }
-    if (n === 2) { fill.style.width = '66%'; label.textContent = 'Шаг 2 из 2'; }
-  }
-
-  function showResults() {
-    document.querySelectorAll('.quiz-step').forEach(s => s.classList.remove('active'));
-    document.getElementById('quizResults').classList.add('active');
-    document.getElementById('quizProgress').style.width = '100%';
-    document.getElementById('quizStepLabel').textContent = 'Готово!';
-
-    const objType = answers['step1'];
-    const need = answers['step2'];
-
-    // Adapt result card names based on answers
-    if (objType === 'business') {
-      document.getElementById('result1').querySelector('.result-name').textContent = 'Бизнес Базовый';
-      document.getElementById('result2').querySelector('.result-name').textContent = 'Бизнес + Аналитика';
-      document.getElementById('result3').querySelector('.result-name').textContent = 'Постовая охрана';
-    } else if (objType === 'house') {
-      document.getElementById('result1').querySelector('.result-name').textContent = 'Защита дома';
-      document.getElementById('result2').querySelector('.result-name').textContent = 'Дом + Видео';
-      document.getElementById('result3').querySelector('.result-name').textContent = 'Умный дом';
-    } else if (objType === 'garage') {
-      document.getElementById('result1').querySelector('.result-name').textContent = 'Защита гаража';
-      document.getElementById('result2').querySelector('.result-name').textContent = 'Гараж + Камера';
-      document.getElementById('result3').querySelector('.result-name').textContent = 'Полная защита';
-    }
-  }
-
-  function restartQuiz() {
-    answers['step1'] = null; answers['step2'] = null;
-    document.getElementById('quizResults').classList.remove('active');
-    document.querySelectorAll('.quiz-option').forEach(o => o.classList.remove('selected'));
-    document.getElementById('step1Next').disabled = true;
-    document.getElementById('step2Next').disabled = true;
-    goToStep(1);
-  }
-
-  // ── NAVIGATION ──────────────────────────────────────────────
-  function openQuizSection() {
-    const quiz = document.getElementById('quiz-anchor');
-    quiz.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  function selectSegment(type) {
-    openQuizSection();
-    // Pre-select based on segment
-    setTimeout(() => {
-      const map = { home: 'apartment', business: 'business', partners: null };
-      if (map[type]) {
-        const opts = document.querySelectorAll('#step1 .quiz-option');
-        opts.forEach(o => {
-          if (o.querySelector('.quiz-option-title').textContent.toLowerCase().includes(
-            type === 'home' ? 'квартира' : 'бизнес'
-          )) {
-            selectOption(1, map[type], o);
-          }
-        });
-      } else if (type === 'partners') {
-        openPartnerModal();
-      }
-    }, 600);
-  }
-
-  // ── MODALS ──────────────────────────────────────────────────
-  function openOrderModal(pkg) {
-    document.getElementById('orderModalPackage').textContent =
-      `Пакет: «${pkg}». Оставьте контакты — менеджер свяжется в течение 30 минут и согласует дату монтажа.`;
-    document.getElementById('orderModal').classList.add('open');
-  }
-
-  function openCallModal() { document.getElementById('callModal').classList.add('open'); }
-  function openPartnerModal() { document.getElementById('partnerModal').classList.add('open'); }
-  function openCityModal() { document.getElementById('cityModal').classList.add('open'); }
-  function openDetailModal(pkg) { alert(`Открывается карточка пакета: «${pkg}»\n\n(В финальной версии — отдельная страница с составом, FAQ и сравнением)`); }
-
-  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-  function submitOrder() {
-    closeModal('orderModal');
-    document.getElementById('successModal').classList.add('open');
-  }
-  function submitCall() {
-    closeModal('callModal');
-    document.getElementById('successModal').classList.add('open');
-  }
-  function submitPartner() {
-    closeModal('partnerModal');
-    document.getElementById('successModal').classList.add('open');
-  }
-
-  function selectCity(city) {
-    document.querySelector('.city-btn').innerHTML =
-      `📍 ${city} <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-    closeModal('cityModal');
-  }
-
-  // ── FAQ ──────────────────────────────────────────────────────
-  function toggleFaq(btn) {
-    const item = btn.closest('.faq-item');
-    const isOpen = item.classList.contains('open');
-    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-    if (!isOpen) item.classList.add('open');
-  }
-
-  // ── STICKY CTA ────────────────────────────────────────────────
-  const stickyCta = document.getElementById('stickyCta');
-  let heroBottom = 0;
-
-  function updateSticky() {
-    const hero = document.querySelector('.hero');
-    const quiz = document.getElementById('quiz-anchor');
-    heroBottom = hero.getBoundingClientRect().bottom;
-    const quizTop = quiz.getBoundingClientRect().top;
-    const quizBottom = quiz.getBoundingClientRect().bottom;
-    const inQuiz = quizTop < window.innerHeight && quizBottom > 0;
-    stickyCta.style.opacity = (heroBottom < 0 && !inQuiz) ? '1' : '0';
-    stickyCta.style.pointerEvents = (heroBottom < 0 && !inQuiz) ? 'auto' : 'none';
-  }
-
-  window.addEventListener('scroll', updateSticky, { passive: true });
-
-  // Close modals on overlay click
-  document.querySelectorAll('.modal-overlay').forEach(overlay => {
-    overlay.addEventListener('click', e => {
-      if (e.target === overlay) overlay.classList.remove('open');
-    });
-  });
-</script>
 
 </body>
 </html>
