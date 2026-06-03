@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UC-P01 · Привязка платёжного метода · Reforce ЛК</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+*{-webkit-tap-highlight-color:transparent;box-sizing:border-box;margin:0;padding:0}
+body{background:#1C1C1E;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Roboto',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px 48px}
+.page-title{color:#fff;font-size:22px;font-weight:700;margin-bottom:4px;text-align:center}
+.page-sub{color:#8E8E93;font-size:14px;text-align:center;margin-bottom:32px}
+.frames{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+.frame-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.frame-num{background:#D42B2B;color:#fff;font-size:11px;font-weight:700;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;letter-spacing:.3px}
+.frame-caption{color:#8E8E93;font-size:12px;text-align:center;max-width:200px;line-height:1.4}
+.frame-caption b{color:#fff;font-weight:500}
+.phone{width:390px;height:844px;background:#F2F2F7;border-radius:54px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.1)}
+/* Status bar */
+.sbar{height:44px;padding:14px 28px 0;display:flex;justify-content:space-between;align-items:flex-end;flex-shrink:0;background:transparent}
+.sbar-time{font-size:15px;font-weight:600;color:#1C1C1E}
+.sbar-icons{display:flex;gap:6px;align-items:center}
+/* Nav header */
+.nav{height:44px;display:flex;align-items:center;justify-content:center;padding:0 16px;position:relative;flex-shrink:0}
+.nav-back{position:absolute;left:8px;display:flex;align-items:center;gap:2px;color:#D42B2B;font-size:17px;padding:0 8px;min-height:44px;cursor:pointer}
+.nav-title{font-size:17px;font-weight:600;color:#1C1C1E;text-align:center}
+/* Large title */
+.nav-lg{padding:8px 20px 4px;flex-shrink:0}
+.nav-lg-title{font-size:28px;font-weight:700;color:#1C1C1E}
+/* Tab bar */
+.tabbar{height:83px;background:#fff;border-top:.5px solid #C7C7CC;display:flex;padding:0 4px 20px;flex-shrink:0;margin-top:auto}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;padding-top:8px;gap:3px}
+.tab span{font-size:10px;font-weight:500;color:#8E8E93}
+.tab.active span{color:#D42B2B}
+/* Content */
+.scroll{flex:1;overflow-y:auto;padding:0 16px}
+.scroll::-webkit-scrollbar{display:none}
+/* Cards & rows */
+.card{background:#fff;border-radius:20px;overflow:hidden;margin-bottom:16px}
+.row{display:flex;align-items:center;padding:14px 16px;gap:12px;min-height:56px;border-bottom:.5px solid #F2F2F7}
+.row:last-child{border-bottom:none}
+.row-label{font-size:15px;color:#1C1C1E;flex:1}
+.row-value{font-size:15px;color:#636366}
+.row-action{font-size:15px;color:#D42B2B}
+.section-title{font-size:13px;color:#636366;padding:16px 0 6px;letter-spacing:.3px;text-transform:uppercase;font-weight:400}
+/* Buttons */
+.btn{width:100%;min-height:56px;border-radius:16px;border:none;font-size:17px;font-weight:600;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.btn-primary{background:#D42B2B;color:#fff}
+.btn-secondary{background:#F2F2F7;color:#1C1C1E}
+.btn-outline{background:#fff;border:1.5px solid #D42B2B;color:#D42B2B}
+/* Toggle */
+.toggle{width:51px;height:31px;border-radius:16px;position:relative;flex-shrink:0}
+.toggle-on{background:#34C759}
+.toggle-off{background:#E5E5EA}
+.toggle-knob{position:absolute;top:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.toggle-on .toggle-knob{left:22px}
+.toggle-off .toggle-knob{left:2px}
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;border-radius:99px;font-size:13px;font-weight:500}
+.badge-success{background:#E8F9ED;color:#1A7F37}
+.badge-neutral{background:#F2F2F7;color:#636366}
+.badge-warning{background:#FFF8EC;color:#B25000}
+/* Bottom sheet */
+.bsheet-bg{position:absolute;inset:0;background:rgba(0,0,0,.32);z-index:40}
+.bsheet{position:absolute;bottom:0;left:0;right:0;background:#fff;border-radius:24px 24px 0 0;z-index:41;padding:0 20px 40px}
+.bsheet-handle{width:36px;height:4px;background:#C7C7CC;border-radius:2px;margin:12px auto 20px}
+/* Method option */
+.method-option{display:flex;align-items:center;padding:16px;gap:14px;border-radius:16px;border:1.5px solid #F2F2F7;cursor:pointer;transition:border-color 150ms;margin-bottom:12px}
+.method-option.selected{border-color:#D42B2B;background:#FFF5F5}
+.method-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:24px}
+/* Bank list */
+.bank-item{display:flex;align-items:center;padding:14px 16px;gap:14px;border-bottom:.5px solid #F2F2F7;cursor:pointer}
+.bank-item:last-child{border-bottom:none}
+.bank-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+/* Info banner */
+.info-banner{background:#EBF5FF;border-radius:12px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start;margin-bottom:16px}
+.warn-banner{background:#FFF8EC;border-radius:12px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start;margin-bottom:16px}
+/* Autopay block */
+.autopay-block{background:#fff;border-radius:20px;padding:16px;margin-bottom:16px}
+.autopay-status-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+/* Loading */
+.spinner{width:24px;height:24px;border:2.5px solid rgba(212,43,43,.2);border-top-color:#D42B2B;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Success */
+.success-circle{width:80px;height:80px;border-radius:50%;background:#E8F9ED;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+/* Divider */
+hr{border:none;border-top:.5px solid #F2F2F7;margin:8px 0}
+/* Chip */
+.chip{display:inline-flex;align-items:center;height:32px;padding:0 12px;border-radius:99px;background:#F2F2F7;color:#1C1C1E;font-size:13px;font-weight:500;cursor:pointer}
+.chip.warn{background:#FFF8EC;color:#B25000}
+/* Screen bg variants */
+.screen-white{background:#fff}
+</style>
+</head>
+<body>
+
+<p class="page-title">UC-P01 · Привязка платёжного метода для автоплатежа</p>
+<p class="page-sub">Основной поток — СБП · Резервный — банковская карта · Альтернативные варианты</p>
+
+<div class="frames">
+
+<!-- ─── FRAME 1: Договор без автоплатежа ─── -->
+<div class="frame-wrap">
+  <div class="frame-num">1</div>
+  <div class="phone">
+    <div style="display:flex;flex-direction:column;height:100%;background:#F2F2F7">
+      <div class="sbar"><span class="sbar-time">9:41</span><div class="sbar-icons"><svg width="17" height="12" viewBox="0 0 17 12" fill="#1C1C1E"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg><svg width="16" height="12" viewBox="0 0 16 12" fill="#1C1C1E"><path d="M8 2.5C10.2 2.5 12.2 3.4 13.7 4.9L15 3.6C13.1 1.7 10.7.7 8 .7S2.9 1.7 1 3.6l1.3 1.3C3.8 3.4 5.8 2.5 8 2.5z"/><path d="M8 5.3c1.5 0 2.9.6 3.9 1.6l1.3-1.3C11.9 4.3 10 3.5 8 3.5s-3.9.8-5.2 2.1L4.1 6.9C5.1 5.9 6.5 5.3 8 5.3z"/><circle cx="8" cy="9.5" r="1.5"/></svg><div style="display:flex;align-items:center;gap:2px"><div style="width:22px;height:11px;border-radius:3px;border:1.5px solid #1C1C1E;position:relative"><div style="position:absolute;top:1.5px;left:1.5px;bottom:1.5px;width:80%;background:#1C1C1E;border-radius:1.5px"></div><div style="position:absolute;right:-4px;top:2.5px;width:2.5px;height:5px;border-radius:0 1px 1px 0;background:#1C1C1E"></div></div></div></div></div>
+      <div class="nav"><span class="nav-back"><svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8L8 14" stroke="#D42B2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp;Платежи</span><span class="nav-title">Договор №А-1042</span></div>
+      <div class="scroll" style="padding-top:8px">
+        <!-- Balance block -->
+        <div class="card" style="padding:16px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div><div style="font-size:13px;color:#636366;margin-bottom:4px">Задолженность</div><div style="font-size:28px;font-weight:700;color:#FF3B30">−1 200 ₽</div></div>
+            <div class="badge badge-warning">⚠ Долг</div>
+          </div>
+          <div style="margin-top:12px;font-size:13px;color:#636366">Абон. плата: 1 200 ₽ / мес</div>
+        </div>
+        <!-- Autopay block — OFF -->
+        <div class="autopay-block">
+          <div class="autopay-status-row">
+            <div><div style="font-size:17px;font-weight:600;color:#1C1C1E">Автоплатёж</div><div style="font-size:13px;color:#636366;margin-top:2px">Не подключён</div></div>
+            <div class="badge badge-neutral">Откл</div>
+          </div>
+          <div style="font-size:13px;color:#636366;margin-bottom:16px;line-height:1.5">Подключите, чтобы абонентская плата списывалась автоматически каждый месяц.</div>
+          <button class="btn btn-primary" style="min-height:48px;font-size:15px;border-radius:12px">Подключить автоплатёж</button>
+        </div>
+        <!-- Contract info -->
+        <div class="card">
+          <div class="row"><span class="row-label" style="color:#636366;font-size:13px">Объект</span><span class="row-value">Склад, ул. Ленина 12</span></div>
+          <div class="row"><span class="row-label" style="color:#636366;font-size:13px">Дата начала</span><span class="row-value">01.03.2024</span></div>
+          <div class="row" style="border-bottom:none"><span class="row-label" style="color:#636366;font-size:13px">Следующее начисление</span><span class="row-value">01.07.2026</span></div>
+        </div>
+        <div style="height:24px"></div>
+      </div>
+      <div class="tabbar">
+        <div class="tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg><span>Объекты</span></div>
+        <div class="tab active"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D42B2B" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><span style="color:#D42B2B">Платежи</span></div>
+        <div class="tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="1.5"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg><span>Профиль</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="frame-caption"><b>Экран договора</b><br>Блок автоплатежа — отключён<br><span style="color:#636366;font-size:11px">Шаг 1 UC-P01 · Приложение А.3</span></div>
+</div>
+
+<!-- ─── FRAME 2: Выбор способа автоплатежа ─── -->
+<div class="frame-wrap">
+  <div class="frame-num">2</div>
+  <div class="phone">
+    <div style="display:flex;flex-direction:column;height:100%;background:#F2F2F7">
+      <div class="sbar"><span class="sbar-time">9:41</span><div class="sbar-icons"><svg width="17" height="12" viewBox="0 0 17 12" fill="#1C1C1E"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/><rect x="13.5" y="0" width="3" height="12" rx="1" opacity=".3"/></svg><circle cx="8" cy="6" r="5.5" fill="none" stroke="#1C1C1E" stroke-width="1.5"/><div style="display:flex;align-items:center;gap:2px"><div style="width:22px;height:11px;border-radius:3px;border:1.5px solid #1C1C1E;position:relative"><div style="position:absolute;top:1.5px;left:1.5px;bottom:1.5px;width:80%;background:#1C1C1E;border-radius:1.5px"></div></div></div></div></div>
+      <div class="nav"><span class="nav-back"><svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8L8 14" stroke="#D42B2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp;Назад</span><span class="nav-title">Автоплатёж</span></div>
+      <div class="scroll" style="padding-top:12px">
+        <div style="font-size:22px;font-weight:700;color:#1C1C1E;margin-bottom:4px">Выберите способ</div>
+        <div style="font-size:15px;color:#636366;margin-bottom:24px;line-height:1.5">Договор №А-1042 · 1 200 ₽/мес</div>
+        <!-- СБП option -->
+        <div class="method-option selected">
+          <div class="method-icon" style="background:#E8F5FF">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M4 8l10-4 10 4v5c0 5.5-3.5 10.3-10 12.5C7.5 23.3 4 18.5 4 13V8z" fill="#0066FF" opacity=".15"/><path d="M14 7l7 2.8V13c0 4-2.8 7.5-7 9.2C9.8 20.5 7 17 7 13V9.8L14 7z" fill="#0066FF" opacity=".3"/><path d="M11 14l2 2 4-4" stroke="#0066FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:17px;font-weight:600;color:#1C1C1E">Оплата через СБП</div>
+            <div style="font-size:13px;color:#636366;margin-top:2px">Через банковское приложение</div>
+          </div>
+          <div style="width:22px;height:22px;border-radius:50%;background:#D42B2B;display:flex;align-items:center;justify-content:center"><svg width="12" height="12" viewBox="0 0 12 12" fill="white"><path d="M2 6l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg></div>
+        </div>
+        <!-- Карта option -->
+        <div class="method-option">
+          <div class="method-icon" style="background:#F5F5FF">
+            <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="7" width="22" height="14" rx="3" fill="#5856D6" opacity=".15"/><rect x="3" y="11" width="22" height="4" fill="#5856D6" opacity=".4"/><rect x="6" y="16" width="6" height="2" rx="1" fill="#5856D6"/></svg>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:17px;font-weight:600;color:#1C1C1E">Оплата картой</div>
+            <div style="font-size:13px;color:#636366;margin-top:2px">Банковская карта · списание 1 ₽</div>
+          </div>
+          <div style="width:22px;height:22px;border-radius:50%;border:1.5px solid #C7C7CC"></div>
+        </div>
+        <!-- Info -->
+        <div class="info-banner">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink:0;margin-top:1px"><circle cx="9" cy="9" r="8" fill="#007AFF" opacity=".15"/><path d="M9 8v4M9 6h.01" stroke="#007AFF" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <div style="font-size:13px;color:#0055CC;line-height:1.4">СБП-автоплатёж доступен только в поддерживаемых банках. Список расширяется автоматически.</div>
+        </div>
+        <div style="height:24px"></div>
+        <button class="btn btn-primary">Подключить</button>
+        <div style="height:16px"></div>
+      </div>
+    </div>
+  </div>
+  <div class="frame-caption"><b>Выбор способа</b><br>СБП — первый, приоритетный<br><span style="color:#636666;font-size:11px">Шаг 2 UC-P01 · Приложение А.5</span></div>
+</div>
+
+<!-- ─── FRAME 3: Список банков ЮКассы ─── -->
+<div class="frame-wrap">
+  <div class="frame-num">3</div>
+  <div class="phone">
+    <div style="display:flex;flex-direction:column;height:100%;background:#F2F2F7">
+      <div class="sbar" style="background:#fff"><span class="sbar-time">9:41</span><div class="sbar-icons"><svg width="17" height="12" viewBox="0 0 17 12" fill="#1C1C1E"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/></svg></div></div>
+      <div class="nav" style="background:#fff;border-bottom:.5px solid #F2F2F7">
+        <span class="nav-back"><svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8L8 14" stroke="#D42B2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp;Назад</span>
+        <span class="nav-title">Выберите банк</span>
+      </div>
+      <!-- Search field -->
+      <div style="background:#fff;padding:8px 16px 12px">
+        <div style="background:#F2F2F7;border-radius:12px;display:flex;align-items:center;gap:8px;padding:8px 12px">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#8E8E93" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#8E8E93" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span style="font-size:15px;color:#8E8E93">Поиск банка</span>
+        </div>
+      </div>
+      <div class="scroll" style="padding:0;background:#fff;flex:1">
+        <!-- Info -->
+        <div style="background:#EBF5FF;margin:0 16px 12px;border-radius:12px;padding:10px 14px;font-size:13px;color:#0055CC">Только банки, поддерживающие привязку счёта для автоплатежа</div>
+        <!-- Banks list -->
+        <div class="bank-item"><div class="bank-icon" style="background:#07B35A"><span style="color:#fff;font-weight:700;font-size:15px">T</span></div><div style="flex:1"><div style="font-size:15px;font-weight:500;color:#1C1C1E">Т-Банк (Тинькофф)</div><div style="font-size:13px;color:#636366">СБП · Привязка счёта ✓</div></div><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C7C7CC" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div class="bank-item"><div class="bank-icon" style="background:#1DB954"><span style="color:#fff;font-weight:700;font-size:15px">С</span></div><div style="flex:1"><div style="font-size:15px;font-weight:500;color:#1C1C1E">Сбербанк</div><div style="font-size:13px;color:#636366">СБП · Привязка счёта ✓</div></div><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C7C7CC" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div class="bank-item"><div class="bank-icon" style="background:#FF6600"><span style="color:#fff;font-weight:700;font-size:13px">АЛФ</span></div><div style="flex:1"><div style="font-size:15px;font-weight:500;color:#1C1C1E">Альфа-Банк</div><div style="font-size:13px;color:#636366">СБП · Привязка счёта ✓</div></div><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C7C7CC" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div class="bank-item"><div class="bank-icon" style="background:#0A2896"><span style="color:#fff;font-weight:700;font-size:13px">ВТБ</span></div><div style="flex:1"><div style="font-size:15px;font-weight:500;color:#1C1C1E">ВТБ</div><div style="font-size:13px;color:#636366">СБП · Привязка счёта ✓</div></div><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C7C7CC" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div class="bank-item"><div class="bank-icon" style="background:#7B2FBE"><span style="color:#fff;font-weight:700;font-size:13px">РСХ</span></div><div style="flex:1"><div style="font-size:15px;font-weight:500;color:#1C1C1E">Россельхозбанк</div><div style="font-size:13px;color:#636366">СБП · Привязка счёта ✓</div></div><svg width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C7C7CC" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        <div style="padding:16px;text-align:center;font-size:13px;color:#8E8E93">Если вашего банка нет в списке — подключите автоплатёж <span style="color:#D42B2B">по карте →</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="frame-caption"><b>Список банков ЮКасса</b><br>Фильтр «Привязка счёта»<br><span style="font-size:11px;color:#636366">Шаг 3 UC-P01</span></div>
+</div>
+
+<!-- ─── FRAME 4: Ожидание подтверждения ─── -->
+<div class="frame-wrap">
+  <div class="frame-num">4</div>
+  <div class="phone">
+    <div style="display:flex;flex-direction:column;height:100%;background:#F2F2F7">
+      <div class="sbar"><span class="sbar-time">9:41</span></div>
+      <div class="nav"><span class="nav-back"><svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8L8 14" stroke="#D42B2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp;Отмена</span><span class="nav-title">Подтверждение</span></div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 32px;gap:0">
+        <!-- Animated waiting -->
+        <div style="width:96px;height:96px;border-radius:50%;background:#E8F5FF;display:flex;align-items:center;justify-content:center;margin-bottom:24px;position:relative">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><path d="M24 8C15.2 8 8 15.2 8 24s7.2 16 16 16 16-7.2 16-16" stroke="#007AFF" stroke-width="3" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 24 24" to="360 24 24" dur="1s" repeatCount="indefinite"/></path></svg>
+        </div>
+        <div style="font-size:22px;font-weight:700;color:#1C1C1E;text-align:center;margin-bottom:8px">Подтвердите в банке</div>
+        <div style="font-size:15px;color:#636366;text-align:center;line-height:1.5;margin-bottom:24px">Откройте Т-Банк и подтвердите привязку счёта для автоплатежа. Ожидаем ответа…</div>
+        <!-- Bank app button -->
+        <div style="background:#07B35A;border-radius:16px;padding:14px 28px;font-size:17px;font-weight:600;color:#fff;display:flex;align-items:center;gap:10px;cursor:pointer">
+          <span>Открыть Т-Банк</span>
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 9h8M9 5l4 4-4 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div style="margin-top:20px;font-size:13px;color:#8E8E93;text-align:center">Если приложение уже открыто — вернитесь<br>в Т-Банк для подтверждения</div>
+        <!-- Timer -->
+        <div style="margin-top:32px;display:flex;align-items:center;gap:8px">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#C7C7CC" stroke-width="1.5"/><path d="M7 4v3l2 1.5" stroke="#C7C7CC" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span style="font-size:13px;color:#C7C7CC">Ожидание: 04:32</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="frame-caption"><b>Ожидание в банке</b><br>Deep link / возврат для подтверждения<br><span style="font-size:11px;color:#636366">Шаг 4–5 UC-P01</span></div>
+</div>
+
+<!-- ─── FRAME 5: Договор — СБП активен ─── -->
+<div class="frame-wrap">
+  <div class="frame-num">5</div>
+  <div class="phone">
+    <div style="display:flex;flex-direction:column;height:100%;background:#F2F2F7">
+      <div class="sbar"><span class="sbar-time">9:41</span><div class="sbar-icons"><svg width="17" height="12" viewBox="0 0 17 12" fill="#1C1C1E"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/></svg></div></div>
+      <div class="nav"><span class="nav-back"><svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8L8 14" stroke="#D42B2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp;Платежи</span><span class="nav-title">Договор №А-1042</span></div>
+      <div class="scroll" style="padding-top:8px">
+        <!-- Balance OK -->
+        <div class="card" style="padding:16px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div><div style="font-size:13px;color:#636366;margin-bottom:4px">Баланс</div><div style="font-size:28px;font-weight:700;color:#34C759">+1 200 ₽</div></div>
+            <div class="badge badge-success">✓ Оплачено</div>
+          </div>
+          <div style="margin-top:12px;font-size:13px;color:#636366">Следующее списание: 01.07.2026 · 1 200 ₽</div>
+        </div>
+        <!-- Autopay block — ACTIVE СБП -->
+        <div class="autopay-block">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div>
+              <div style="font-size:17px;font-weight:600;color:#1C1C1E">Автоплатёж</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+                <div style="width:8px;height:8px;border-radius:50%;background:#34C759"></div>
+                <span style="font-size:13px;color:#34C759;font-weight:500">СБП · Т-Банк</span>
+              </div>
+            </div>
+            <div class="toggle toggle-on"><div class="toggle-knob"></div></div>
+          </div>
+          <div style="background:#F9F9FB;border-radius:12px;padding:12px 14px;margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:13px;color:#636366">Следующее списание</span><span style="font-size:13px;font-weight:500;color:#1C1C1E">01.07.2026</span></div>
+            <div style="display:flex;justify-content:space-between"><span style="font-size:13px;color:#636366">Сумма</span><span style="font-size:13px;font-weight:500;color:#1C1C1E">1 200 ₽</span></div>
+          </div>
+          <button class="btn btn-secondary" style="min-height:44px;font-size:15px;border-radius:12px">Сменить способ оплаты</button>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+      <div class="tabbar">
+        <div class="tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg><span>Объекты</span></div>
+        <div class="tab active"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D42B2B" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><span style="color:#D42B2B">Платежи</span></div>
+        <div class="tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Профиль</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="frame-caption"><b>Автоплатёж подключён</b><br>СБП · Т-Банк · активен<br><span style="font-size:11px;color:#636366">Шаг 6 UC-P01 · Приложение А.3</span></div>
+</div>
+
+<!-- ─── FRAME 6: Банк не поддерживает ─── -->
+<div class="frame-wrap">
+  <div class="frame-num" style="background:#FF9500">6</div>
+  <div class="phone">
+    <div style="display:flex;flex-direction:column;height:100%;background:#F2F2F7">
+      <div class="sbar" style="background:#fff"><span class="sbar-time">9:41</span></div>
+      <div class="nav" style="background:#fff;border-bottom:.5px solid #F2F2F7"><span class="nav-back"><svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8L8 14" stroke="#D42B2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp;Назад</span><span class="nav-title">Выберите банк</span></div>
+      <div style="background:#fff;padding:8px 16px 12px">
+        <div style="background:#F2F2F7;border-radius:12px;display:flex;align-items:center;gap:8px;padding:8px 12px">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="#8E8E93" stroke-width="1.5"/><path d="M11 11l3 3" stroke="#8E8E93" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span style="font-size:15px;color:#1C1C1E">Газпромбанк</span>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;gap:0;background:#fff">
+        <!-- Empty state -->
+        <div style="width:72px;height:72px;border-radius:50%;background:#FFF8EC;display:flex;align-items:center;justify-content:center;margin-bottom:20px">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path d="M18 12v6M18 22h.01" stroke="#FF9500" stroke-width="2.5" stroke-linecap="round"/><circle cx="18" cy="18" r="15" stroke="#FF9500" stroke-width="2"/></svg>
+        </div>
+        <div style="font-size:20px;font-weight:700;color:#1C1C1E;text-align:center;margin-bottom:8px">Банк не найден в списке</div>
+        <div style="font-size:15px;color:#636366;text-align:center;line-height:1.5;margin-bottom:28px">Газпромбанк пока не поддерживает привязку счёта для СБП-автоплатежа.</div>
+        <!-- Offer card -->
+        <div style="background:#F9F9FB;border-radius:16px;padding:16px;width:100%;margin-bottom:16px">
+          <div style="font-size:15px;font-weight:600;color:#1C1C1E;margin-bottom:6px">Подключите автоплатёж по карте</div>
+          <div style="font-size:13px;color:#636366;line-height:1.4;margin-bottom:12px">При привязке спишем 1 ₽ и вернём в течение суток.</div>
+          <button class="btn btn-primary" style="min-height:48px;font-size:15px;border-radius:12px">Привязать карту</button>
+        </div>
+        <button style="background:transparent;border:none;font-size:15px;color:#D42B2B;cursor:pointer;padding:8px;font-family:inherit">Попробовать другой банк</button>
+      </div>
+    </div>
+  </div>
+  <div class="frame-caption"><b>АЛТ: банк не поддерживает</b><br>Предложение привязать карту<br><span style="font-size:11px;color:#636366">Альт. поток 3а UC-P01</span></div>
+</div>
+
+</div><!-- /frames -->
+
+<div style="margin-top:48px;background:rgba(255,255,255,.06);border-radius:16px;padding:20px 28px;max-width:700px;width:100%">
+  <div style="color:#8E8E93;font-size:12px;text-align:center;line-height:1.6">
+    <b style="color:#fff">UC-P01 · Привязка платёжного метода</b> &nbsp;|&nbsp; Версия 1.0 · 2026-06-01 &nbsp;|&nbsp;
+    Связанные: <span style="color:#D42B2B">UC-P02</span> · <span style="color:#D42B2B">UC-P03</span> · <span style="color:#D42B2B">UC-P05</span>
+  </div>
+</div>
+
+</body>
+</html>
