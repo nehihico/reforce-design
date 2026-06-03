@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UML · Жизненный цикл автоплатежа · Reforce ЛК</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#111;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Roboto',sans-serif;min-height:100vh;padding:40px 24px 80px;color:#fff}
+
+/* Header */
+.header{text-align:center;margin-bottom:40px}
+.header-badge{display:inline-flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:8px 20px;margin-bottom:20px}
+.header-badge span{font-size:12px;font-weight:600;color:#8E8E93;letter-spacing:.5px;text-transform:uppercase}
+.header-badge .sep{width:1px;height:14px;background:rgba(255,255,255,.15)}
+.header h1{font-size:28px;font-weight:700;color:#fff;margin-bottom:6px}
+.header p{font-size:15px;color:#636366}
+
+/* Layout */
+.layout{display:flex;gap:32px;align-items:flex-start;max-width:1400px;margin:0 auto;flex-wrap:wrap}
+.diagram-col{flex:1;min-width:700px}
+.sidebar{width:320px;flex-shrink:0}
+
+/* Diagram card */
+.diagram-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px;overflow:auto}
+.diagram-card .mermaid{display:flex;justify-content:center}
+
+/* Legend */
+.legend-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:20px;margin-bottom:16px}
+.legend-card h3{font-size:13px;font-weight:600;color:#8E8E93;letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px}
+.legend-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.legend-item:last-child{margin-bottom:0}
+.legend-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.legend-text .name{font-size:14px;font-weight:600;color:#fff;margin-bottom:2px}
+.legend-text .desc{font-size:12px;color:#636366;line-height:1.4}
+
+/* UC list */
+.uc-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:20px;margin-bottom:16px}
+.uc-card h3{font-size:13px;font-weight:600;color:#8E8E93;letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px}
+.uc-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,.06)}
+.uc-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.uc-id{background:#D42B2B;color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;flex-shrink:0;margin-top:1px}
+.uc-desc{font-size:13px;color:#C7C7CC;line-height:1.4}
+
+/* Open questions */
+.oq-card{background:rgba(255,152,0,.06);border:1px solid rgba(255,152,0,.2);border-radius:16px;padding:20px}
+.oq-card h3{font-size:13px;font-weight:600;color:#FF9500;letter-spacing:.5px;text-transform:uppercase;margin-bottom:12px}
+.oq-item{font-size:13px;color:#FFD580;line-height:1.5;margin-bottom:8px;padding-left:16px;position:relative}
+.oq-item::before{content:'?';position:absolute;left:0;color:#FF9500;font-weight:700;font-size:11px}
+.oq-item:last-child{margin-bottom:0}
+
+/* Transitions table */
+.trans-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:20px;margin-top:16px}
+.trans-card h3{font-size:13px;font-weight:600;color:#8E8E93;letter-spacing:.5px;text-transform:uppercase;margin-bottom:14px}
+.trans-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.trans-item:last-child{border-bottom:none}
+.trans-arrow{font-size:12px;color:#636366;white-space:nowrap;flex-shrink:0;padding-top:2px;font-family:monospace}
+.trans-text{font-size:12px;color:#C7C7CC;line-height:1.4}
+.trans-uc{font-size:10px;font-weight:600;color:#D42B2B;margin-left:4px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">
+    <span>State Diagram</span>
+    <div class="sep"></div>
+    <span>UC-P01 · P02 · P03 · P04 · P05</span>
+  </div>
+  <h1>Жизненный цикл автоплатежа</h1>
+  <p>Все статусы и переходы · payment_method_id · ЮКасса recurrent</p>
+</div>
+
+<div class="layout">
+
+  <!-- Diagram -->
+  <div class="diagram-col">
+    <div class="diagram-card">
+      <div class="mermaid">
+stateDiagram-v2
+    direction TB
+    classDef inactive fill:#2C2C2E,stroke:#48484A,color:#AEAEB2
+    classDef active fill:#1A3D2B,stroke:#30D158,color:#30D158
+    classDef pending fill:#3D3000,stroke:#FF9500,color:#FF9500
+    classDef suspended fill:#3D1A00,stroke:#FF6B00,color:#FF9500
+    classDef disabled fill:#1C1C1E,stroke:#636366,color:#636366
+
+    [*] --> НеПодключён
+
+    state "⭕  Не подключён" as НеПодключён
+    state "🟢  Активен" as Активен
+    state "🔄  Попытки списания" as Попытки
+    state "⏸  Приостановлен" as Приостановлен
+    state "⚫  Отключён" as Отключён
+
+    state Активен {
+        direction TB
+        state "✅ Норма" as Норма
+        state "❌ Попытка 1 (день 0)" as P1
+        state "❌ Попытка 2 (день +3)" as P2
+
+        Норма --> P1 : Списание отклонено ЮКассой
+        P1 --> Норма : Ручная оплата /\nСмена метода (UC-P03)
+        P1 --> P2 : +3 дня, повтор неудача
+        P2 --> Норма : Ручная оплата /\nСмена метода (UC-P03)
+    }
+
+    НеПодключён --> Активен : UC-P01\nПривязка СБП или карты
+    Активен --> НеПодключён : UC-P04\nКлиент нажал «Отключить»
+    Активен --> Приостановлен : UC-P05\nПопытка 3 — неудача\n(is_active=false, status=suspended)
+    Приостановлен --> Активен : UC-P01\nВозобновление (повторная привязка)
+    Приостановлен --> Отключён : UC-P04\nКлиент отключил вручную
+    Отключён --> Активен : UC-P01\nПовторная привязка метода
+    Активен --> Активен : UC-P03\nСмена метода\n(старый → новый payment_method_id)
+
+    note right of НеПодключён
+        payment_method_id = null
+        или is_active = false
+    end note
+
+    note right of Приостановлен
+        payment_method_id сохранён
+        is_active = false
+        retry_count = 3
+        Пуши о долге продолжаются
+    end note
+
+    note right of Отключён
+        payment_method_id сохранён
+        is_active = false
+        Клиент сам отключил
+    end note
+      </div>
+    </div>
+
+    <!-- Transitions table -->
+    <div class="trans-card">
+      <h3>Все переходы</h3>
+      <div class="trans-item">
+        <div class="trans-arrow">⭕ → 🟢</div>
+        <div class="trans-text">Клиент привязал СБП или карту через ЮКассу <span class="trans-uc">UC-P01</span></div>
+      </div>
+      <div class="trans-item">
+        <div class="trans-arrow">🟢 → ⭕</div>
+        <div class="trans-text">Клиент нажал «Отключить» и подтвердил в диалоге <span class="trans-uc">UC-P04</span></div>
+      </div>
+      <div class="trans-item">
+        <div class="trans-arrow">🟢 → ⏸</div>
+        <div class="trans-text">Три попытки автосписания подряд не прошли (день 0, +3, +6) <span class="trans-uc">UC-P05</span></div>
+      </div>
+      <div class="trans-item">
+        <div class="trans-arrow">🟢 → 🟢</div>
+        <div class="trans-text">Смена способа оплаты — деактивируется старый, сохраняется новый payment_method_id <span class="trans-uc">UC-P03</span></div>
+      </div>
+      <div class="trans-item">
+        <div class="trans-arrow">⏸ → 🟢</div>
+        <div class="trans-text">Клиент нажал «Возобновить» и прошёл повторную привязку <span class="trans-uc">UC-P01</span></div>
+      </div>
+      <div class="trans-item">
+        <div class="trans-arrow">⏸ → ⚫</div>
+        <div class="trans-text">Клиент отключил автоплатёж вручную пока он приостановлен <span class="trans-uc">UC-P04</span></div>
+      </div>
+      <div class="trans-item">
+        <div class="trans-arrow">⚫ → 🟢</div>
+        <div class="trans-text">Клиент повторно привязал платёжный метод после отключения <span class="trans-uc">UC-P01</span></div>
+      </div>
+      <div class="trans-item">
+        <div class="trans-arrow">Норма → P1</div>
+        <div class="trans-text">В день списания ЮКасса вернула ошибку (недостаток средств, карта заблокирована и т.д.) <span class="trans-uc">UC-P02/P05</span></div>
+      </div>
+      <div class="trans-item">
+        <div class="trans-arrow">P1/P2 → Норма</div>
+        <div class="trans-text">Клиент оплатил вручную или сменил платёжный метод — счётчик попыток сбрасывается <span class="trans-uc">UC-P03/P05</span></div>
+      </div>
+      <div class="trans-item">
+        <div class="trans-arrow">Фоллбэк</div>
+        <div class="trans-text">СБП отклонён → немедленная попытка через карту (если привязаны оба метода). Счётчик не увеличивается <span class="trans-uc">UC-P02/P05</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+
+    <!-- States legend -->
+    <div class="legend-card">
+      <h3>Статусы</h3>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#48484A"></div>
+        <div class="legend-text">
+          <div class="name">Не подключён</div>
+          <div class="desc">payment_method_id = null или is_active = false. Начальное состояние.</div>
+        </div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#30D158"></div>
+        <div class="legend-text">
+          <div class="name">Активен</div>
+          <div class="desc">is_active = true. Cron списывает в дату начисления. Внутри — три суб-состояния по счётчику попыток.</div>
+        </div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#FF9500"></div>
+        <div class="legend-text">
+          <div class="name">Приостановлен</div>
+          <div class="desc">status = suspended. Исчерпаны 3 попытки. payment_method_id сохранён, пуши о долге продолжаются.</div>
+        </div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#636366"></div>
+        <div class="legend-text">
+          <div class="name">Отключён</div>
+          <div class="desc">Клиент сам отключил через переключатель. is_active = false, payment_method_id сохранён.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- UC list -->
+    <div class="uc-card">
+      <h3>Use Cases в диаграмме</h3>
+      <div class="uc-item">
+        <div class="uc-id">P01</div>
+        <div class="uc-desc">Привязка СБП или карты через ЮКассу. Создаёт активный автоплатёж.</div>
+      </div>
+      <div class="uc-item">
+        <div class="uc-id">P02</div>
+        <div class="uc-desc">Cron: push за 3 дня → списание в дату начисления → обновление баланса.</div>
+      </div>
+      <div class="uc-item">
+        <div class="uc-id">P03</div>
+        <div class="uc-desc">Смена метода: атомарно деактивирует старый и сохраняет новый payment_method_id.</div>
+      </div>
+      <div class="uc-item">
+        <div class="uc-id">P04</div>
+        <div class="uc-desc">Ручное отключение клиентом. Диалог подтверждения → is_active = false.</div>
+      </div>
+      <div class="uc-item">
+        <div class="uc-id">P05</div>
+        <div class="uc-desc">Сбои: фоллбэк СБП→Карта, повторные попытки +3/+6 дней, приостановка после трёх неудач.</div>
+      </div>
+    </div>
+
+    <!-- Storage -->
+    <div class="legend-card">
+      <h3>Хранение в БД</h3>
+      <div class="legend-item" style="align-items:flex-start">
+        <div style="background:rgba(0,122,255,.15);border-radius:6px;padding:3px 8px;font-size:11px;font-family:monospace;color:#0A84FF;flex-shrink:0;margin-top:1px">is_active</div>
+        <div class="legend-text">
+          <div class="desc">true = активен / false = приостановлен или отключён</div>
+        </div>
+      </div>
+      <div class="legend-item" style="align-items:flex-start">
+        <div style="background:rgba(0,122,255,.15);border-radius:6px;padding:3px 8px;font-size:11px;font-family:monospace;color:#0A84FF;flex-shrink:0;margin-top:1px">status</div>
+        <div class="legend-text">
+          <div class="desc">active · suspended · disabled</div>
+        </div>
+      </div>
+      <div class="legend-item" style="align-items:flex-start">
+        <div style="background:rgba(0,122,255,.15);border-radius:6px;padding:3px 8px;font-size:11px;font-family:monospace;color:#0A84FF;flex-shrink:0;margin-top:1px">retry_count</div>
+        <div class="legend-text">
+          <div class="desc">0→3. Сбрасывается при ручной оплате или смене метода</div>
+        </div>
+      </div>
+      <div class="legend-item" style="align-items:flex-start">
+        <div style="background:rgba(0,122,255,.15);border-radius:6px;padding:3px 8px;font-size:11px;font-family:monospace;color:#0A84FF;flex-shrink:0;margin-top:1px">payment_method_id</div>
+        <div class="legend-text">
+          <div class="desc">Токен ЮКассы. Никогда не удаляется — только деактивируется</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Open questions -->
+    <div class="oq-card">
+      <h3>Открытые вопросы</h3>
+      <div class="oq-item">Фоллбэк СБП→Карта: в ту же попытку (мгновенно) или через 3 дня? Уточнить с бэкендом.</div>
+      <div class="oq-item">После приостановки: нужна новая привязка (UC-P01) или можно переиспользовать сохранённый токен?</div>
+      <div class="oq-item">Технический timeout ЮКассы: считается «официальной» неудачной попыткой или нет?</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      background: '#1C1C1E',
+      primaryColor: '#1A3D2B',
+      primaryTextColor: '#30D158',
+      primaryBorderColor: '#30D158',
+      lineColor: '#48484A',
+      secondaryColor: '#2C2C2E',
+      tertiaryColor: '#3D3000',
+      edgeLabelBackground: '#2C2C2E',
+      fontFamily: '-apple-system, BlinkMacSystemFont, SF Pro Text, Roboto, sans-serif',
+      fontSize: '14px',
+      noteBkgColor: '#2C2C2E',
+      noteTextColor: '#AEAEB2',
+      noteBorderColor: '#48484A',
+    },
+    stateDiagram: {
+      dividerMargin: 10,
+      sizeUnit: 5,
+      padding: 8,
+      textHeight: 16,
+      titleShift: -15,
+      noteMargin: 10,
+      forkWidth: 70,
+      forkHeight: 7,
+      miniPadding: 2,
+    }
+  });
+</script>
+</body>
+</html>
