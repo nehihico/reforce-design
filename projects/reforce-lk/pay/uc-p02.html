@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UC-P02 · Настройка автоплатежа · Reforce ЛК</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+*{-webkit-tap-highlight-color:transparent;box-sizing:border-box;margin:0;padding:0}
+body{background:#1C1C1E;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Roboto',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:24px 16px 48px}
+.page-title{color:#fff;font-size:22px;font-weight:700;margin-bottom:4px;text-align:center}
+.page-sub{color:#8E8E93;font-size:14px;text-align:center;margin-bottom:32px}
+.frames{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+.frame-wrap{display:flex;flex-direction:column;align-items:center;gap:12px}
+.frame-num{background:#D42B2B;color:#fff;font-size:11px;font-weight:700;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.frame-caption{color:#8E8E93;font-size:12px;text-align:center;max-width:220px;line-height:1.4}
+.frame-caption b{color:#fff;font-weight:500}
+.phone{width:390px;height:844px;background:#F2F2F7;border-radius:54px;overflow:hidden;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.1)}
+.sbar{height:44px;padding:14px 28px 0;display:flex;justify-content:space-between;align-items:flex-end;flex-shrink:0}
+.sbar-time{font-size:15px;font-weight:600;color:#1C1C1E}
+.nav{height:44px;display:flex;align-items:center;justify-content:center;padding:0 16px;position:relative;flex-shrink:0}
+.nav-back{position:absolute;left:8px;display:flex;align-items:center;gap:2px;color:#D42B2B;font-size:17px;padding:0 8px;min-height:44px}
+.nav-title{font-size:17px;font-weight:600;color:#1C1C1E}
+.tabbar{height:83px;background:#fff;border-top:.5px solid #C7C7CC;display:flex;padding:0 4px 20px;flex-shrink:0;margin-top:auto}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;padding-top:8px;gap:3px}
+.tab span{font-size:10px;font-weight:500;color:#8E8E93}
+.tab.active span{color:#D42B2B}
+.scroll{flex:1;overflow-y:auto;padding:0 16px}
+.scroll::-webkit-scrollbar{display:none}
+.card{background:#fff;border-radius:20px;overflow:hidden;margin-bottom:16px}
+.row{display:flex;align-items:center;padding:14px 16px;gap:12px;min-height:56px;border-bottom:.5px solid #F2F2F7}
+.row:last-child{border-bottom:none}
+.btn{width:100%;min-height:56px;border-radius:16px;border:none;font-size:17px;font-weight:600;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer}
+.btn-primary{background:#D42B2B;color:#fff}
+.btn-secondary{background:#F2F2F7;color:#1C1C1E}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px 4px 8px;border-radius:99px;font-size:13px;font-weight:500}
+.badge-success{background:#E8F9ED;color:#1A7F37}
+.badge-warning{background:#FFF8EC;color:#B25000}
+.badge-error{background:#FFF0EF;color:#D70015}
+.badge-info{background:#EBF5FF;color:#0055CC}
+/* Push notification */
+.push-wrapper{position:absolute;top:72px;left:12px;right:12px;z-index:10}
+.push-notif{background:rgba(255,255,255,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:16px;padding:12px 14px;box-shadow:0 8px 32px rgba(0,0,0,.16);border:.5px solid rgba(0,0,0,.06)}
+.push-app{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.push-app-icon{width:20px;height:20px;border-radius:5px;background:#D42B2B;display:flex;align-items:center;justify-content:center}
+.push-time{font-size:11px;color:#8E8E93;margin-left:auto}
+.push-title{font-size:13px;font-weight:600;color:#1C1C1E;margin-bottom:3px}
+.push-body{font-size:13px;color:#3A3A3C;line-height:1.4}
+.push-actions{display:flex;gap:0;margin-top:10px;border-top:.5px solid #F2F2F7;padding-top:10px}
+.push-act{flex:1;text-align:center;font-size:13px;font-weight:600;color:#D42B2B;padding:4px 0;cursor:pointer}
+.push-act.secondary{color:#636366;font-weight:400}
+.push-act+.push-act{border-left:.5px solid #F2F2F7}
+/* Toggle */
+.toggle{width:51px;height:31px;border-radius:16px;position:relative;flex-shrink:0}
+.toggle-on{background:#34C759}
+.toggle-knob{position:absolute;top:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.2)}
+.toggle-on .toggle-knob{left:22px}
+/* History item */
+.history-item{display:flex;align-items:center;padding:12px 16px;gap:12px;border-bottom:.5px solid #F2F2F7}
+.history-item:last-child{border-bottom:none}
+.history-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<p class="page-title">UC-P02 · Настройка автоплатежа</p>
+<p class="page-sub">Автоматическое списание · Пуш за 3 дня · Успех · Фоллбэк СБП→Карта</p>
+
+<div class="frames">
+
+<!-- ─── FRAME 1: Push за 3 дня (обычный) ─── -->
+<div class="frame-wrap">
+  <div class="frame-num">1</div>
+  <div class="phone">
+    <div style="display:flex;flex-direction:column;height:100%;background:#1C1C1E;position:relative">
+      <!-- Lock screen -->
+      <div style="height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px">
+        <span style="font-size:15px;font-weight:600;color:#fff">9:41</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <svg width="17" height="12" viewBox="0 0 17 12" fill="white"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/></svg>
+          <svg width="16" height="11" viewBox="0 0 16 11" fill="white"><path d="M8 1.5C10.2 1.5 12.2 2.4 13.7 3.9L15 2.6C13.1.7 10.7-.3 8-.3S2.9.7 1 2.6l1.3 1.3C3.8 2.4 5.8 1.5 8 1.5z"/><circle cx="8" cy="8.5" r="1.5"/></svg>
+          <div style="display:flex;align-items:center;gap:2px"><div style="width:22px;height:11px;border-radius:3px;border:1.5px solid rgba(255,255,255,.6);position:relative"><div style="position:absolute;top:1.5px;left:1.5px;bottom:1.5px;width:80%;background:white;border-radius:1.5px"></div></div></div>
+        </div>
+      </div>
+      <!-- Lock clock -->
+      <div style="text-align:center;margin-top:40px;margin-bottom:32px">
+        <div style="font-size:72px;font-weight:200;color:#fff;line-height:1">9:41</div>
+        <div style="font-size:17px;color:rgba(255,255,255,.7);margin-top:4px">Вт, 28 июня</div>
+      </div>
+      <!-- Push -->
+      <div class="push-wrapper">
+        <div class="push-notif">
+          <div class="push-app">
+            <div class="push-app-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="white"><rect x="1" y="3" width="10" height="7" rx="1.5"/><path d="M1 5h10"/></svg></div>
+            <span style="font-size:11px;font-weight:600;color:#3A3A3C;letter-spacing:.3px">REFORCE</span>
+            <span class="push-time">сейчас</span>
+          </div>
+          <div class="push-title">💳 Автоплатёж через 3 дня</div>
+          <div class="push-body">Через 3 дня спишем <b>1 200 ₽</b> по договору №А-1042 (СБП · Т-Банк)</div>
+          <div class="push-actions">
+            <div class="push-act">Открыть</div>
+            <div class="push-act secondary">Закрыть</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="frame-caption"><b>Push за 3 дня</b><br>Предупреждение о списании<br><span style="font-size:11px;color:#636366">Шаг 1 UC-P02 · Приложение А.7</span></div>
+</div>
+
+<!-- ─── FRAME 2: Push за 3 дня (с долгом) ─── -->
+<div class="frame-wrap">
+  <div class="frame-num">2</div>
+  <div class="phone">
+    <div style="display:flex;flex-direction:column;height:100%;background:#1C1C1E;position:relative">
+      <div style="height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px">
+        <span style="font-size:15px;font-weight:600;color:#fff">9:41</span>
+        <div style="display:flex;gap:6px;align-items:center"><svg width="17" height="12" viewBox="0 0 17 12" fill="white"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/></svg></div>
+      </div>
+      <div style="text-align:center;margin-top:40px;margin-bottom:32px">
+        <div style="font-size:72px;font-weight:200;color:#fff;line-height:1">9:41</div>
+        <div style="font-size:17px;color:rgba(255,255,255,.7);margin-top:4px">Вт, 28 июня</div>
+      </div>
+      <div class="push-wrapper">
+        <div class="push-notif">
+          <div class="push-app">
+            <div class="push-app-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="white"><rect x="1" y="3" width="10" height="7" rx="1.5"/><path d="M1 5h10"/></svg></div>
+            <span style="font-size:11px;font-weight:600;color:#3A3A3C;letter-spacing:.3px">REFORCE</span>
+            <span class="push-time">сейчас</span>
+          </div>
+          <div class="push-title">⚠️ Автоплатёж через 3 дня · Включает долг</div>
+          <div class="push-body">Через 3 дня спишем <b>2 400 ₽</b> по договору №А-1042 (СБП · Т-Банк). Включает задолженность <b>1 200 ₽</b></div>
+          <div class="push-actions">
+            <div class="push-act">Открыть</div>
+            <div class="push-act secondary">Закрыть</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="frame-caption"><b>Push: долг + абон. плата</b><br>Расширенное уведомление с долгом<br><span style="font-size:11px;color:#636366">Шаг 1а UC-P02 · Приложение А.7</span></div>
+</div>
+
+<!-- ─── FRAME 3: Push успешного списания ─── -->
+<div class="frame-wrap">
+  <div class="frame-num">3</div>
+  <div class="phone">
+    <div style="display:flex;flex-direction:column;height:100%;background:#1C1C1E;position:relative">
+      <div style="height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px">
+        <span style="font-size:15px;font-weight:600;color:#fff">9:41</span>
+        <div style="display:flex;gap:6px;align-items:center"><svg width="17" height="12" viewBox="0 0 17 12" fill="white"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/></svg></div>
+      </div>
+      <div style="text-align:center;margin-top:40px;margin-bottom:32px">
+        <div style="font-size:72px;font-weight:200;color:#fff;line-height:1">9:41</div>
+        <div style="font-size:17px;color:rgba(255,255,255,.7);margin-top:4px">Вт, 1 июля</div>
+      </div>
+      <div class="push-wrapper">
+        <div class="push-notif">
+          <div class="push-app">
+            <div class="push-app-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="white"><rect x="1" y="3" width="10" height="7" rx="1.5"/><path d="M1 5h10"/></svg></div>
+            <span style="font-size:11px;font-weight:600;color:#3A3A3C;letter-spacing:.3px">REFORCE</span>
+            <span class="push-time">сейчас</span>
+          </div>
+          <div class="push-title">✅ Списано 1 200 ₽</div>
+          <div class="push-body">Автоплатёж по договору №А-1042. Баланс: <b style="color:#34C759">0 ₽</b> · СБП · Т-Банк</div>
+          <div class="push-actions">
+            <div class="push-act">Квитанция</div>
+            <div class="push-act secondary">Закрыть</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="frame-caption"><b>Push: успешное списание</b><br>СБП, Т-Банк, подтверждение<br><span style="font-size:11px;color:#636366">Шаг 4 UC-P02</span></div>
+</div>
+
+<!-- ─── FRAME 4: Push — фоллбэк СБП→Карта ─── -->
+<div class="frame-wrap">
+  <div class="frame-num">4</div>
+  <div class="phone">
+    <div style="display:flex;flex-direction:column;height:100%;background:#1C1C1E;position:relative">
+      <div style="height:44px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 28px 8px">
+        <span style="font-size:15px;font-weight:600;color:#fff">9:41</span>
+        <div style="display:flex;gap:6px;align-items:center"><svg width="17" height="12" viewBox="0 0 17 12" fill="white"><rect x="0" y="3" width="3" height="9" rx="1"/><rect x="4.5" y="2" width="3" height="10" rx="1"/><rect x="9" y="0" width="3" height="12" rx="1"/></svg></div>
+      </div>
+      <div style="text-align:center;margin-top:40px;margin-bottom:32px">
+        <div style="font-size:72px;font-weight:200;color:#fff;line-height:1">9:41</div>
+        <div style="font-size:17px;color:rgba(255,255,255,.7);margin-top:4px">Вт, 1 июля</div>
+      </div>
+      <div class="push-wrapper">
+        <div class="push-notif">
+          <div class="push-app">
+            <div class="push-app-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="white"><rect x="1" y="3" width="10" height="7" rx="1.5"/><path d="M1 5h10"/></svg></div>
+            <span style="font-size:11px;font-weight:600;color:#3A3A3C;letter-spacing:.3px">REFORCE</span>
+            <span class="push-time">сейчас</span>
+          </div>
+          <div class="push-title">✅ Списано 1 200 ₽ · Через карту</div>
+          <div class="push-body">Автоплатёж по договору №А-1042 выполнен с карты •••• 4242 (СБП не прошёл).</div>
+          <div class="push-actions">
+            <div class="push-act">Квитанция</div>
+            <div class="push-act secondary">Закрыть</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="frame-caption"><b>Push: фоллбэк СБП→Карта</b><br>Успех по резервному методу<br><span style="font-size:11px;color:#636366">Шаг 3б UC-P02 · Поток B</span></div>
+</div>
+
+<!-- ─── FRAME 5: Договор — история после автоплатежа ─── -->
+<div class="frame-wrap">
+  <div class="frame-num">5</div>
+  <div class="phone">
+    <div style="display:flex;flex-direction:column;height:100%;background:#F2F2F7">
+      <div class="sbar"><span class="sbar-time">9:41</span></div>
+      <div class="nav"><span class="nav-back"><svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8L8 14" stroke="#D42B2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>&nbsp;Платежи</span><span class="nav-title">Договор №А-1042</span></div>
+      <div class="scroll" style="padding-top:8px">
+        <!-- Balance OK -->
+        <div class="card" style="padding:16px">
+          <div style="font-size:13px;color:#636366;margin-bottom:4px">Баланс</div>
+          <div style="font-size:28px;font-weight:700;color:#34C759">0 ₽</div>
+          <div style="margin-top:8px;font-size:13px;color:#636366">Следующее списание: 01.08.2026 · 1 200 ₽</div>
+        </div>
+        <!-- Autopay block -->
+        <div style="background:#fff;border-radius:20px;padding:16px;margin-bottom:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <div style="font-size:17px;font-weight:600;color:#1C1C1E">Автоплатёж</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:4px"><div style="width:8px;height:8px;border-radius:50%;background:#34C759"></div><span style="font-size:13px;color:#34C759;font-weight:500">СБП · Т-Банк</span></div>
+            </div>
+            <div class="toggle toggle-on"><div class="toggle-knob"></div></div>
+          </div>
+        </div>
+        <!-- History -->
+        <div style="font-size:13px;color:#636366;padding:0 0 6px;text-transform:uppercase;letter-spacing:.3px;font-weight:400">История операций</div>
+        <div class="card" style="margin-bottom:16px">
+          <div class="history-item">
+            <div class="history-icon" style="background:#E8F9ED"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:500;color:#1C1C1E">Автоплатёж</div>
+              <div style="font-size:13px;color:#636366">1 июля · СБП · Т-Банк</div>
+            </div>
+            <div style="font-size:15px;font-weight:600;color:#34C759">−1 200 ₽</div>
+          </div>
+          <div class="history-item">
+            <div class="history-icon" style="background:#E8F9ED"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:500;color:#1C1C1E">Автоплатёж</div>
+              <div style="font-size:13px;color:#636366">1 июня · СБП · Т-Банк</div>
+            </div>
+            <div style="font-size:15px;font-weight:600;color:#34C759">−1 200 ₽</div>
+          </div>
+          <div class="history-item">
+            <div class="history-icon" style="background:#E8F9ED"><svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 10l4 4 6-7" stroke="#34C759" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:500;color:#1C1C1E">Начисление абон. платы</div>
+              <div style="font-size:13px;color:#636366">1 июля · Система</div>
+            </div>
+            <div style="font-size:15px;font-weight:600;color:#FF3B30">+1 200 ₽</div>
+          </div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+      <div class="tabbar">
+        <div class="tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/></svg><span>Объекты</span></div>
+        <div class="tab active"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D42B2B" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg><span style="color:#D42B2B">Платежи</span></div>
+        <div class="tab"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8E8E93" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg><span>Профиль</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="frame-caption"><b>Договор · история операций</b><br>Два успешных автоплатежа<br><span style="font-size:11px;color:#636366">Постусловие UC-P02</span></div>
+</div>
+
+</div>
+
+<div style="margin-top:48px;background:rgba(255,255,255,.06);border-radius:16px;padding:20px 28px;max-width:700px;width:100%">
+  <div style="color:#8E8E93;font-size:12px;text-align:center;line-height:1.6">
+    <b style="color:#fff">UC-P02 · Настройка автоплатежа (cron)</b> &nbsp;|&nbsp; Версия 1.0 · 2026-06-01 &nbsp;|&nbsp;
+    Связанные: <span style="color:#D42B2B">UC-P01</span> · <span style="color:#D42B2B">UC-P05</span>
+  </div>
+</div>
+
+</body>
+</html>
