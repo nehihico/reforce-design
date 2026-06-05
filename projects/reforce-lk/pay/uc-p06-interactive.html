@@ -231,21 +231,15 @@ body {
 .bdr-total-val   { font-size: 28px; font-weight: 700; color: #1C1C1E; transition: color .2s; }
 .bdr-total-val.accent { color: #D42B2B; }
 
-/* ─── DEBT-ONLY LINK ─────────────────────────────────────── */
-.donly-row {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 2px 4px 14px;
+/* ─── DEBT-ONLY BUTTON ───────────────────────────────────── */
+.btn-debt {
+  min-height: 50px; border-radius: 14px;
+  font-size: 15px; font-weight: 500;
+  background: #fff;
+  color: #636366;
+  border: 1.5px solid #E5E5EA;
+  margin-top: 8px;
 }
-.donly-hint { font-size: 13px; color: #8E8E93; }
-.donly-btn {
-  display: flex; align-items: center; gap: 5px;
-  background: #F2F2F7; border: none;
-  border-radius: 10px; padding: 7px 13px;
-  font-size: 14px; color: #636366; font-weight: 500;
-  font-family: inherit; cursor: pointer;
-  transition: background .15s;
-}
-.donly-btn:active { background: #E5E5EA; }
 
 /* ─── CTA ────────────────────────────────────────────────── */
 .cta { padding: 8px 16px 36px; flex-shrink: 0; background: #F2F2F7; }
@@ -515,25 +509,18 @@ body {
         </div>
       </div>
 
-      <!-- Debt-only link -->
-      <div class="donly-row" id="donly-row">
-        <div class="donly-hint">Хочу только погасить долг</div>
-        <button class="donly-btn" onclick="setDebtOnly(true)">
-          744 ₽
-          <svg width="7" height="12" viewBox="0 0 7 12" fill="none">
-            <path d="M1 1l4.5 5L1 11" stroke="#8E8E93" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
-
     </div><!-- /scroll -->
 
     <div class="cta" id="pay-cta">
-      <!-- full payment button -->
+      <!-- full payment -->
       <button class="btn btn-p" id="btn-pay-full" onclick="pay('full')">
         Оплатить <span id="btn-pay-label">1 600 ₽</span>
       </button>
-      <!-- debt-only buttons (hidden initially) -->
+      <!-- secondary: debt-only trigger -->
+      <button class="btn btn-debt" id="btn-donly-trigger" onclick="setDebtOnly(true)">
+        Погасить только долг · 744 ₽
+      </button>
+      <!-- debt-only mode buttons (hidden initially) -->
       <button class="btn btn-p gray" id="btn-pay-debt" style="display:none" onclick="pay('debt')">
         Погасить долг · 744 ₽
       </button>
@@ -765,17 +752,20 @@ function renderPay() {
   document.getElementById('donly-row').style.display = S.debtOnly ? 'none' : 'flex';
 
   /* CTA buttons */
-  const bFull = document.getElementById('btn-pay-full');
-  const bDebt = document.getElementById('btn-pay-debt');
-  const bBack = document.getElementById('btn-pay-back');
+  const bFull    = document.getElementById('btn-pay-full');
+  const bTrigger = document.getElementById('btn-donly-trigger');
+  const bDebt    = document.getElementById('btn-pay-debt');
+  const bBack    = document.getElementById('btn-pay-back');
   if (S.debtOnly) {
-    bFull.style.display = 'none';
-    bDebt.style.display = 'flex';
-    bBack.style.display = 'flex';
+    bFull.style.display    = 'none';
+    bTrigger.style.display = 'none';
+    bDebt.style.display    = 'flex';
+    bBack.style.display    = 'flex';
   } else {
-    bFull.style.display = 'flex';
-    bDebt.style.display = 'none';
-    bBack.style.display = 'none';
+    bFull.style.display    = 'flex';
+    bTrigger.style.display = 'flex';
+    bDebt.style.display    = 'none';
+    bBack.style.display    = 'none';
     document.getElementById('btn-pay-label').textContent = fmt(t);
   }
 }
