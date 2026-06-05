@@ -231,6 +231,30 @@ body {
 .bdr-total-val   { font-size: 28px; font-weight: 700; color: #1C1C1E; transition: color .2s; }
 .bdr-total-val.accent { color: #D42B2B; }
 
+/* ─── CUSTOM AMOUNT ──────────────────────────────────────── */
+.custom-amt-wrap {
+  margin: 4px 16px 14px;
+  border-radius: 14px;
+  border: 1.5px solid #E5E5EA;
+  background: #F9F9FB;
+  padding: 10px 14px;
+  display: flex; align-items: center; gap: 8px;
+  transition: border-color .15s, background .15s;
+}
+.custom-amt-wrap.active {
+  border-color: #D42B2B; background: #FFF5F5;
+}
+.custom-amt-label { font-size: 13px; color: #8E8E93; white-space: nowrap; font-weight: 500; }
+.custom-amt-input {
+  flex: 1; font-size: 20px; font-weight: 700; color: #1C1C1E;
+  border: none; outline: none; background: transparent;
+  font-family: inherit; text-align: right;
+  caret-color: #D42B2B; min-width: 0;
+}
+.custom-amt-input.red { color: #D42B2B; }
+.custom-amt-suffix { font-size: 20px; font-weight: 700; color: #1C1C1E; flex-shrink: 0; }
+.custom-amt-suffix.red { color: #D42B2B; }
+
 /* ─── DEBT-ONLY BUTTON ───────────────────────────────────── */
 .btn-debt {
   min-height: 50px; border-radius: 14px;
@@ -565,6 +589,14 @@ body {
           <!-- chips rendered by JS -->
         </div>
 
+        <!-- Custom amount input -->
+        <div class="custom-amt-wrap" id="custom-wrap">
+          <div class="custom-amt-label">Сумма к оплате</div>
+          <input class="custom-amt-input" id="custom-inp" type="text" inputmode="numeric"
+            oninput="onCustomAmt(this)" onfocus="onCustomFocus()" onblur="onCustomBlur()"/>
+          <div class="custom-amt-suffix" id="custom-suffix">₽</div>
+        </div>
+
         <!-- Savings notice -->
         <div class="notice green" id="notice-saving" style="display:none">
           <div class="notice-ico green">
@@ -863,11 +895,12 @@ const DEBT = 744;
 const BASE = 856; // base monthly price
 
 let S = {
-  pi: 0,          // period index
+  pi: 0,           // period index
   autopay: true,
   debtOnly: false,
-  lastPay: null,  // 'full' | 'debt' | 'period'
-  noBadge: false, // no debt after paying it
+  lastPay: null,   // 'full' | 'debt' | 'period'
+  noBadge: false,
+  customAmt: null, // null = use period chip, number = custom override
 };
 
 /* ═══════════════════════════════════════════════════════════
@@ -878,13 +911,18 @@ function fmt(n) {
 }
 
 function saving() {
+  if (S.customAmt !== null) return 0; // no discount on custom
   const p = PERIODS[S.pi];
   if (!p.discount) return 0;
   return BASE * p.months - p.amount;
 }
 
+function periodAmount() {
+  return S.customAmt !== null ? S.customAmt : PERIODS[S.pi].amount;
+}
+
 function total() {
-  return S.debtOnly ? DEBT : DEBT + PERIODS[S.pi].amount;
+  return S.debtOnly ? DEBT : DEBT + periodAmount();
 }
 
 function periodNextLabel() {
@@ -914,7 +952,8 @@ function go(id, dir) {
 function renderChips() {
   const grid = document.getElementById('period-grid');
   grid.innerHTML = PERIODS.map((p, i) => {
-    const on = i === S.pi ? 'on' : '';
+    /* chip is "on" only if no custom amount and this period is selected */
+    const on = (S.customAmt === null && i === S.pi) ? 'on' : '';
     const badge = p.discount
       ? `<div class="pchip-badge ${p.discount >= 20 ? 'g' : 'r'}">−${p.discount}%</div>`
       : '';
@@ -978,17 +1017,39 @@ function renderPay() {
     ? 'Период не входит в эту оплату'
     : 'Выбери горизонт — чем длиннее, тем выгоднее';
 
+  /* custom amount field */
+  const wrap = document.getElementById('custom-wrap');
+  const cinp = document.getElementById('custom-inp');
+  const sfx  = document.getElementById('custom-suffix');
+  if (S.debtOnly) {
+    wrap.style.display = 'none';
+  } else {
+    wrap.style.display = 'flex';
+    if (S.customAmt === null) {
+      cinp.value = p.amount.toLocaleString('ru-RU');
+      cinp.classList.remove('red');
+      sfx.classList.remove('red');
+      wrap.classList.remove('active');
+    }
+  }
+
   /* breakdown — period row */
+  const pa = periodAmount();
   if (S.debtOnly) {
     document.getElementById('bd-period-label').innerHTML =
       `Период ${p.months} мес <span class="tag-ni">не входит</span>`;
     document.getElementById('bd-period-val').className = 'bdr-val strike';
+    document.getElementById('bd-period-val').textContent = fmt(p.amount);
+  } else if (S.customAmt !== null) {
+    document.getElementById('bd-period-label').innerHTML = `Ваша сумма`;
+    document.getElementById('bd-period-val').className = 'bdr-val accent';
+    document.getElementById('bd-period-val').textContent = fmt(pa);
   } else {
     document.getElementById('bd-period-label').innerHTML =
       `Оплата вперёд · <b style="color:#1C1C1E">${p.months} мес</b>`;
     document.getElementById('bd-period-val').className = 'bdr-val';
+    document.getElementById('bd-period-val').textContent = fmt(pa);
   }
-  document.getElementById('bd-period-val').textContent = fmt(p.amount);
 
   /* breakdown — saving row */
   const savRow = document.getElementById('bd-saving-row');
@@ -1031,6 +1092,7 @@ function renderPay() {
 ═══════════════════════════════════════════════════════════ */
 function selectPeriod(i) {
   S.pi = i;
+  S.customAmt = null; // chip tap resets custom amount
   renderPay();
 }
 
@@ -1329,6 +1391,51 @@ function resetDebtRow() {
 }
 
 /* ═══════════════════════════════════════════════════════════
+/* ═══════════════════════════════════════════════════════════
+   CUSTOM AMOUNT INPUT
+═══════════════════════════════════════════════════════════ */
+function onCustomFocus() {
+  document.getElementById('custom-wrap').classList.add('active');
+  setTimeout(() => document.getElementById('custom-inp').select(), 50);
+}
+function onCustomBlur() {
+  const raw = document.getElementById('custom-inp').value.replace(/[^\d]/g,'');
+  if (!raw || parseInt(raw) === 0) { S.customAmt = null; renderPay(); return; }
+  S.customAmt = parseInt(raw);
+  document.getElementById('custom-inp').value = S.customAmt.toLocaleString('ru-RU');
+  renderChips(); syncBreakdown();
+}
+function onCustomAmt(inp) {
+  const raw = inp.value.replace(/[^\d]/g,'');
+  inp.value = raw ? parseInt(raw).toLocaleString('ru-RU') : '';
+  const val = parseInt(raw) || 0;
+  S.customAmt = val > 0 ? val : null;
+  const red = S.customAmt !== null;
+  inp.classList.toggle('red', red);
+  document.getElementById('custom-suffix').classList.toggle('red', red);
+  renderChips(); syncBreakdown();
+}
+function syncBreakdown() {
+  const pa = periodAmount(); const t = total(); const p = PERIODS[S.pi];
+  if (S.customAmt !== null) {
+    document.getElementById('bd-period-label').innerHTML = 'Ваша сумма';
+    document.getElementById('bd-period-val').className = 'bdr-val accent';
+    document.getElementById('bd-saving-row').style.display = 'none';
+  } else {
+    const sv = saving();
+    document.getElementById('bd-period-label').innerHTML =
+      'Оплата вперёд · <b style="color:#1C1C1E">' + p.months + '\u00a0мес</b>';
+    document.getElementById('bd-period-val').className = 'bdr-val';
+    document.getElementById('bd-saving-row').style.display = (!S.debtOnly && sv > 0) ? 'flex' : 'none';
+    if (sv > 0) document.getElementById('bd-saving-val').textContent = '\u2212' + fmt(sv);
+  }
+  document.getElementById('bd-period-val').textContent = fmt(pa);
+  const tel = document.getElementById('bd-total');
+  tel.textContent = fmt(t);
+  tel.className = 'bdr-total-val' + (S.debtOnly ? ' accent' : '');
+  if (!S.debtOnly) document.getElementById('btn-pay-label').textContent = fmt(t);
+}
+
    CARD MANAGEMENT
 ═══════════════════════════════════════════════════════════ */
 const CARD_SYSTEMS = [
