@@ -952,8 +952,7 @@ function go(id, dir) {
 function renderChips() {
   const grid = document.getElementById('period-grid');
   grid.innerHTML = PERIODS.map((p, i) => {
-    /* chip is "on" only if no custom amount and this period is selected */
-    const on = (S.customAmt === null && i === S.pi) ? 'on' : '';
+    const on = i === S.pi ? 'on' : '';
     const badge = p.discount
       ? `<div class="pchip-badge ${p.discount >= 20 ? 'g' : 'r'}">−${p.discount}%</div>`
       : '';
@@ -1092,8 +1091,11 @@ function renderPay() {
 ═══════════════════════════════════════════════════════════ */
 function selectPeriod(i) {
   S.pi = i;
-  S.customAmt = null; // chip tap resets custom amount
+  S.customAmt = null; // chip tap resets to period default
   renderPay();
+  /* also reset field color */
+  const inp = document.getElementById('custom-inp');
+  if (inp) { inp.classList.remove('red'); document.getElementById('custom-suffix').classList.remove('red'); }
 }
 
 function toggleAutopay() {
@@ -1403,17 +1405,17 @@ function onCustomBlur() {
   if (!raw || parseInt(raw) === 0) { S.customAmt = null; renderPay(); return; }
   S.customAmt = parseInt(raw);
   document.getElementById('custom-inp').value = S.customAmt.toLocaleString('ru-RU');
-  renderChips(); syncBreakdown();
+  syncBreakdown();
 }
 function onCustomAmt(inp) {
   const raw = inp.value.replace(/[^\d]/g,'');
   inp.value = raw ? parseInt(raw).toLocaleString('ru-RU') : '';
   const val = parseInt(raw) || 0;
   S.customAmt = val > 0 ? val : null;
-  const red = S.customAmt !== null;
+  const red = S.customAmt !== null && val !== PERIODS[S.pi].amount;
   inp.classList.toggle('red', red);
   document.getElementById('custom-suffix').classList.toggle('red', red);
-  renderChips(); syncBreakdown();
+  syncBreakdown();
 }
 function syncBreakdown() {
   const pa = periodAmount(); const t = total(); const p = PERIODS[S.pi];
