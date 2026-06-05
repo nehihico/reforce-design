@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UC-P06 · Платёжный флоу · Reforce ЛК</title>
+<style>
+/* ─── RESET ─────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif;
+  background: #111;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 16px 80px;
+  background: radial-gradient(ellipse at 50% 0%, #2a1a1a 0%, #111 60%);
+}
+
+/* ─── PAGE HEADER ────────────────────────────────────────── */
+.page-header { text-align: center; margin-bottom: 32px; }
+.page-header h1 { color: #fff; font-size: 18px; font-weight: 700; margin-bottom: 6px; letter-spacing: -.2px; }
+.page-header p { color: #636366; font-size: 12px; line-height: 1.5; max-width: 440px; margin: 0 auto; }
+
+/* ─── PHONE SHELL ────────────────────────────────────────── */
+.phone-shell {
+  width: 390px;
+  height: 844px;
+  background: #F2F2F7;
+  border-radius: 54px;
+  overflow: hidden;
+  position: relative;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,.1) inset,
+    0 8px 0 -4px rgba(255,255,255,.06) inset,
+    0 40px 100px rgba(0,0,0,.8);
+}
+
+/* ─── SCREENS ────────────────────────────────────────────── */
+.screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  background: #F2F2F7;
+  will-change: transform, opacity;
+  transition: transform .28s cubic-bezier(.4,0,.2,1), opacity .28s ease;
+}
+.screen.hidden      { opacity: 0; transform: translateX(100%); pointer-events: none; }
+.screen.hidden-left { opacity: 0; transform: translateX(-30%); pointer-events: none; }
+
+/* ─── STATUS BAR ─────────────────────────────────────────── */
+.sbar {
+  height: 44px;
+  padding: 14px 28px 0;
+  display: flex; justify-content: space-between; align-items: flex-end;
+  flex-shrink: 0;
+}
+.sbar-time { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+.sbar-icons { display: flex; align-items: center; gap: 5px; }
+
+/* ─── NAV BAR ────────────────────────────────────────────── */
+.nav {
+  height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 16px; position: relative; flex-shrink: 0;
+}
+.nav-back {
+  position: absolute; left: 8px;
+  display: flex; align-items: center; gap: 4px;
+  color: #D42B2B; font-size: 17px; font-weight: 400;
+  padding: 0 8px; min-height: 44px;
+  background: none; border: none; font-family: inherit; cursor: pointer;
+}
+.nav-title { font-size: 17px; font-weight: 600; color: #1C1C1E; }
+
+/* ─── SCROLL ─────────────────────────────────────────────── */
+.scroll { flex: 1; overflow-y: auto; padding: 0 16px; -webkit-overflow-scrolling: touch; }
+.scroll::-webkit-scrollbar { display: none; }
+
+/* ─── CARDS ──────────────────────────────────────────────── */
+.card {
+  background: #fff;
+  border-radius: 20px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.card-label {
+  padding: 13px 16px 4px;
+  font-size: 11px; font-weight: 700;
+  color: #8E8E93; text-transform: uppercase; letter-spacing: .7px;
+}
+
+/* ─── METHOD ROW ─────────────────────────────────────────── */
+.method-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px 13px;
+}
+.method-ico {
+  width: 44px; height: 44px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.method-name  { font-size: 15px; font-weight: 500; color: #1C1C1E; line-height: 1.2; }
+.method-sub   { font-size: 12px; color: #8E8E93; margin-top: 1px; }
+.method-edit  { font-size: 14px; color: #D42B2B; cursor: pointer; padding: 4px; flex-shrink: 0; }
+
+/* ─── PERIOD BLOCK ───────────────────────────────────────── */
+.period-title-row {
+  padding: 14px 16px 2px;
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.period-title { font-size: 17px; font-weight: 700; color: #1C1C1E; }
+.period-sub   { font-size: 13px; color: #8E8E93; margin-top: 1px; }
+
+.period-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; padding: 12px 16px 4px;
+  transition: opacity .2s;
+}
+.period-grid.dimmed { opacity: .25; pointer-events: none; }
+
+.pchip {
+  position: relative;
+  border-radius: 16px;
+  border: 1.5px solid #E5E5EA;
+  background: #F9F9FB;
+  padding: 12px 12px 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color .15s, background .15s, transform .1s;
+}
+.pchip:active { transform: scale(.96); }
+.pchip.on  { border-color: #D42B2B; background: #FFF5F5; }
+
+.pchip-badge {
+  position: absolute; top: -9px; right: 8px;
+  font-size: 10px; font-weight: 700; padding: 2px 7px;
+  border-radius: 20px; color: #fff; line-height: 1.5;
+}
+.pchip-badge.r  { background: #D42B2B; }
+.pchip-badge.g  { background: #34C759; }
+
+.pchip-dot {
+  position: absolute; top: 9px; right: 9px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #D42B2B;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .15s;
+}
+.pchip.on .pchip-dot { opacity: 1; }
+
+.pchip-period  { font-size: 12px; color: #8E8E93; font-weight: 500; margin-bottom: 3px; }
+.pchip.on .pchip-period { color: #D42B2B; }
+.pchip-amount  { font-size: 17px; font-weight: 700; color: #1C1C1E; line-height: 1.1; }
+.pchip.on .pchip-amount { color: #D42B2B; }
+.pchip-mthly   { font-size: 11px; color: #8E8E93; margin-top: 3px; }
+.pchip.on .pchip-mthly { color: rgba(212,43,43,.55); }
+
+/* ─── NOTICE BANNERS ─────────────────────────────────────── */
+.notice {
+  display: flex; align-items: flex-start; gap: 9px;
+  margin: 8px 16px 4px;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.notice.green { background: #E8F9ED; }
+.notice.orange { background: #FFF8EC; }
+.notice-ico {
+  width: 26px; height: 26px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+}
+.notice-ico.green  { background: #34C759; }
+.notice-ico.orange { background: #FF9500; }
+.notice-text { font-size: 12px; line-height: 1.45; font-weight: 500; }
+.notice-text.green  { color: #1A7F37; }
+.notice-text.orange { color: #B25000; }
+.notice-link { text-decoration: underline; cursor: pointer; font-weight: 700; }
+
+/* ─── AUTOPAY ROW ────────────────────────────────────────── */
+.autopay-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 16px 13px;
+  border-top: .5px solid #F2F2F7;
+  margin-top: 6px;
+}
+.toggle {
+  width: 36px; height: 22px; border-radius: 11px;
+  position: relative; cursor: pointer; flex-shrink: 0;
+  transition: background .2s;
+}
+.toggle.on  { background: #34C759; }
+.toggle.off { background: #E5E5EA; }
+.t-knob {
+  position: absolute; top: 2px; width: 18px; height: 18px;
+  border-radius: 50%; background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.28);
+  transition: left .2s;
+}
+.toggle.on  .t-knob { left: 16px; }
+.toggle.off .t-knob { left: 2px; }
+.autopay-label { font-size: 14px; font-weight: 500; color: #1C1C1E; }
+.autopay-sub   { font-size: 12px; color: #8E8E93; margin-top: 1px; }
+
+/* ─── BREAKDOWN ──────────────────────────────────────────── */
+.bdown {
+  background: #fff; border-radius: 20px;
+  padding: 14px 16px 6px; margin-bottom: 4px;
+}
+.bdr {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding: 5px 0; gap: 8px;
+}
+.bdr-label { font-size: 14px; color: #636366; line-height: 1.3; flex: 1; }
+.bdr-val   { font-size: 14px; font-weight: 500; color: #1C1C1E; white-space: nowrap; }
+.bdr-val.accent { color: #D42B2B; }
+.bdr-val.green  { color: #34C759; font-size: 13px; }
+.bdr-val.strike { text-decoration: line-through; color: #C7C7CC; font-size: 13px; }
+.tag-ni {
+  display: inline-block; margin-left: 6px;
+  background: #F2F2F7; border-radius: 6px;
+  padding: 1px 7px; font-size: 11px; color: #8E8E93; font-weight: 600;
+}
+.bdr-div { height: .5px; background: #F2F2F7; margin: 6px 0; }
+.bdr-total {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding: 6px 0 8px;
+}
+.bdr-total-label { font-size: 16px; font-weight: 700; color: #1C1C1E; }
+.bdr-total-val   { font-size: 28px; font-weight: 700; color: #1C1C1E; transition: color .2s; }
+.bdr-total-val.accent { color: #D42B2B; }
+
+/* ─── DEBT-ONLY LINK ─────────────────────────────────────── */
+.donly-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 2px 4px 14px;
+}
+.donly-hint { font-size: 13px; color: #8E8E93; }
+.donly-btn {
+  display: flex; align-items: center; gap: 5px;
+  background: #F2F2F7; border: none;
+  border-radius: 10px; padding: 7px 13px;
+  font-size: 14px; color: #636366; font-weight: 500;
+  font-family: inherit; cursor: pointer;
+  transition: background .15s;
+}
+.donly-btn:active { background: #E5E5EA; }
+
+/* ─── CTA ────────────────────────────────────────────────── */
+.cta { padding: 8px 16px 36px; flex-shrink: 0; background: #F2F2F7; }
+.btn {
+  width: 100%; border: none; font-family: inherit; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  gap: 8px; transition: opacity .15s, transform .1s;
+}
+.btn:active { opacity: .82; transform: scale(.98); }
+.btn-p {
+  min-height: 56px; border-radius: 16px;
+  font-size: 17px; background: #D42B2B; color: #fff;
+}
+.btn-p.gray   { background: #8E8E93; }
+.btn-p.orange { background: #FF9500; }
+.btn-s {
+  min-height: 50px; border-radius: 14px;
+  font-size: 15px; background: #F2F2F7; color: #636366; margin-top: 8px;
+}
+.btn-g {
+  min-height: 44px; border-radius: 14px;
+  font-size: 15px; background: transparent; color: #D42B2B;
+  margin-top: 4px; font-weight: 500;
+}
+.btn-o {
+  min-height: 50px; border-radius: 14px; font-size: 15px;
+  background: #fff; color: #D42B2B;
+  border: 1.5px solid #D42B2B; margin-top: 8px; font-weight: 500;
+}
+
+/* ─── SUCCESS ────────────────────────────────────────────── */
+.success-body {
+  flex: 1; overflow-y: auto;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 28px 20px 8px; text-align: center;
+}
+.success-body::-webkit-scrollbar { display: none; }
+.s-icon {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: #E8F9ED;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px; flex-shrink: 0;
+}
+.s-title  { font-size: 22px; font-weight: 700; color: #1C1C1E; margin-bottom: 4px; }
+.s-amount { font-size: 34px; font-weight: 700; color: #34C759; margin-bottom: 4px; }
+.s-sub    { font-size: 14px; color: #636366; margin-bottom: 22px; line-height: 1.4; }
+
+.s-card {
+  background: #fff; border-radius: 16px;
+  padding: 14px 16px; width: 100%; margin-bottom: 10px; text-align: left;
+}
+.s-card-row { display: flex; align-items: flex-start; gap: 10px; }
+.s-card-ico {
+  width: 36px; height: 36px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.s-card-title { font-size: 14px; font-weight: 600; color: #1C1C1E; margin-bottom: 3px; }
+.s-card-sub   { font-size: 12px; color: #636366; line-height: 1.45; }
+.s-card-sub b { color: #1C1C1E; font-weight: 600; }
+
+.s-card.warn { background: #FFF8EC; }
+.s-card.warn .s-card-title { color: #B25000; }
+.s-card.warn .s-card-sub   { color: #B25000; }
+.s-card.warn .s-card-sub b { color: #7A3700; }
+
+/* ─── CONTRACT SCREEN ────────────────────────────────────── */
+.contract-scroll { flex: 1; overflow-y: auto; padding-bottom: 16px; }
+.contract-scroll::-webkit-scrollbar { display: none; }
+
+.c-header { padding: 6px 16px 14px; }
+.c-title  { font-size: 20px; font-weight: 700; color: #1C1C1E; }
+.c-sub    { font-size: 13px; color: #8E8E93; margin-top: 2px; }
+
+.c-banner {
+  margin: 0 16px 12px;
+  border-radius: 14px; padding: 12px 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.c-banner.ok   { background: #E8F9ED; }
+.c-banner.warn { background: #FFF8EC; border: 1px solid #FFD580; }
+.c-banner-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.c-banner-text { font-size: 13px; font-weight: 600; }
+.c-banner-text.ok   { color: #1A7F37; }
+.c-banner-text.warn { color: #B25000; flex: 1; }
+
+.c-table { background: #fff; border-radius: 20px; margin: 0 16px 12px; overflow: hidden; }
+.c-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 16px;
+  border-bottom: .5px solid #F2F2F7;
+}
+.c-row:last-child { border-bottom: none; }
+.c-key { font-size: 14px; color: #636366; }
+.c-val { font-size: 14px; font-weight: 500; color: #1C1C1E; }
+.c-val.green  { color: #34C759; }
+.c-val.orange { color: #B25000; }
+.c-val.red    { color: #D42B2B; }
+
+.c-pay-row {
+  margin: 0 16px 12px;
+  background: #fff; border-radius: 16px;
+  padding: 14px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.c-pay-row.warn { background: #FFF8EC; border: 1px solid #FFD580; }
+.c-pay-label { font-size: 13px; color: #636366; margin-bottom: 2px; }
+.c-pay-val   { font-size: 16px; font-weight: 700; }
+.c-pay-val.ok   { color: #1C1C1E; }
+.c-pay-val.warn { color: #B25000; }
+.c-pay-badge {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 12px; font-weight: 600;
+}
+.c-pay-badge.auto { color: #34C759; }
+.c-pay-badge.warn { color: #B25000; }
+.c-pay-btn {
+  background: #FF9500; border: none; color: #fff;
+  border-radius: 10px; padding: 8px 14px;
+  font-size: 13px; font-weight: 600; font-family: inherit; cursor: pointer;
+}
+
+/* ─── LEGEND ─────────────────────────────────────────────── */
+.legend {
+  margin-top: 28px;
+  background: rgba(255,255,255,.05);
+  border-radius: 14px; padding: 16px 20px;
+  max-width: 460px; width: 100%;
+}
+.legend-title { color: #fff; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+.legend-item  { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+.legend-key {
+  font-size: 10px; font-weight: 700; padding: 2px 8px;
+  border-radius: 4px; white-space: nowrap; flex-shrink: 0; margin-top: 1px;
+}
+.lk-r  { background: rgba(212,43,43,.2);  color: #D42B2B; }
+.lk-g  { background: rgba(52,199,89,.2);  color: #34C759; }
+.lk-o  { background: rgba(255,149,0,.2);  color: #FF9500; }
+.lk-b  { background: rgba(10,132,255,.2); color: #0A84FF; }
+.legend-val { font-size: 12px; color: #636366; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>UC-P06 · Оплата договора · Интерактивный прототип</h1>
+  <p>Выбор периода предоплаты, режим «только долг», два сценария после оплаты</p>
+</div>
+
+<div class="phone-shell">
+
+  <!-- ══════════════════════════════════════════════════
+       SCREEN 1 · PAYMENT FORM
+  ══════════════════════════════════════════════════ -->
+  <div class="screen" id="scr-pay">
+    <div class="sbar">
+      <span class="sbar-time">9:41</span>
+      <div class="sbar-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="#1C1C1E">
+          <rect x="0" y="3" width="3" height="9" rx=".5"/><rect x="4.5" y="2" width="3" height="10" rx=".5"/>
+          <rect x="9" y=".5" width="3" height="11.5" rx=".5"/><rect x="13.5" y="0" width="3" height="12" rx=".5"/>
+        </svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#1C1C1E" stroke-width="1.1">
+          <rect x=".5" y=".5" width="13" height="9" rx="1.5"/>
+          <path d="M14 3.5h1.2v4H14"/><rect x="2" y="2" width="8" height="5" rx=".4" fill="#1C1C1E" stroke="none"/>
+        </svg>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="nav-back" onclick="go('scr-contract','back')">
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="none">
+          <path d="M8 2L2 8L8 14" stroke="#D42B2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Назад
+      </button>
+      <span class="nav-title">Договор №9876</span>
+    </div>
+
+    <div class="scroll" id="pay-scroll">
+      <div style="padding:6px 0 12px">
+        <div style="font-size:20px;font-weight:700;color:#1C1C1E">Договор №9876</div>
+        <div style="font-size:13px;color:#8E8E93;margin-top:2px">Абонентский · с 13.02.2026</div>
+      </div>
+
+      <!-- Method -->
+      <div class="card">
+        <div class="method-row">
+          <div class="method-ico" style="background:#E8F9F1">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <circle cx="11" cy="11" r="10" fill="#21A038" opacity=".18"/>
+              <path d="M6 11l3.5 3.5 6.5-7" stroke="#21A038" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div style="flex:1">
+            <div class="method-name">СБЕР •••• 5426</div>
+            <div class="method-sub">MIR · Срок 07/23</div>
+          </div>
+          <span class="method-edit">Изменить</span>
+        </div>
+      </div>
+
+      <!-- Period block -->
+      <div class="card" id="period-card">
+        <div class="period-title-row">
+          <div>
+            <div class="period-title">За сколько месяцев оплатить?</div>
+            <div class="period-sub" id="period-card-sub">Выбери горизонт — чем длиннее, тем выгоднее</div>
+          </div>
+        </div>
+
+        <div class="period-grid" id="period-grid">
+          <!-- chips rendered by JS -->
+        </div>
+
+        <!-- Savings notice -->
+        <div class="notice green" id="notice-saving" style="display:none">
+          <div class="notice-ico green">
+            <svg width="13" height="11" viewBox="0 0 13 11" fill="none">
+              <path d="M1.5 5.5l3.5 3.5 6.5-7" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="notice-text green" id="notice-saving-text"></div>
+        </div>
+
+        <!-- Dimmed notice (debt-only mode) -->
+        <div class="notice orange" id="notice-dimmed" style="display:none">
+          <div class="notice-ico orange">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M6 2.5v4.5M6 8.8h.01" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="notice-text orange">
+            Период <strong>не включён</strong> в эту оплату —
+            <span class="notice-link" onclick="setDebtOnly(false)">включить и оплатить <span id="notice-full-amt"></span></span>
+          </div>
+        </div>
+
+        <!-- Autopay row -->
+        <div class="autopay-row" id="autopay-row">
+          <div class="toggle on" id="autopay-toggle" onclick="toggleAutopay()">
+            <div class="t-knob"></div>
+          </div>
+          <div>
+            <div class="autopay-label" id="autopay-label">Автоповтор через 1 мес</div>
+            <div class="autopay-sub" id="autopay-sub">Следующий — 1 августа 2026, авто</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Breakdown -->
+      <div class="bdown" id="bdown">
+        <div class="bdr">
+          <div class="bdr-label">Задолженность</div>
+          <div class="bdr-val accent" id="bd-debt-row">744 ₽</div>
+        </div>
+        <div class="bdr" id="bd-period-row">
+          <div class="bdr-label" id="bd-period-label">Оплата вперёд · <b style="color:#1C1C1E">1 мес</b></div>
+          <div class="bdr-val" id="bd-period-val">856 ₽</div>
+        </div>
+        <div class="bdr" id="bd-saving-row" style="display:none">
+          <div class="bdr-label" style="color:#34C759">Скидка</div>
+          <div class="bdr-val green" id="bd-saving-val"></div>
+        </div>
+        <div class="bdr-div"></div>
+        <div class="bdr-total">
+          <div class="bdr-total-label">Итого</div>
+          <div class="bdr-total-val" id="bd-total">1 600 ₽</div>
+        </div>
+      </div>
+
+      <!-- Debt-only link -->
+      <div class="donly-row" id="donly-row">
+        <div class="donly-hint">Хочу только погасить долг</div>
+        <button class="donly-btn" onclick="setDebtOnly(true)">
+          744 ₽
+          <svg width="7" height="12" viewBox="0 0 7 12" fill="none">
+            <path d="M1 1l4.5 5L1 11" stroke="#8E8E93" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+    </div><!-- /scroll -->
+
+    <div class="cta" id="pay-cta">
+      <!-- full payment button -->
+      <button class="btn btn-p" id="btn-pay-full" onclick="pay('full')">
+        Оплатить <span id="btn-pay-label">1 600 ₽</span>
+      </button>
+      <!-- debt-only buttons (hidden initially) -->
+      <button class="btn btn-p gray" id="btn-pay-debt" style="display:none" onclick="pay('debt')">
+        Погасить долг · 744 ₽
+      </button>
+      <button class="btn btn-g" id="btn-pay-back" style="display:none" onclick="setDebtOnly(false)">
+        ← Включить оплату периода
+      </button>
+    </div>
+  </div><!-- /scr-pay -->
+
+
+  <!-- ══════════════════════════════════════════════════
+       SCREEN 2 · SUCCESS
+  ══════════════════════════════════════════════════ -->
+  <div class="screen hidden" id="scr-success">
+    <div class="sbar">
+      <span class="sbar-time">9:41</span>
+      <div class="sbar-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="#1C1C1E"><rect x="0" y="3" width="3" height="9" rx=".5"/><rect x="4.5" y="2" width="3" height="10" rx=".5"/><rect x="9" y=".5" width="3" height="11.5" rx=".5"/><rect x="13.5" y="0" width="3" height="12" rx=".5"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#1C1C1E" stroke-width="1.1"><rect x=".5" y=".5" width="13" height="9" rx="1.5"/><path d="M14 3.5h1.2v4H14"/><rect x="2" y="2" width="8" height="5" rx=".4" fill="#1C1C1E" stroke="none"/></svg>
+      </div>
+    </div>
+    <div class="nav"><span class="nav-title">Оплата</span></div>
+    <div class="success-body" id="success-body"></div>
+    <div class="cta" id="success-cta"></div>
+  </div><!-- /scr-success -->
+
+
+  <!-- ══════════════════════════════════════════════════
+       SCREEN 3 · CONTRACT DETAIL
+  ══════════════════════════════════════════════════ -->
+  <div class="screen hidden" id="scr-contract">
+    <div class="sbar">
+      <span class="sbar-time">9:41</span>
+      <div class="sbar-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="#1C1C1E"><rect x="0" y="3" width="3" height="9" rx=".5"/><rect x="4.5" y="2" width="3" height="10" rx=".5"/><rect x="9" y=".5" width="3" height="11.5" rx=".5"/><rect x="13.5" y="0" width="3" height="12" rx=".5"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#1C1C1E" stroke-width="1.1"><rect x=".5" y=".5" width="13" height="9" rx="1.5"/><path d="M14 3.5h1.2v4H14"/><rect x="2" y="2" width="8" height="5" rx=".4" fill="#1C1C1E" stroke="none"/></svg>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="nav-back" onclick="go('scr-pay','back')">
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8L8 14" stroke="#D42B2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Платежи
+      </button>
+      <span class="nav-title">Договор №9876</span>
+    </div>
+    <div class="contract-scroll" id="contract-body"></div>
+    <div class="cta" id="contract-cta"></div>
+  </div><!-- /scr-contract -->
+
+</div><!-- /phone-shell -->
+
+<!-- Flow legend -->
+<div class="legend">
+  <div class="legend-title">Навигация по флоу</div>
+  <div class="legend-item">
+    <span class="legend-key lk-b">Период</span>
+    <div class="legend-val">Тап на чип → пересчёт суммы в режиме реального времени</div>
+  </div>
+  <div class="legend-item">
+    <span class="legend-key lk-r">Долг</span>
+    <div class="legend-val">«Только долг 744 ₽» — период грейаутится, кнопка меняется</div>
+  </div>
+  <div class="legend-item">
+    <span class="legend-key lk-g">Успех A</span>
+    <div class="legend-val">Автоплатёж включён → покой, период покроется сам</div>
+  </div>
+  <div class="legend-item">
+    <span class="legend-key lk-o">Успех B</span>
+    <div class="legend-val">Автоплатёж выключен → предупреждение + CTA «оплатить период»</div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════════════════ */
+const PERIODS = [
+  { months: 1,  label: '1 месяц',    amount: 856,  monthly: 856, discount: null, next: '1 августа 2026'  },
+  { months: 3,  label: '3 месяца',   amount: 2400, monthly: 800, discount: null, next: '1 сентября 2026' },
+  { months: 6,  label: '6 месяцев',  amount: 4500, monthly: 750, discount: 12,   next: '1 декабря 2026'  },
+  { months: 12, label: '12 месяцев', amount: 8192, monthly: 683, discount: 20,   next: '1 июня 2027'     },
+];
+const DEBT = 744;
+const BASE = 856; // base monthly price
+
+let S = {
+  pi: 0,          // period index
+  autopay: true,
+  debtOnly: false,
+  lastPay: null,  // 'full' | 'debt' | 'period'
+  noBadge: false, // no debt after paying it
+};
+
+/* ═══════════════════════════════════════════════════════════
+   HELPERS
+═══════════════════════════════════════════════════════════ */
+function fmt(n) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' ₽';
+}
+
+function saving() {
+  const p = PERIODS[S.pi];
+  if (!p.discount) return 0;
+  return BASE * p.months - p.amount;
+}
+
+function total() {
+  return S.debtOnly ? DEBT : DEBT + PERIODS[S.pi].amount;
+}
+
+function periodNextLabel() {
+  const labels = ['1 мес', '3 мес', '6 мес', '12 мес'];
+  return labels[S.pi];
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SCREEN TRANSITIONS
+═══════════════════════════════════════════════════════════ */
+let current = 'scr-pay';
+
+function go(id, dir) {
+  if (id === current) return;
+  const from = document.getElementById(current);
+  const to   = document.getElementById(id);
+
+  from.classList.add(dir === 'back' ? 'hidden' : 'hidden-left');
+  to.classList.remove('hidden', 'hidden-left');
+
+  current = id;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PERIOD CHIPS — render
+═══════════════════════════════════════════════════════════ */
+function renderChips() {
+  const grid = document.getElementById('period-grid');
+  grid.innerHTML = PERIODS.map((p, i) => {
+    const on = i === S.pi ? 'on' : '';
+    const badge = p.discount
+      ? `<div class="pchip-badge ${p.discount >= 20 ? 'g' : 'r'}">−${p.discount}%</div>`
+      : '';
+    return `
+      <div class="pchip ${on}" data-i="${i}" onclick="selectPeriod(${i})">
+        ${badge}
+        <div class="pchip-dot">
+          <svg width="9" height="8" viewBox="0 0 9 8" fill="none">
+            <path d="M1 4l2.5 2.5 4.5-5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="pchip-period">${p.label}</div>
+        <div class="pchip-amount">${fmt(p.amount)}</div>
+        <div class="pchip-mthly">${fmt(p.monthly)}/мес</div>
+      </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RENDER PAY SCREEN
+═══════════════════════════════════════════════════════════ */
+function renderPay() {
+  const p  = PERIODS[S.pi];
+  const sv = saving();
+  const t  = total();
+
+  /* chips */
+  renderChips();
+
+  /* period grid opacity */
+  document.getElementById('period-grid').classList.toggle('dimmed', S.debtOnly);
+
+  /* autopay row opacity when debt-only */
+  document.getElementById('autopay-row').style.opacity = S.debtOnly ? '.3' : '1';
+  document.getElementById('autopay-row').style.pointerEvents = S.debtOnly ? 'none' : '';
+
+  /* autopay label */
+  document.getElementById('autopay-label').textContent = `Автоповтор через ${periodNextLabel()}`;
+  document.getElementById('autopay-sub').textContent = `Следующий — ${p.next}, авто`;
+  document.getElementById('autopay-toggle').className = `toggle ${S.autopay ? 'on' : 'off'}`;
+
+  /* notices */
+  const ns = document.getElementById('notice-saving');
+  const nd = document.getElementById('notice-dimmed');
+  if (S.debtOnly) {
+    ns.style.display = 'none';
+    nd.style.display = 'flex';
+    document.getElementById('notice-full-amt').textContent = fmt(DEBT + p.amount);
+  } else if (sv > 0) {
+    ns.style.display = 'flex';
+    nd.style.display = 'none';
+    document.getElementById('notice-saving-text').innerHTML =
+      `Экономия <strong>${fmt(sv)}</strong> по сравнению с ежемесячной оплатой`;
+  } else {
+    ns.style.display = 'none';
+    nd.style.display = 'none';
+  }
+
+  /* period card title when dimmed */
+  document.getElementById('period-card-sub').textContent = S.debtOnly
+    ? 'Период не входит в эту оплату'
+    : 'Выбери горизонт — чем длиннее, тем выгоднее';
+
+  /* breakdown — period row */
+  if (S.debtOnly) {
+    document.getElementById('bd-period-label').innerHTML =
+      `Период ${p.months} мес <span class="tag-ni">не входит</span>`;
+    document.getElementById('bd-period-val').className = 'bdr-val strike';
+  } else {
+    document.getElementById('bd-period-label').innerHTML =
+      `Оплата вперёд · <b style="color:#1C1C1E">${p.months} мес</b>`;
+    document.getElementById('bd-period-val').className = 'bdr-val';
+  }
+  document.getElementById('bd-period-val').textContent = fmt(p.amount);
+
+  /* breakdown — saving row */
+  const savRow = document.getElementById('bd-saving-row');
+  if (!S.debtOnly && sv > 0) {
+    savRow.style.display = 'flex';
+    document.getElementById('bd-saving-val').textContent = '−' + fmt(sv);
+  } else {
+    savRow.style.display = 'none';
+  }
+
+  /* breakdown — total */
+  const totalEl = document.getElementById('bd-total');
+  totalEl.textContent = fmt(t);
+  totalEl.className = 'bdr-total-val' + (S.debtOnly ? ' accent' : '');
+
+  /* debt-only link */
+  document.getElementById('donly-row').style.display = S.debtOnly ? 'none' : 'flex';
+
+  /* CTA buttons */
+  const bFull = document.getElementById('btn-pay-full');
+  const bDebt = document.getElementById('btn-pay-debt');
+  const bBack = document.getElementById('btn-pay-back');
+  if (S.debtOnly) {
+    bFull.style.display = 'none';
+    bDebt.style.display = 'flex';
+    bBack.style.display = 'flex';
+  } else {
+    bFull.style.display = 'flex';
+    bDebt.style.display = 'none';
+    bBack.style.display = 'none';
+    document.getElementById('btn-pay-label').textContent = fmt(t);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   ACTIONS
+═══════════════════════════════════════════════════════════ */
+function selectPeriod(i) {
+  S.pi = i;
+  renderPay();
+}
+
+function toggleAutopay() {
+  S.autopay = !S.autopay;
+  renderPay();
+}
+
+function setDebtOnly(v) {
+  S.debtOnly = v;
+  /* scroll back to top when switching mode */
+  document.getElementById('pay-scroll').scrollTop = 0;
+  renderPay();
+}
+
+function pay(type) {
+  S.lastPay = type;
+  renderSuccess();
+  go('scr-success', 'forward');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RENDER SUCCESS
+═══════════════════════════════════════════════════════════ */
+function renderSuccess() {
+  const p   = PERIODS[S.pi];
+  const t   = total();
+  const sv  = saving();
+  const body = document.getElementById('success-body');
+  const cta  = document.getElementById('success-cta');
+
+  const paidAmount = S.lastPay === 'debt' ? DEBT : t;
+  const isDebt = S.lastPay === 'debt';
+
+  /* top section — always the same */
+  let html = `
+    <div class="s-icon">
+      <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+        <circle cx="19" cy="19" r="17" fill="#34C759" opacity=".2"/>
+        <path d="M11 19l6 6 10-11" stroke="#34C759" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="s-title">${isDebt ? 'Долг погашен' : 'Оплата прошла'}</div>
+    <div class="s-amount">${fmt(paidAmount)}</div>
+    <div class="s-sub">Договор №9876 · ${isDebt ? 'задолженность закрыта' : `оплачено на ${p.months} мес вперёд`}</div>
+  `;
+
+  if (!isDebt) {
+    /* ── Full payment ── */
+    if (S.autopay) {
+      html += `
+        <div class="s-card">
+          <div class="s-card-row">
+            <div class="s-card-ico" style="background:#E8F9ED">
+              <svg width="18" height="16" viewBox="0 0 18 16" fill="none">
+                <path d="M2 8l5 5 9-10" stroke="#34C759" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="s-card-title">Автоплатёж активен</div>
+              <div class="s-card-sub">Следующее списание — <b>${p.next}</b><br>${fmt(p.amount)} · СБЕР •••• 5426</div>
+            </div>
+          </div>
+        </div>`;
+    } else {
+      html += `
+        <div class="s-card warn">
+          <div class="s-card-row">
+            <div class="s-card-ico" style="background:rgba(255,149,0,.2)">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 3v6M8 10.5h.01" stroke="#B25000" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="s-card-title">Автоплатёж выключен</div>
+              <div class="s-card-sub">Следующий платёж <b>${p.next}</b> придётся провести вручную</div>
+            </div>
+          </div>
+        </div>`;
+    }
+    html += `
+      <div class="s-card">
+        <div class="s-card-row">
+          <div class="s-card-ico" style="background:#E8F5FF">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M3 7.5l6-5 6 5V15a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 013 15V7.5z" stroke="#0A84FF" stroke-width="1.4"/>
+            </svg>
+          </div>
+          <div>
+            <div class="s-card-title">Склад, ул. Ленина 12</div>
+            <div class="s-card-sub" style="display:flex;align-items:center;gap:5px;margin-top:3px">
+              <span style="width:7px;height:7px;border-radius:50%;background:#34C759;display:inline-block;flex-shrink:0"></span>
+              <span style="color:#34C759;font-weight:600">Под охраной</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+
+  } else {
+    /* ── Debt-only payment ── */
+    if (S.autopay) {
+      html += `
+        <div class="s-card">
+          <div class="s-card-row">
+            <div class="s-card-ico" style="background:#E8F9ED">
+              <svg width="18" height="16" viewBox="0 0 18 16" fill="none">
+                <path d="M2 8l5 5 9-10" stroke="#34C759" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="s-card-title">Автоплатёж активен</div>
+              <div class="s-card-sub">Текущий период спишется автоматически<br><b>${p.next}</b> · ${fmt(p.amount)} · СБЕР •••• 5426</div>
+            </div>
+          </div>
+        </div>
+        <div class="s-card">
+          <div class="s-card-row">
+            <div class="s-card-ico" style="background:#E8F5FF">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M3 7.5l6-5 6 5V15a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 013 15V7.5z" stroke="#0A84FF" stroke-width="1.4"/>
+              </svg>
+            </div>
+            <div>
+              <div class="s-card-title">Склад, ул. Ленина 12</div>
+              <div class="s-card-sub" style="display:flex;align-items:center;gap:5px;margin-top:3px">
+                <span style="width:7px;height:7px;border-radius:50%;background:#34C759;display:inline-block;flex-shrink:0"></span>
+                <span style="color:#34C759;font-weight:600">Под охраной</span>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    } else {
+      /* debt-only + no autopay — critical path */
+      html += `
+        <div class="s-card warn">
+          <div class="s-card-row">
+            <div class="s-card-ico" style="background:rgba(255,149,0,.25)">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 3v6M8 10.5h.01" stroke="#B25000" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="s-card-title">Текущий период не оплачен</div>
+              <div class="s-card-sub">Июнь 2026 · <b>${fmt(PERIODS[0].amount)}</b><br>Оплатите до 30 июня, иначе снова возникнет долг</div>
+            </div>
+          </div>
+        </div>
+        <div class="s-card">
+          <div class="s-card-row">
+            <div class="s-card-ico" style="background:#E8F5FF">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M3 7.5l6-5 6 5V15a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 013 15V7.5z" stroke="#0A84FF" stroke-width="1.4"/>
+              </svg>
+            </div>
+            <div>
+              <div class="s-card-title">Склад, ул. Ленина 12</div>
+              <div class="s-card-sub" style="display:flex;align-items:center;gap:5px;margin-top:3px">
+                <span style="width:7px;height:7px;border-radius:50%;background:#34C759;display:inline-block;flex-shrink:0"></span>
+                <span style="color:#34C759;font-weight:600">Под охраной</span>
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+  }
+
+  body.innerHTML = html;
+
+  /* CTA buttons */
+  if (isDebt && !S.autopay) {
+    cta.innerHTML = `
+      <button class="btn btn-p" onclick="payPeriod()">Оплатить июнь · ${fmt(PERIODS[0].amount)}</button>
+      <button class="btn btn-g" onclick="enableAutopayFromSuccess()">Настроить автоплатёж</button>
+      <button class="btn btn-s" onclick="goContract()">Вернуться к договору</button>`;
+  } else {
+    cta.innerHTML = `
+      <button class="btn btn-s" onclick="goContract()">Вернуться к договору</button>`;
+  }
+}
+
+function payPeriod() {
+  /* switch to pay screen in period-only mode */
+  S.debtOnly = false;
+  S.noBadge = true; /* debt already paid */
+  renderPay();
+  /* hide debt row */
+  document.getElementById('bd-debt-row').closest('.bdr').style.display = 'none';
+  go('scr-pay', 'back');
+}
+
+function enableAutopayFromSuccess() {
+  S.autopay = true;
+  renderSuccess(); /* re-render with autopay on */
+}
+
+function goContract() {
+  renderContract();
+  go('scr-contract', 'forward');
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RENDER CONTRACT
+═══════════════════════════════════════════════════════════ */
+function renderContract() {
+  const p = PERIODS[S.pi];
+  const body = document.getElementById('contract-body');
+  const cta  = document.getElementById('contract-cta');
+  const isDebt = S.lastPay === 'debt';
+  const noDebt = isDebt && !S.autopay;
+
+  /* object status banner */
+  const statusBanner = `
+    <div class="c-banner ok">
+      <div class="c-banner-dot" style="background:#34C759"></div>
+      <div class="c-banner-text ok">Под охраной · задолженности нет</div>
+    </div>`;
+
+  /* next payment row */
+  let nextRow = '';
+  if (!isDebt) {
+    /* full payment made */
+    nextRow = `
+      <div class="c-pay-row">
+        <div>
+          <div class="c-pay-label">Следующий платёж</div>
+          <div class="c-pay-val ok">${p.next} · ${fmt(p.amount)}</div>
+        </div>
+        <div class="c-pay-badge auto">
+          <span style="width:7px;height:7px;border-radius:50%;background:#34C759;display:inline-block"></span>
+          Авто
+        </div>
+      </div>`;
+  } else if (S.autopay) {
+    /* debt-only + autopay: period will be covered */
+    nextRow = `
+      <div class="c-pay-row">
+        <div>
+          <div class="c-pay-label">Следующий платёж</div>
+          <div class="c-pay-val ok">${p.next} · ${fmt(p.amount)}</div>
+        </div>
+        <div class="c-pay-badge auto">
+          <span style="width:7px;height:7px;border-radius:50%;background:#34C759;display:inline-block"></span>
+          Авто
+        </div>
+      </div>`;
+  } else {
+    /* debt-only + no autopay: period pending */
+    nextRow = `
+      <div class="c-pay-row warn">
+        <div>
+          <div class="c-pay-label">Период не оплачен</div>
+          <div class="c-pay-val warn">Июнь 2026 · ${fmt(PERIODS[0].amount)}</div>
+        </div>
+        <button class="c-pay-btn" onclick="payPeriodFromContract()">Оплатить</button>
+      </div>`;
+  }
+
+  body.innerHTML = `
+    <div class="c-header">
+      <div class="c-title">Договор №9876</div>
+      <div class="c-sub">Абонентский · с 13.02.2026</div>
+    </div>
+    ${statusBanner}
+    ${nextRow}
+    <div class="c-table">
+      <div class="c-row"><div class="c-key">Объект</div><div class="c-val">Склад, ул. Ленина 12</div></div>
+      <div class="c-row"><div class="c-key">Тариф</div><div class="c-val">${fmt(BASE)}/мес</div></div>
+      <div class="c-row"><div class="c-key">Задолженность</div><div class="c-val green">Нет</div></div>
+      <div class="c-row">
+        <div class="c-key">Автоплатёж</div>
+        <div class="c-val ${S.autopay ? 'green' : 'orange'}">${S.autopay ? 'Включён · СБЕР •••• 5426' : 'Выключен'}</div>
+      </div>
+      <div class="c-row">
+        <div class="c-key">Период</div>
+        <div class="c-val">${p.label} · ${fmt(p.amount)}</div>
+      </div>
+    </div>`;
+
+  cta.innerHTML = `
+    <button class="btn btn-p" onclick="go('scr-pay','back');resetDebtRow()">Перейти к оплате</button>`;
+}
+
+function payPeriodFromContract() {
+  S.debtOnly = false;
+  S.noBadge = true;
+  renderPay();
+  document.getElementById('bd-debt-row').closest('.bdr').style.display = 'none';
+  go('scr-pay', 'back');
+}
+
+function resetDebtRow() {
+  if (!S.noBadge) {
+    const row = document.getElementById('bd-debt-row').closest('.bdr');
+    if (row) row.style.display = 'flex';
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════ */
+renderPay();
+</script>
+</body>
+</html>
