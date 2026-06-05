@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UC-P01 · Управление картами · Reforce ЛК</title>
+<style>
+*, *::before, *::after {
+  box-sizing: border-box; margin: 0; padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Roboto', sans-serif;
+  background: radial-gradient(ellipse at 50% 0%, #1a1a2e 0%, #111 60%);
+  min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 48px 16px 80px;
+}
+.page-header { text-align: center; margin-bottom: 32px; }
+.page-header h1 { color: #fff; font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.page-header p  { color: #636366; font-size: 12px; line-height: 1.5; max-width: 500px; margin: 0 auto; }
+
+/* ─── PHONE ──────────────────────────────────────────────── */
+.phone {
+  width: 390px; height: 844px;
+  background: #F2F2F7; border-radius: 54px; overflow: hidden;
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.1) inset, 0 40px 100px rgba(0,0,0,.8);
+}
+.screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; background: #F2F2F7;
+  transition: transform .28s cubic-bezier(.4,0,.2,1), opacity .28s ease;
+}
+.screen.hidden      { opacity: 0; transform: translateX(100%); pointer-events: none; }
+.screen.hidden-left { opacity: 0; transform: translateX(-28%); pointer-events: none; }
+
+/* ─── SHELL ELEMENTS ─────────────────────────────────────── */
+.sbar {
+  height: 44px; padding: 14px 28px 0;
+  display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0;
+}
+.sbar-time { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+.nav {
+  height: 44px; display: flex; align-items: center; justify-content: center;
+  padding: 0 16px; position: relative; flex-shrink: 0;
+}
+.nav-back {
+  position: absolute; left: 8px;
+  display: flex; align-items: center; gap: 4px;
+  color: #D42B2B; font-size: 17px; font-weight: 400;
+  padding: 0 8px; min-height: 44px;
+  background: none; border: none; font-family: inherit; cursor: pointer;
+}
+.nav-title { font-size: 17px; font-weight: 600; color: #1C1C1E; }
+.scroll { flex: 1; overflow-y: auto; padding: 0 16px; }
+.scroll::-webkit-scrollbar { display: none; }
+.cta { padding: 8px 16px 36px; flex-shrink: 0; background: #F2F2F7; }
+
+/* ─── CARDS ──────────────────────────────────────────────── */
+.card { background: #fff; border-radius: 20px; margin-bottom: 12px; overflow: hidden; }
+
+/* ─── METHOD ROW (compact) ───────────────────────────────── */
+.method-compact {
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px 13px;
+}
+.m-ico {
+  width: 44px; height: 44px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.m-name { font-size: 15px; font-weight: 500; color: #1C1C1E; }
+.m-sub  { font-size: 12px; color: #8E8E93; margin-top: 1px; }
+.m-edit { font-size: 14px; color: #D42B2B; cursor: pointer; padding: 4px; flex-shrink: 0; }
+
+/* ─── BOTTOM SHEET ───────────────────────────────────────── */
+.sheet-overlay {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,.4);
+  z-index: 20;
+  opacity: 0; pointer-events: none;
+  transition: opacity .25s ease;
+}
+.sheet-overlay.show { opacity: 1; pointer-events: all; }
+
+.sheet {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: #F2F2F7; border-radius: 24px 24px 0 0;
+  z-index: 21;
+  transform: translateY(100%);
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+  padding-bottom: 36px;
+}
+.sheet.open { transform: translateY(0); }
+
+.sheet-handle {
+  width: 36px; height: 4px; border-radius: 2px;
+  background: #D1D1D6; margin: 12px auto 0;
+}
+.sheet-title {
+  font-size: 17px; font-weight: 700; color: #1C1C1E;
+  padding: 14px 20px 8px;
+}
+.sheet-cards { background: #fff; border-radius: 16px; margin: 0 16px 8px; overflow: hidden; }
+
+/* ─── CARD ROW IN SHEET ──────────────────────────────────── */
+.card-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; position: relative; overflow: hidden;
+  border-bottom: .5px solid #F2F2F7; cursor: pointer;
+  transition: background .12s;
+}
+.card-row:last-child { border-bottom: none; }
+.card-row:active { background: #F9F9FB; }
+.card-row.swiped { transform: translateX(-80px); transition: transform .25s ease; }
+
+.cr-ico {
+  width: 42px; height: 42px; border-radius: 13px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.cr-name { font-size: 15px; font-weight: 500; color: #1C1C1E; }
+.cr-sub  { font-size: 12px; color: #8E8E93; margin-top: 1px; }
+.cr-check {
+  width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-left: auto;
+  transition: background .15s, border-color .15s;
+}
+.cr-check.on  { background: #D42B2B; border: none; }
+.cr-check.off { background: transparent; border: 1.5px solid #C7C7CC; }
+
+/* Delete reveal */
+.cr-delete-reveal {
+  position: absolute; right: 0; top: 0; bottom: 0;
+  width: 80px; background: #FF3B30;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.cr-delete-reveal span { color: #fff; font-size: 13px; font-weight: 600; }
+
+/* Swipe hint */
+.swipe-hint {
+  text-align: center; font-size: 12px; color: #C7C7CC;
+  padding: 6px 0 2px;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+}
+
+/* Add card row */
+.add-card-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 13px 16px; cursor: pointer;
+  background: #fff; border-radius: 16px; margin: 0 16px;
+  transition: background .12s;
+}
+.add-card-row:active { background: #F9F9FB; }
+.add-ico {
+  width: 42px; height: 42px; border-radius: 13px;
+  background: #F2F2F7;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.add-label { font-size: 15px; font-weight: 500; color: #1C1C1E; }
+
+/* ─── DELETE CONFIRMATION SHEET ──────────────────────────── */
+.confirm-sheet {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  z-index: 30; background: #F2F2F7; border-radius: 24px 24px 0 0;
+  padding: 0 16px 36px;
+  transform: translateY(100%);
+  transition: transform .25s cubic-bezier(.4,0,.2,1);
+}
+.confirm-sheet.open { transform: translateY(0); }
+.confirm-overlay {
+  position: absolute; inset: 0; background: rgba(0,0,0,.5);
+  z-index: 29; opacity: 0; pointer-events: none;
+  transition: opacity .2s;
+}
+.confirm-overlay.show { opacity: 1; pointer-events: all; }
+
+/* ─── ADD CARD SCREEN ────────────────────────────────────── */
+.add-screen { background: #F2F2F7; }
+
+/* Card preview widget */
+.card-preview {
+  margin: 8px 16px 16px;
+  height: 192px; border-radius: 20px;
+  background: linear-gradient(135deg, #1C1C1E 0%, #3A3A3C 100%);
+  position: relative; overflow: hidden; flex-shrink: 0;
+  box-shadow: 0 8px 24px rgba(0,0,0,.28);
+}
+.card-preview-shine {
+  position: absolute; top: -40%; right: -20%;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: rgba(255,255,255,.06);
+  pointer-events: none;
+}
+.cp-system {
+  position: absolute; top: 16px; left: 20px;
+  font-size: 13px; font-weight: 700; color: rgba(255,255,255,.5);
+  letter-spacing: .5px;
+}
+.cp-logo {
+  position: absolute; top: 12px; right: 16px;
+  width: 44px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+}
+.cp-number {
+  position: absolute; bottom: 48px; left: 20px; right: 20px;
+  font-size: 18px; font-weight: 600; color: #fff; letter-spacing: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.cp-expiry {
+  position: absolute; bottom: 20px; left: 20px;
+  font-size: 13px; color: rgba(255,255,255,.6);
+}
+.cp-expiry span { color: #fff; font-weight: 500; margin-left: 4px; }
+.cp-name {
+  position: absolute; bottom: 20px; right: 20px;
+  font-size: 13px; color: rgba(255,255,255,.7); text-transform: uppercase;
+  letter-spacing: .5px;
+}
+
+/* Form fields */
+.field-card {
+  background: #fff; border-radius: 16px; margin: 0 16px 10px; overflow: hidden;
+}
+.field {
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 16px; border-bottom: .5px solid #F2F2F7; position: relative;
+}
+.field:last-child { border-bottom: none; }
+.field-label {
+  font-size: 12px; color: #8E8E93; font-weight: 500;
+  white-space: nowrap; flex-shrink: 0; width: 64px;
+}
+.field-input {
+  flex: 1; font-size: 16px; color: #1C1C1E; font-weight: 500;
+  border: none; outline: none; background: transparent;
+  padding: 14px 0; font-family: inherit;
+  caret-color: #D42B2B;
+}
+.field-input::placeholder { color: #C7C7CC; font-weight: 400; }
+.field-suffix {
+  font-size: 13px; color: #8E8E93; flex-shrink: 0; margin-left: 4px;
+}
+.field-icon { flex-shrink: 0; cursor: pointer; padding: 4px; }
+.field-error { border-bottom-color: #FF3B30 !important; }
+.field-error-msg {
+  font-size: 12px; color: #FF3B30;
+  padding: 4px 16px 8px; display: none;
+}
+
+/* Camera scan row */
+.scan-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 11px 16px;
+  background: #fff; border-radius: 16px; margin: 0 16px 10px;
+  cursor: pointer;
+}
+.scan-row:active { background: #F9F9FB; }
+.scan-label { font-size: 15px; color: #0A84FF; font-weight: 500; }
+
+/* Save toggle row */
+.save-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; background: #fff; border-radius: 16px; margin: 0 16px 10px;
+}
+.save-text { flex: 1; font-size: 15px; color: #1C1C1E; font-weight: 500; }
+.save-sub  { font-size: 12px; color: #8E8E93; margin-top: 1px; }
+.toggle {
+  width: 36px; height: 22px; border-radius: 11px;
+  position: relative; cursor: pointer; flex-shrink: 0;
+  transition: background .2s;
+}
+.toggle.on  { background: #34C759; }
+.toggle.off { background: #E5E5EA; }
+.t-knob {
+  position: absolute; top: 2px; width: 18px; height: 18px;
+  border-radius: 50%; background: #fff;
+  box-shadow: 0 1px 4px rgba(0,0,0,.28);
+  transition: left .2s;
+}
+.toggle.on  .t-knob { left: 16px; }
+.toggle.off .t-knob { left: 2px; }
+
+/* ─── BUTTONS ────────────────────────────────────────────── */
+.btn {
+  width: 100%; border: none; font-family: inherit; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  gap: 8px; transition: opacity .15s, transform .1s;
+}
+.btn:active { opacity: .82; transform: scale(.98); }
+.btn-p {
+  min-height: 56px; border-radius: 16px;
+  font-size: 17px; background: #D42B2B; color: #fff;
+}
+.btn-p:disabled { background: #E5E5EA; color: #C7C7CC; pointer-events: none; }
+.btn-s {
+  min-height: 50px; border-radius: 14px;
+  font-size: 15px; background: #F2F2F7; color: #636366; margin-top: 8px;
+}
+.btn-del {
+  min-height: 50px; border-radius: 14px;
+  font-size: 15px; background: #FF3B30; color: #fff; font-weight: 600; border: none;
+  font-family: inherit; cursor: pointer; width: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.btn-del:active { opacity: .85; }
+
+/* ─── SUCCESS OVERLAY ────────────────────────────────────── */
+.success-overlay {
+  position: absolute; inset: 0; background: #F2F2F7;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 40; opacity: 0; pointer-events: none;
+  transition: opacity .25s;
+  padding: 32px;
+}
+.success-overlay.show { opacity: 1; pointer-events: all; }
+.s-ico {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: #E8F9ED;
+  display: flex; align-items: center; justify-content: center; margin-bottom: 16px;
+}
+
+/* ─── LEGEND ─────────────────────────────────────────────── */
+.legend {
+  margin-top: 28px; background: rgba(255,255,255,.05);
+  border-radius: 14px; padding: 16px 20px;
+  max-width: 460px; width: 100%;
+}
+.legend-title { color: #fff; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+.leg-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 7px; }
+.leg-key {
+  font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 4px;
+  white-space: nowrap; flex-shrink: 0; margin-top: 1px;
+}
+.k-r { background: rgba(212,43,43,.2);  color: #D42B2B; }
+.k-b { background: rgba(10,132,255,.2); color: #0A84FF; }
+.k-o { background: rgba(255,59,48,.2);  color: #FF3B30; }
+.k-g { background: rgba(52,199,89,.2);  color: #34C759; }
+.leg-val { font-size: 12px; color: #636366; line-height: 1.5; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>UC-P01 · Управление картами</h1>
+  <p>Смена карты, добавление новой, удаление — все состояния интерактивно</p>
+</div>
+
+<div class="phone" id="phone">
+
+  <!-- ══════════════════════════════ SCREEN: PAYMENT (entry) -->
+  <div class="screen" id="scr-pay">
+    <div class="sbar">
+      <span class="sbar-time">9:41</span>
+      <div style="display:flex;gap:5px">
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="#1C1C1E"><rect x="0" y="3" width="3" height="9" rx=".5"/><rect x="4.5" y="2" width="3" height="10" rx=".5"/><rect x="9" y=".5" width="3" height="11.5" rx=".5"/><rect x="13.5" y="0" width="3" height="12" rx=".5"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#1C1C1E" stroke-width="1.1"><rect x=".5" y=".5" width="13" height="9" rx="1.5"/><path d="M14 3.5h1.2v4H14"/><rect x="2" y="2" width="8" height="5" rx=".4" fill="#1C1C1E" stroke="none"/></svg>
+      </div>
+    </div>
+    <div class="nav">
+      <span class="nav-back" style="cursor:default;opacity:.4">
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8L8 14" stroke="#D42B2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Назад
+      </span>
+      <span class="nav-title">Договор №9876</span>
+    </div>
+
+    <div class="scroll">
+      <div style="padding:6px 0 12px">
+        <div style="font-size:20px;font-weight:700;color:#1C1C1E">Договор №9876</div>
+        <div style="font-size:13px;color:#8E8E93;margin-top:2px">Абонентский · с 13.02.2026</div>
+      </div>
+
+      <!-- Current card — tap Изменить to open sheet -->
+      <div class="card">
+        <div class="method-compact">
+          <div class="m-ico" style="background:#E8F9F1" id="pay-card-ico">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="10" fill="#21A038" opacity=".18"/><path d="M6 11l3.5 3.5 6.5-7" stroke="#21A038" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div style="flex:1">
+            <div class="m-name" id="pay-card-name">СБЕР •••• 5426</div>
+            <div class="m-sub"  id="pay-card-sub">MIR · Срок 07/23</div>
+          </div>
+          <span class="m-edit" onclick="openCardSheet()">Изменить</span>
+        </div>
+      </div>
+
+      <!-- Rest of payment form (static for context) -->
+      <div class="card">
+        <div style="padding:14px 16px 0">
+          <div style="font-size:17px;font-weight:700;color:#1C1C1E">За сколько месяцев оплатить?</div>
+          <div style="font-size:13px;color:#8E8E93;margin-top:2px;margin-bottom:12px">Выбери горизонт — чем длиннее, тем выгоднее</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 16px">
+          <div style="border-radius:16px;border:1.5px solid #D42B2B;background:#FFF5F5;padding:12px 12px 10px;position:relative">
+            <div style="position:absolute;top:8px;right:8px;width:18px;height:18px;border-radius:50%;background:#D42B2B;display:flex;align-items:center;justify-content:center"><svg width="9" height="8" viewBox="0 0 9 8" fill="none"><path d="M1 4l2.5 2.5 4.5-5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div style="font-size:12px;color:#D42B2B;font-weight:500;margin-bottom:3px">1 месяц</div>
+            <div style="font-size:17px;font-weight:700;color:#D42B2B">856 ₽</div>
+            <div style="font-size:11px;color:rgba(212,43,43,.55);margin-top:3px">856 ₽/мес</div>
+          </div>
+          <div style="border-radius:16px;border:1.5px solid #E5E5EA;background:#F9F9FB;padding:12px 12px 10px">
+            <div style="font-size:12px;color:#8E8E93;font-weight:500;margin-bottom:3px">3 месяца</div>
+            <div style="font-size:17px;font-weight:700;color:#1C1C1E">2 400 ₽</div>
+            <div style="font-size:11px;color:#8E8E93;margin-top:3px">800 ₽/мес</div>
+          </div>
+          <div style="border-radius:16px;border:1.5px solid #E5E5EA;background:#F9F9FB;padding:12px 12px 10px;position:relative">
+            <div style="position:absolute;top:-9px;right:8px;background:#D42B2B;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px">−12%</div>
+            <div style="font-size:12px;color:#8E8E93;font-weight:500;margin-bottom:3px">6 месяцев</div>
+            <div style="font-size:17px;font-weight:700;color:#1C1C1E">4 500 ₽</div>
+            <div style="font-size:11px;color:#8E8E93;margin-top:3px">750 ₽/мес</div>
+          </div>
+          <div style="border-radius:16px;border:1.5px solid #E5E5EA;background:#F9F9FB;padding:12px 12px 10px;position:relative">
+            <div style="position:absolute;top:-9px;right:8px;background:#34C759;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px">−20%</div>
+            <div style="font-size:12px;color:#8E8E93;font-weight:500;margin-bottom:3px">12 месяцев</div>
+            <div style="font-size:17px;font-weight:700;color:#1C1C1E">8 192 ₽</div>
+            <div style="font-size:11px;color:#8E8E93;margin-top:3px">683 ₽/мес</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Breakdown static -->
+      <div style="background:#fff;border-radius:20px;padding:14px 16px;margin-bottom:4px">
+        <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="font-size:14px;color:#636366">Задолженность</span><span style="font-size:14px;font-weight:500;color:#D42B2B">744 ₽</span></div>
+        <div style="display:flex;justify-content:space-between;padding:5px 0"><span style="font-size:14px;color:#636366">Оплата вперёд · 1 мес</span><span style="font-size:14px;font-weight:500;color:#1C1C1E">856 ₽</span></div>
+        <div style="height:.5px;background:#F2F2F7;margin:6px 0"></div>
+        <div style="display:flex;justify-content:space-between;padding:6px 0 8px"><span style="font-size:16px;font-weight:700;color:#1C1C1E">Итого</span><span style="font-size:28px;font-weight:700;color:#1C1C1E">1 600 ₽</span></div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <button class="btn btn-p">Оплатить 1 600 ₽</button>
+      <button class="btn btn-s" style="border:1.5px solid #E5E5EA">Погасить только долг · 744 ₽</button>
+    </div>
+
+    <!-- ── CARD SELECTION SHEET ── -->
+    <div class="sheet-overlay" id="sheet-overlay" onclick="closeCardSheet()"></div>
+    <div class="sheet" id="card-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-title">Способ оплаты</div>
+
+      <div class="sheet-cards" id="sheet-card-list">
+        <!-- cards rendered by JS -->
+      </div>
+
+      <div style="height:8px"></div>
+      <div class="add-card-row" onclick="goAddCard()">
+        <div class="add-ico">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#8E8E93" stroke-width="1.5">
+            <path d="M10 4v12M4 10h12" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="add-label">Добавить карту</div>
+          <div style="font-size:12px;color:#8E8E93;margin-top:1px">Visa, Mastercard, МИР</div>
+        </div>
+        <svg style="margin-left:auto" width="8" height="14" viewBox="0 0 8 14" fill="none"><path d="M1 1l6 6-6 6" stroke="#C7C7CC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <!-- ── DELETE CONFIRM SHEET ── -->
+    <div class="confirm-overlay" id="confirm-overlay" onclick="closeConfirm()"></div>
+    <div class="confirm-sheet" id="confirm-sheet">
+      <div class="sheet-handle"></div>
+      <div style="padding:16px 0 8px;text-align:center">
+        <div style="font-size:17px;font-weight:700;color:#1C1C1E;margin-bottom:6px">Удалить карту?</div>
+        <div style="font-size:14px;color:#636366;line-height:1.4" id="confirm-card-name-text">Карта будет удалена из системы</div>
+      </div>
+      <div style="height:12px"></div>
+      <button class="btn-del" onclick="confirmDelete()">Удалить</button>
+      <button class="btn btn-s" style="margin-top:8px" onclick="closeConfirm()">Отмена</button>
+    </div>
+  </div><!-- /scr-pay -->
+
+
+  <!-- ══════════════════════════════ SCREEN: ADD CARD -->
+  <div class="screen hidden" id="scr-add">
+    <div class="sbar"><span class="sbar-time">9:41</span></div>
+    <div class="nav">
+      <button class="nav-back" onclick="goBack()">
+        <svg width="10" height="16" viewBox="0 0 10 16" fill="none"><path d="M8 2L2 8L8 14" stroke="#D42B2B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Назад
+      </button>
+      <span class="nav-title">Новая карта</span>
+    </div>
+
+    <div class="scroll" style="padding:0">
+      <!-- Card preview -->
+      <div class="card-preview" id="card-preview">
+        <div class="card-preview-shine"></div>
+        <div class="cp-system" id="cp-system">•••• •••• •••• ••••</div>
+        <div class="cp-logo" id="cp-logo"></div>
+        <div class="cp-number" id="cp-number">•••• •••• •••• ••••</div>
+        <div class="cp-expiry">Срок<span id="cp-expiry">ММ/ГГ</span></div>
+        <div class="cp-name" id="cp-name">Имя на карте</div>
+      </div>
+
+      <!-- Form -->
+      <div style="padding:0 16px">
+
+        <div class="scan-row" onclick="simulateScan()">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <rect x="2" y="2" width="5" height="5" rx="1" stroke="#0A84FF" stroke-width="1.4"/>
+            <rect x="13" y="2" width="5" height="5" rx="1" stroke="#0A84FF" stroke-width="1.4"/>
+            <rect x="2" y="13" width="5" height="5" rx="1" stroke="#0A84FF" stroke-width="1.4"/>
+            <path d="M13 13h2v2M17 13v2h-2M13 17h2M17 17v-1" stroke="#0A84FF" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <span class="scan-label">Сканировать карту камерой</span>
+        </div>
+
+        <div class="field-card">
+          <div class="field" id="field-number">
+            <div class="field-label">Номер</div>
+            <input class="field-input" id="inp-number" type="text" inputmode="numeric"
+              placeholder="0000 0000 0000 0000" maxlength="23"
+              oninput="onNumberInput(this)" onblur="validateNumber()"/>
+            <div class="field-icon" id="number-icon"></div>
+          </div>
+          <div class="field-error-msg" id="err-number">Неверный номер карты</div>
+          <div class="field" style="border-bottom:none">
+            <div class="field-label">Срок</div>
+            <input class="field-input" id="inp-expiry" type="text" inputmode="numeric"
+              placeholder="ММ/ГГ" maxlength="5"
+              oninput="onExpiryInput(this)" onblur="validateExpiry()"/>
+            <div style="width:.5px;height:28px;background:#F2F2F7;margin:0 8px"></div>
+            <div class="field-label" style="text-align:right">CVV</div>
+            <input class="field-input" id="inp-cvv" type="text" inputmode="numeric"
+              placeholder="•••" maxlength="3" style="max-width:60px;text-align:right"
+              oninput="onCvvInput(this)"/>
+          </div>
+          <div class="field-error-msg" id="err-expiry">Истёк срок действия</div>
+        </div>
+
+        <div class="field-card">
+          <div class="field" style="border-bottom:none">
+            <div class="field-label">Имя</div>
+            <input class="field-input" id="inp-name" type="text"
+              placeholder="Как на карте (необязательно)" style="text-transform:uppercase"
+              oninput="onNameInput(this)"/>
+          </div>
+        </div>
+
+        <div class="save-row">
+          <div style="flex:1">
+            <div class="save-text">Сохранить карту</div>
+            <div class="save-sub">Для быстрой оплаты в следующий раз</div>
+          </div>
+          <div class="toggle on" id="save-toggle" onclick="this.classList.toggle('on');this.classList.toggle('off')">
+            <div class="t-knob"></div>
+          </div>
+        </div>
+
+        <div style="height:4px"></div>
+      </div>
+    </div>
+
+    <div class="cta">
+      <button class="btn btn-p" id="btn-add" disabled onclick="addCard()">Добавить карту</button>
+    </div>
+
+    <!-- Success overlay -->
+    <div class="success-overlay" id="add-success">
+      <div class="s-ico">
+        <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+          <circle cx="19" cy="19" r="17" fill="#34C759" opacity=".2"/>
+          <path d="M11 19l6 6 10-11" stroke="#34C759" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div style="font-size:22px;font-weight:700;color:#1C1C1E;margin-bottom:6px">Карта добавлена</div>
+      <div style="font-size:28px;font-weight:700;color:#1C1C1E;margin-bottom:6px" id="success-card-number">•••• 0000</div>
+      <div style="font-size:14px;color:#636366;margin-bottom:28px" id="success-card-system">Карта выбрана для оплаты</div>
+      <div style="background:#fff;border-radius:16px;padding:14px 16px;width:100%;display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div style="width:36px;height:36px;border-radius:11px;background:#E8F9ED;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+          <svg width="18" height="16" viewBox="0 0 18 16" fill="none"><path d="M2 8l5 5 9-10" stroke="#34C759" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <div style="font-size:14px;font-weight:600;color:#1C1C1E">Выбрана для текущей оплаты</div>
+          <div style="font-size:12px;color:#636366;margin-top:2px">Договор №9876 · 1 600 ₽</div>
+        </div>
+      </div>
+      <button style="width:100%;min-height:56px;border-radius:16px;border:none;font-size:17px;font-weight:600;background:#D42B2B;color:#fff;font-family:inherit;cursor:pointer" onclick="finishAdd()">Перейти к оплате</button>
+    </div>
+  </div><!-- /scr-add -->
+
+</div><!-- /phone -->
+
+<div class="legend">
+  <div class="legend-title">Навигация по флоу</div>
+  <div class="leg-row"><span class="leg-key k-r">Смена</span><div class="leg-val">«Изменить» → bottom sheet с картами → тап выбирает карту</div></div>
+  <div class="leg-row"><span class="leg-key k-b">Добавить</span><div class="leg-val">«Добавить карту» → экран формы → авто-определение системы по номеру</div></div>
+  <div class="leg-row"><span class="leg-key k-o">Удалить</span><div class="leg-val">Свайп влево на карте → кнопка «Удалить» → подтверждение</div></div>
+  <div class="leg-row"><span class="leg-key k-g">Успех</span><div class="leg-val">Карта добавлена → автоматически выбрана → вернуться к оплате</div></div>
+</div>
+
+<script>
+/* ═══════════════════ DATA ══════════════════════ */
+let cards = [
+  { id: 1, name: 'СБЕР',       last4: '5426', expiry: '07/23', system: 'MIR',  color: '#E8F9F1', selected: true,  logo: 'sber'  },
+  { id: 2, name: 'Альфа-Банк', last4: '1234', expiry: '12/25', system: 'VISA', color: '#FFF0F0', selected: false, logo: 'alfa'  },
+];
+let deleteTarget = null;
+let swipedRow    = null;
+let saveEnabled  = true;
+
+/* ═══════════════════ SCREEN NAV ════════════════ */
+let currentScreen = 'scr-pay';
+function showScreen(id, dir) {
+  document.getElementById(currentScreen).className = 'screen ' + (dir === 'forward' ? 'hidden-left' : 'hidden');
+  const next = document.getElementById(id);
+  next.classList.remove('hidden', 'hidden-left');
+  currentScreen = id;
+}
+function goBack() { showScreen('scr-pay', 'back'); }
+
+/* ═══════════════════ CARD SHEET ════════════════ */
+function renderSheetCards() {
+  const list = document.getElementById('sheet-card-list');
+  list.innerHTML = cards.map(c => `
+    <div class="card-row" id="cr-${c.id}" onclick="selectCard(${c.id})">
+      <div class="cr-ico" style="background:${c.color}">${cardLogoHTML(c)}</div>
+      <div style="flex:1">
+        <div class="cr-name">${c.name} •••• ${c.last4}</div>
+        <div class="cr-sub">${c.system} · Срок ${c.expiry}</div>
+      </div>
+      <div class="cr-check ${c.selected ? 'on' : 'off'}">
+        ${c.selected ? '<svg width="11" height="9" viewBox="0 0 11 9" fill="none"><path d="M1.5 4.5l3 3 5-5.5" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>' : ''}
+      </div>
+      <div class="cr-delete-reveal" onclick="event.stopPropagation();askDelete(${c.id})">
+        <span>Удалить</span>
+      </div>
+    </div>`).join('');
+
+  /* add swipe listeners */
+  cards.forEach(c => {
+    const row = document.getElementById('cr-' + c.id);
+    addSwipe(row, c.id);
+  });
+}
+
+function cardLogoHTML(c) {
+  if (c.logo === 'sber') return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="10" fill="#21A038" opacity=".2"/><path d="M6 11l3.5 3.5 6.5-7" stroke="#21A038" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  if (c.logo === 'alfa') return `<svg width="36" height="14" viewBox="0 0 36 14"><text x="0" y="11" font-size="11" font-weight="700" fill="#EF3124" font-family="Arial">Альфа</text></svg>`;
+  return `<svg width="22" height="16" viewBox="0 0 22 16" fill="none"><rect x="1" y="1" width="20" height="14" rx="3" stroke="#8E8E93" stroke-width="1.3"/><path d="M1 5h20" stroke="#8E8E93" stroke-width="1.3"/></svg>`;
+}
+
+function openCardSheet() {
+  renderSheetCards();
+  document.getElementById('sheet-overlay').classList.add('show');
+  document.getElementById('card-sheet').classList.add('open');
+}
+function closeCardSheet() {
+  if (swipedRow) { swipedRow.classList.remove('swiped'); swipedRow = null; }
+  document.getElementById('sheet-overlay').classList.remove('show');
+  document.getElementById('card-sheet').classList.remove('open');
+}
+
+function selectCard(id) {
+  if (swipedRow) { swipedRow.classList.remove('swiped'); swipedRow = null; return; }
+  cards.forEach(c => c.selected = c.id === id);
+  const sel = cards.find(c => c.id === id);
+
+  /* update payment screen card */
+  document.getElementById('pay-card-name').textContent = `${sel.name} •••• ${sel.last4}`;
+  document.getElementById('pay-card-sub').textContent  = `${sel.system} · Срок ${sel.expiry}`;
+  document.getElementById('pay-card-ico').style.background = sel.color;
+  document.getElementById('pay-card-ico').innerHTML = cardLogoHTML(sel);
+
+  closeCardSheet();
+}
+
+/* ═══════════════════ SWIPE TO DELETE ══════════════════════ */
+function addSwipe(row, id) {
+  let startX = 0;
+  row.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+  row.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (dx < -40) {
+      if (swipedRow && swipedRow !== row) swipedRow.classList.remove('swiped');
+      row.classList.add('swiped');
+      swipedRow = row;
+    } else if (dx > 20) {
+      row.classList.remove('swiped');
+      if (swipedRow === row) swipedRow = null;
+    }
+  }, { passive: true });
+  /* mouse fallback for desktop testing */
+  let mouseStartX = 0; let isDragging = false;
+  row.addEventListener('mousedown', e => { mouseStartX = e.clientX; isDragging = true; });
+  row.addEventListener('mouseup', e => {
+    if (!isDragging) return; isDragging = false;
+    const dx = e.clientX - mouseStartX;
+    if (dx < -30) {
+      if (swipedRow && swipedRow !== row) swipedRow.classList.remove('swiped');
+      row.classList.add('swiped'); swipedRow = row;
+    } else if (dx > 10) {
+      row.classList.remove('swiped'); if (swipedRow === row) swipedRow = null;
+    }
+  });
+}
+
+/* ═══════════════════ DELETE ════════════════════ */
+function askDelete(id) {
+  deleteTarget = id;
+  const card = cards.find(c => c.id === id);
+  document.getElementById('confirm-card-name-text').textContent =
+    `${card.name} •••• ${card.last4} будет удалена`;
+  document.getElementById('confirm-overlay').classList.add('show');
+  document.getElementById('confirm-sheet').classList.add('open');
+}
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('show');
+  document.getElementById('confirm-sheet').classList.remove('open');
+  if (swipedRow) { swipedRow.classList.remove('swiped'); swipedRow = null; }
+  deleteTarget = null;
+}
+function confirmDelete() {
+  if (!deleteTarget) return;
+  const wasSelected = cards.find(c => c.id === deleteTarget)?.selected;
+  cards = cards.filter(c => c.id !== deleteTarget);
+  /* if deleted card was selected, select first remaining */
+  if (wasSelected && cards.length > 0) {
+    cards[0].selected = true;
+    const sel = cards[0];
+    document.getElementById('pay-card-name').textContent = `${sel.name} •••• ${sel.last4}`;
+    document.getElementById('pay-card-sub').textContent  = `${sel.system} · Срок ${sel.expiry}`;
+    document.getElementById('pay-card-ico').style.background = sel.color;
+    document.getElementById('pay-card-ico').innerHTML = cardLogoHTML(sel);
+  }
+  closeConfirm();
+  renderSheetCards();
+}
+
+/* ═══════════════════ ADD CARD NAV ══════════════ */
+function goAddCard() {
+  closeCardSheet();
+  clearForm();
+  showScreen('scr-add', 'forward');
+}
+
+/* ═══════════════════ CARD NUMBER INPUT ═════════ */
+const CARD_SYSTEMS = [
+  { prefix: /^2/,    name: 'МИР',        color: '#E8F5FF' },
+  { prefix: /^4/,    name: 'Visa',       color: '#F0F0FF' },
+  { prefix: /^5[1-5]/, name: 'Mastercard', color: '#FFF8EC' },
+  { prefix: /^220/,  name: 'МИР',        color: '#E8F5FF' },
+];
+
+function detectSystem(num) {
+  const clean = num.replace(/\s/g, '');
+  for (const s of CARD_SYSTEMS) {
+    if (s.prefix.test(clean)) return s;
+  }
+  return null;
+}
+
+function onNumberInput(inp) {
+  let v = inp.value.replace(/\D/g, '').substring(0, 16);
+  inp.value = v.replace(/(.{4})/g, '$1 ').trim();
+  updatePreview();
+  checkForm();
+
+  const sys = detectSystem(v);
+  const icon = document.getElementById('number-icon');
+  const cpSys = document.getElementById('cp-system');
+
+  if (sys) {
+    cpSys.textContent = sys.name;
+    icon.innerHTML = `<div style="font-size:11px;font-weight:700;color:#636366;background:#F2F2F7;border-radius:6px;padding:2px 6px">${sys.name}</div>`;
+  } else {
+    cpSys.textContent = '';
+    icon.innerHTML = '';
+  }
+  document.getElementById('field-number').classList.remove('field-error');
+  document.getElementById('err-number').style.display = 'none';
+}
+
+function validateNumber() {
+  const v = document.getElementById('inp-number').value.replace(/\s/g,'');
+  if (v.length > 0 && v.length < 16) {
+    document.getElementById('field-number').classList.add('field-error');
+    document.getElementById('err-number').style.display = 'block';
+  }
+}
+
+function onExpiryInput(inp) {
+  let v = inp.value.replace(/\D/g, '').substring(0, 4);
+  if (v.length >= 2) v = v.slice(0,2) + '/' + v.slice(2);
+  inp.value = v;
+  document.getElementById('cp-expiry').textContent = v || 'ММ/ГГ';
+  document.getElementById('field-expiry') && document.getElementById('field-expiry').classList.remove('field-error');
+  document.getElementById('err-expiry').style.display = 'none';
+  checkForm();
+}
+
+function validateExpiry() {
+  const v = document.getElementById('inp-expiry').value;
+  if (v.length === 5) {
+    const [mm, yy] = v.split('/').map(Number);
+    const now = new Date(); const cy = now.getFullYear() % 100; const cm = now.getMonth() + 1;
+    if (mm < 1 || mm > 12 || yy < cy || (yy === cy && mm < cm)) {
+      document.getElementById('err-expiry').style.display = 'block';
+    }
+  }
+}
+
+function onCvvInput(inp) {
+  inp.value = inp.value.replace(/\D/g,'').substring(0,3);
+  checkForm();
+}
+
+function onNameInput(inp) {
+  inp.value = inp.value.toUpperCase();
+  document.getElementById('cp-name').textContent = inp.value || 'Имя на карте';
+  checkForm();
+}
+
+function updatePreview() {
+  const raw = document.getElementById('inp-number').value.replace(/\s/g,'');
+  const padded = raw.padEnd(16,'•');
+  const chunks = padded.match(/.{1,4}/g) || [];
+  document.getElementById('cp-number').textContent = chunks.join(' ');
+}
+
+function checkForm() {
+  const num = document.getElementById('inp-number').value.replace(/\s/g,'');
+  const exp = document.getElementById('inp-expiry').value;
+  const cvv = document.getElementById('inp-cvv').value;
+  const ok  = num.length >= 16 && exp.length === 5 && cvv.length >= 3;
+  document.getElementById('btn-add').disabled = !ok;
+}
+
+function clearForm() {
+  ['inp-number','inp-expiry','inp-cvv','inp-name'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('cp-number').textContent = '•••• •••• •••• ••••';
+  document.getElementById('cp-expiry').textContent = 'ММ/ГГ';
+  document.getElementById('cp-name').textContent   = 'Имя на карте';
+  document.getElementById('cp-system').textContent = '';
+  document.getElementById('number-icon').innerHTML = '';
+  document.getElementById('btn-add').disabled = true;
+}
+
+function simulateScan() {
+  /* simulate filling the form after camera scan */
+  document.getElementById('inp-number').value = '2200 1234 5678 9012';
+  document.getElementById('inp-expiry').value = '09/27';
+  document.getElementById('inp-cvv').value    = '321';
+  document.getElementById('cp-number').textContent = '2200 1234 5678 9012';
+  document.getElementById('cp-expiry').textContent = '09/27';
+  document.getElementById('cp-system').textContent = 'МИР';
+  document.getElementById('number-icon').innerHTML = `<div style="font-size:11px;font-weight:700;color:#636366;background:#F2F2F7;border-radius:6px;padding:2px 6px">МИР</div>`;
+  checkForm();
+}
+
+/* ═══════════════════ ADD CARD CONFIRM ══════════ */
+function addCard() {
+  const num    = document.getElementById('inp-number').value;
+  const last4  = num.replace(/\s/g,'').slice(-4);
+  const expiry = document.getElementById('inp-expiry').value;
+  const sys    = detectSystem(num)?.name || 'Карта';
+
+  document.getElementById('success-card-number').textContent = `•••• ${last4}`;
+  document.getElementById('success-card-system').textContent = `${sys} · выбрана для оплаты`;
+  document.getElementById('add-success').classList.add('show');
+}
+
+function finishAdd() {
+  const num    = document.getElementById('inp-number').value;
+  const last4  = num.replace(/\s/g,'').slice(-4);
+  const expiry = document.getElementById('inp-expiry').value;
+  const sys    = detectSystem(num);
+  const newId  = Date.now();
+
+  const newCard = {
+    id: newId, name: sys?.name || 'Карта',
+    last4, expiry, system: sys?.name || '•',
+    color: sys?.color || '#F2F2F7',
+    selected: true, logo: 'generic',
+  };
+
+  cards.forEach(c => c.selected = false);
+  if (document.getElementById('save-toggle').classList.contains('on')) {
+    cards.push(newCard);
+  }
+
+  /* update payment screen */
+  document.getElementById('pay-card-name').textContent = `${newCard.name} •••• ${last4}`;
+  document.getElementById('pay-card-sub').textContent  = `${newCard.system} · Срок ${expiry}`;
+  document.getElementById('pay-card-ico').style.background = newCard.color;
+  document.getElementById('pay-card-ico').innerHTML = cardLogoHTML(newCard);
+
+  document.getElementById('add-success').classList.remove('show');
+  showScreen('scr-pay', 'back');
+}
+</script>
+</body>
+</html>
