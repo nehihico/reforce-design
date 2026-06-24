@@ -6,6 +6,7 @@
 <title>Reforce — Безопасность, которую легко настроить</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*:focus { outline: none; }
 html { scroll-behavior: smooth; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Helvetica Neue', sans-serif;
@@ -220,7 +221,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .quiz-left .section-sub { margin-bottom: 36px; }
 .quiz-feature { display: flex; flex-direction: column; gap: 16px; margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--border); }
 .qf-item { display: flex; align-items: center; gap: 14px; }
-.qf-ic { width: 38px; height: 38px; border-radius: 10px; background: #fff; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #555; }
+.qf-ic { width: 38px; height: 38px; border-radius: 10px; background: #fff; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: #1a1a1a; }
 .qf-tx { font-size: 14px; color: var(--n600); }
 .qf-tx strong { display: block; font-size: 14px; font-weight: 600; color: var(--dark); margin-bottom: 1px; }
 
@@ -425,6 +426,81 @@ button { cursor: pointer; border: none; font-family: inherit; }
 .ft-legal a { font-size: 12px; color: rgba(255,255,255,.22); transition: color .12s; }
 .ft-legal a:hover { color: rgba(255,255,255,.5); }
 
+/* ─── CITY BUTTON ─── */
+.btn-city {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 1.5px solid var(--border);
+  border-radius: 100px; padding: 8px 16px 8px 12px;
+  font-size: 13.5px; font-weight: 600; color: var(--dark);
+  transition: border-color .15s, background .15s;
+  cursor: pointer; font-family: inherit;
+}
+.btn-city:hover { border-color: #bbb; background: var(--n50); }
+.btn-city-pin { color: var(--red); flex-shrink: 0; }
+.btn-city-chevron { color: var(--n400); flex-shrink: 0; }
+
+/* ─── CITY SNACKBAR ─── */
+.city-snack {
+  position: fixed; bottom: 24px; left: 50%; z-index: 300;
+  transform: translateX(-50%) translateY(calc(100% + 40px));
+  transition: transform .4s cubic-bezier(.34,1.3,.64,1);
+  background: #111; border-radius: 16px;
+  box-shadow: 0 8px 48px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.2);
+  padding: 16px 16px 14px 20px;
+  min-width: 340px; max-width: calc(100vw - 32px);
+  display: flex; flex-direction: column; gap: 12px;
+}
+.city-snack.visible { transform: translateX(-50%) translateY(0); }
+.city-snack-row { display: flex; align-items: center; gap: 12px; }
+.city-snack-ic { color: var(--red); flex-shrink: 0; }
+.city-snack-text { font-size: 14.5px; font-weight: 600; color: #fff; flex: 1; }
+.city-snack-text span { color: rgba(255,255,255,.5); font-weight: 400; }
+.city-snack-btns { display: flex; gap: 8px; flex-shrink: 0; }
+.btn-snack-yes {
+  background: var(--red); color: #fff; border: none;
+  border-radius: 100px; padding: 8px 18px;
+  font-size: 13.5px; font-weight: 600; font-family: inherit;
+  cursor: pointer; white-space: nowrap;
+  transition: opacity .12s;
+}
+.btn-snack-yes:hover { opacity: .88; }
+.btn-snack-other {
+  background: rgba(255,255,255,.1); color: rgba(255,255,255,.7);
+  border: 1px solid rgba(255,255,255,.15); border-radius: 100px;
+  padding: 8px 16px; font-size: 13.5px; font-weight: 500;
+  font-family: inherit; cursor: pointer; white-space: nowrap;
+  transition: background .12s;
+}
+.btn-snack-other:hover { background: rgba(255,255,255,.16); }
+.city-snack-progress {
+  height: 2px; background: rgba(255,255,255,.1); border-radius: 2px; overflow: hidden;
+}
+.city-snack-bar {
+  height: 100%; background: var(--red); border-radius: 2px;
+  width: 100%; transform-origin: left;
+  transition: transform 10s linear;
+}
+.city-snack-bar.running { transform: scaleX(0); }
+@media (max-width: 640px) {
+  .city-snack { flex-direction: column; min-width: 0; width: calc(100vw - 32px); }
+  .city-snack-btns { width: 100%; }
+  .btn-snack-yes, .btn-snack-other { flex: 1; text-align: center; }
+}
+
+/* ─── CITY MODAL (updated) ─── */
+.city-modal-search {
+  width: 100%; height: 44px; border: 1.5px solid var(--border);
+  border-radius: 10px; padding: 0 16px 0 40px;
+  font-size: 14px; font-family: inherit; outline: none;
+  transition: border-color .15s; color: var(--dark); background: var(--n50);
+  box-sizing: border-box; margin-bottom: 8px;
+}
+.city-modal-search:focus { border-color: var(--red); background: #fff; }
+.city-modal-search-wrap { position: relative; margin-bottom: 2px; }
+.city-modal-search-ic { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--n400); pointer-events: none; }
+.city-opt.active { background: rgba(212,43,43,.06); border-color: rgba(212,43,43,.2); color: var(--red); font-weight: 600; }
+.city-opt-region { font-size: 12px; color: var(--n400); margin-left: auto; font-weight: 400; }
+
 /* ─── FLOATING BAR ─── */
 .float-bar {
   position: fixed; bottom: 24px; left: 50%; z-index: 200;
@@ -571,7 +647,11 @@ button { cursor: pointer; border: none; font-family: inherit; }
     <a href="concept-contacts.html">Контакты</a>
   </div>
   <div class="nav-r">
-    <button class="btn-nav-ghost" onclick="openCityModal()">📍 Москва</button>
+    <button class="btn-city" id="cityBtn" onclick="openCityModal()">
+      <svg class="btn-city-pin" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      <span id="cityName">Екатеринбург</span>
+      <svg class="btn-city-chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
     <a href="tel:88005557555" class="btn-nav-ghost nav-phone">8 800 555-75-55</a>
     <button class="btn-nav-ghost" onclick="alert('Войти')">Войти</button>
     <button class="btn-nav-dark" onclick="document.getElementById('quiz').scrollIntoView({behavior:'smooth'})">Подобрать охрану →</button>
@@ -584,7 +664,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
     <div>
       <span class="label"><em>ПЛАТФОРМА БЕЗОПАСНОСТИ</em></span>
       <h1 class="hero-h1">Ваш объект<br>под <em>охраной.</em><br>Вы — за пультом.</h1>
-      <p class="hero-desc">Охранная сигнализация, ГБР и видеонаблюдение — оформите онлайн, монтаж за 1 день.</p>
+      <p class="hero-desc">Охранная сигнализация, ГБР и видеонаблюдение — оформите онлайн, монтаж за 1 день. Работаем в <span id="heroCityText">Екатеринбурге и области</span>.</p>
       <div class="hero-ctas">
         <button class="btn-red" onclick="document.getElementById('quiz').scrollIntoView({behavior:'smooth'})">Подобрать охрану →</button>
         <button class="btn-outline" onclick="openCallModal()">Заказать звонок</button>
@@ -802,7 +882,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
       <div class="q-res" id="qRes">
         <div class="q-res-hd">
           <h3>Вот что подходит именно вам</h3>
-          <p>Подобрано по вашему запросу · Москва · Цены актуальны</p>
+          <p>Подобрано по вашему запросу · <span id="quizCityText">Екатеринбург</span> · Цены актуальны</p>
         </div>
         <div class="res-grid">
           <div class="res-card">
@@ -1080,7 +1160,7 @@ button { cursor: pointer; border: none; font-family: inherit; }
         Что происходит, когда срабатывает сигнализация?
         <span class="faq-chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
       </button>
-      <div class="faq-a">Пульт получает сигнал, вам приходит уведомление. Оператор звонит в течение минуты. При подтверждении угрозы — направляем группу реагирования, среднее время прибытия 5,8 мин. При ложном срабатывании — просто информируем, без паники и лишних выездов.</div>
+      <div class="faq-a">Пульт получает сигнал, вам приходит уведомление. Оператор звонит в течение минуты. При подтверждении угрозы — направляем группу реагирования, среднее время прибытия <span id="faqTimeText">3–7 мин</span>. При ложном срабатывании — просто информируем, без паники и лишних выездов.</div>
     </div>
     <div class="faq-item">
       <button class="faq-q" onclick="toggleFaq(this)">
@@ -1158,16 +1238,24 @@ button { cursor: pointer; border: none; font-family: inherit; }
   <div class="modal">
     <button class="modal-close" onclick="closeModal('modalCity')">✕</button>
     <div class="modal-h">Выберите город</div>
-    <div class="modal-sub">Покажем доступные тарифы и условия для вашего региона</div>
-    <div class="city-list">
-      <button class="city-opt" onclick="selectCity('Москва')">Москва</button>
-      <button class="city-opt" onclick="selectCity('Санкт-Петербург')">Санкт-Петербург</button>
-      <button class="city-opt" onclick="selectCity('Екатеринбург')">Екатеринбург</button>
-      <button class="city-opt" onclick="selectCity('Новосибирск')">Новосибирск</button>
-      <button class="city-opt" onclick="selectCity('Казань')">Казань</button>
-      <button class="city-opt" onclick="selectCity('Краснодар')">Краснодар</button>
-      <button class="city-opt" onclick="selectCity('Ростов-на-Дону')">Ростов-на-Дону</button>
-      <button class="city-opt" onclick="selectCity('Другой город')">Другой город</button>
+    <div class="modal-sub">Покажем цены и партнёров в вашем регионе</div>
+    <div class="city-modal-search-wrap">
+      <svg class="city-modal-search-ic" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="city-modal-search" type="text" placeholder="Поиск города..." oninput="filterCities(this.value)">
+    </div>
+    <div class="city-list" id="cityList">
+      <button class="city-opt" id="city-ekb" onclick="selectCity('ekb')">
+        Екатеринбург <span class="city-opt-region">Свердловская обл.</span>
+      </button>
+      <button class="city-opt" id="city-chel" onclick="selectCity('chel')">
+        Челябинск <span class="city-opt-region">Челябинская обл.</span>
+      </button>
+      <button class="city-opt" id="city-kurgan" onclick="selectCity('kurgan')">
+        Курган <span class="city-opt-region">Курганская обл.</span>
+      </button>
+    </div>
+    <div style="margin-top:12px;font-size:12px;color:var(--n400);text-align:center;line-height:1.5">
+      Не нашли свой город? <button onclick="openCallModal();closeModal('modalCity')" style="background:none;border:none;color:var(--red);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;padding:0">Оставьте заявку</button> — свяжемся и уточним
     </div>
   </div>
 </div>
@@ -1227,6 +1315,21 @@ button { cursor: pointer; border: none; font-family: inherit; }
   </div>
 </footer>
 
+<!-- CITY SNACKBAR -->
+<div class="city-snack" id="citySnack">
+  <div class="city-snack-row">
+    <svg class="city-snack-ic" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <div class="city-snack-text">Ваш город — <span id="snackCityName">Екатеринбург</span>?</div>
+    <div class="city-snack-btns">
+      <button class="btn-snack-yes" onclick="confirmCity()">Да, верно</button>
+      <button class="btn-snack-other" onclick="changeCity()">Другой город</button>
+    </div>
+  </div>
+  <div class="city-snack-progress">
+    <div class="city-snack-bar" id="snackBar"></div>
+  </div>
+</div>
+
 <!-- FLOATING BAR -->
 <div class="float-bar" id="floatBar">
   <div class="float-bar-l">
@@ -1237,6 +1340,106 @@ button { cursor: pointer; border: none; font-family: inherit; }
 </div>
 
 <script>
+/* ── CITY LOGIC ── */
+var CITIES = {
+  ekb:    { name: 'Екатеринбург', region: 'Свердловская обл.', time: '3–7 мин', partner: 'Варяг' },
+  chel:   { name: 'Челябинск',    region: 'Челябинская обл.',  time: '4–8 мин', partner: 'Гольфстрим' },
+  kurgan: { name: 'Курган',       region: 'Курганская обл.',   time: '5–10 мин', partner: 'Delta' }
+};
+var DEFAULT_CITY = 'ekb';
+var currentCity = DEFAULT_CITY;
+var snackTimer = null;
+
+function getSavedCity() {
+  try { return localStorage.getItem('rf_city'); } catch(e) { return null; }
+}
+function saveCity(code) {
+  try { localStorage.setItem('rf_city', code); } catch(e) {}
+}
+
+function applyCity(code) {
+  var city = CITIES[code] || CITIES[DEFAULT_CITY];
+  currentCity = code;
+  // Nav button
+  document.getElementById('cityName').textContent = city.name;
+  // Snackbar city name
+  document.getElementById('snackCityName').textContent = city.name;
+  // Hero subtitle city mention
+  var heroCitySpan = document.getElementById('heroCityText');
+  if (heroCitySpan) heroCitySpan.textContent = city.name + ' и области';
+  // Quiz results city mention
+  var quizCitySpan = document.getElementById('quizCityText');
+  if (quizCitySpan) quizCitySpan.textContent = city.name;
+  // Response time in FAQ
+  var faqTimeSpan = document.getElementById('faqTimeText');
+  if (faqTimeSpan) faqTimeSpan.textContent = city.time;
+  // Highlight active city in modal
+  Object.keys(CITIES).forEach(function(k) {
+    var btn = document.getElementById('city-' + k);
+    if (btn) btn.classList.toggle('active', k === code);
+  });
+}
+
+function selectCity(code) {
+  applyCity(code);
+  saveCity(code);
+  closeModal('modalCity');
+  hideSnack();
+}
+
+function confirmCity() {
+  saveCity(currentCity);
+  hideSnack();
+}
+
+function changeCity() {
+  hideSnack();
+  openCityModal();
+}
+
+function showSnack() {
+  var snack = document.getElementById('citySnack');
+  snack.classList.add('visible');
+  // start progress bar
+  setTimeout(function() {
+    document.getElementById('snackBar').classList.add('running');
+  }, 50);
+  // auto-dismiss after 10s
+  snackTimer = setTimeout(function() {
+    confirmCity();
+    hideSnack();
+  }, 10000);
+}
+
+function hideSnack() {
+  clearTimeout(snackTimer);
+  var snack = document.getElementById('citySnack');
+  snack.classList.remove('visible');
+}
+
+function filterCities(q) {
+  var items = document.querySelectorAll('#cityList .city-opt');
+  q = q.toLowerCase();
+  items.forEach(function(btn) {
+    var text = btn.textContent.toLowerCase();
+    btn.style.display = text.includes(q) ? '' : 'none';
+  });
+}
+
+// Init on load
+(function() {
+  var saved = getSavedCity();
+  if (saved && CITIES[saved]) {
+    applyCity(saved);
+    // already saved — no snackbar needed
+  } else {
+    applyCity(DEFAULT_CITY);
+    // simulate: show snackbar after 1.5s (as if geolocation confirmed default city)
+    setTimeout(showSnack, 1500);
+  }
+})();
+
+/* ── QUIZ LOGIC ── */
 var s1 = null, s2 = null;
 
 function pick(step, val, el) {
@@ -1318,12 +1521,7 @@ function submitModal(id) {
   document.getElementById('modalSuccess').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
-function selectCity(city) {
-  document.querySelectorAll('.nav-r .btn-nav-ghost').forEach(function(btn) {
-    if (btn.textContent.startsWith('📍')) btn.textContent = '📍 ' + city;
-  });
-  closeModal('modalCity');
-}
+// selectCity is defined above in city logic block
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(function(m) { m.classList.remove('open'); document.body.style.overflow = ''; });
 });
