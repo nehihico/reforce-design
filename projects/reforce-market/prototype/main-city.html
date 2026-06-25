@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reforce — Безопасность как сервис</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+*:focus{outline:none}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Inter','Helvetica Neue',sans-serif;background:#fff;color:#111;-webkit-font-smoothing:antialiased;font-size:16px}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;border:none;font-family:inherit;background:none}
+img{max-width:100%;display:block}
+
+:root{
+  --red:#D42B2B;
+  --dark:#111;
+  --gray:#6B7280;
+  --light:#F9FAFB;
+  --border:#E5E7EB;
+  --sp:8px;
+}
+
+.container{max-width:1200px;margin:0 auto;padding:0 48px}
+
+/* ── HEADER ── */
+.site-header{
+  position:sticky;top:0;z-index:100;
+  background:#fff;border-bottom:1px solid var(--border);
+}
+.header-inner{
+  display:flex;align-items:center;gap:0;
+  height:64px;
+}
+.h-logo{display:flex;align-items:center;flex-shrink:0;margin-right:40px}
+.h-logo img{height:26px;width:auto}
+.h-nav{display:flex;gap:28px;flex:1}
+.h-nav a{font-size:14px;font-weight:500;color:#374151;transition:color .12s;white-space:nowrap}
+.h-nav a:hover,.h-nav a.active{color:var(--dark)}
+.h-right{display:flex;align-items:center;gap:12px;flex-shrink:0;margin-left:24px}
+.h-phone{font-size:14px;font-weight:600;color:var(--dark);white-space:nowrap}
+.h-phone:hover{color:var(--red)}
+.btn-call{
+  background:var(--red);color:#fff;border-radius:8px;
+  padding:9px 20px;font-size:13.5px;font-weight:600;
+  white-space:nowrap;transition:opacity .12s;
+}
+.btn-call:hover{opacity:.88}
+
+/* city button */
+.btn-city{
+  display:inline-flex;align-items:center;gap:6px;
+  border:1.5px solid var(--border);border-radius:8px;
+  padding:8px 14px 8px 10px;
+  font-size:13px;font-weight:600;color:var(--dark);
+  background:#fff;transition:border-color .15s,background .15s;
+  white-space:nowrap;flex-shrink:0;
+}
+.btn-city:hover{border-color:#9CA3AF;background:var(--light)}
+.btn-city svg{flex-shrink:0}
+.city-pin-ic{color:var(--red)}
+.city-chev{color:#9CA3AF}
+
+/* ── HERO ── */
+.hero{
+  position:relative;overflow:hidden;
+  background:#0d1117;
+  min-height:520px;
+  display:flex;align-items:center;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background-image:url('https://shop.reforce.group/assets/main.jpg');
+  background-size:cover;background-position:center;
+  opacity:.22;
+}
+.hero-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(100deg,rgba(13,17,23,.85) 45%,rgba(13,17,23,.5) 100%);
+}
+.hero-inner{
+  position:relative;z-index:1;
+  display:grid;grid-template-columns:1fr 420px;gap:60px;align-items:center;
+  padding:72px 0;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;
+  color:rgba(255,255,255,.45);margin-bottom:20px;
+}
+.hero-eyebrow span{display:inline-block;width:24px;height:1px;background:var(--red)}
+.hero-h1{
+  font-size:60px;font-weight:800;line-height:1.0;letter-spacing:-2.5px;
+  color:#fff;margin-bottom:20px;
+}
+.hero-h1 em{color:var(--red);font-style:normal}
+.hero-sub{
+  font-size:17px;color:rgba(255,255,255,.6);line-height:1.7;
+  max-width:480px;margin-bottom:36px;
+}
+.hero-sub strong{color:rgba(255,255,255,.85);font-weight:600}
+.hero-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12.5px;color:rgba(255,255,255,.55);
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+  border-radius:100px;padding:5px 12px;
+}
+.hero-tag svg{color:rgba(255,255,255,.35)}
+.hero-ctas{display:flex;gap:12px;align-items:center}
+.btn-hero-primary{
+  background:var(--red);color:#fff;border-radius:10px;
+  padding:14px 28px;font-size:15px;font-weight:700;
+  display:inline-flex;align-items:center;gap:8px;
+  transition:opacity .12s;white-space:nowrap;
+}
+.btn-hero-primary:hover{opacity:.88}
+.btn-hero-ghost{
+  color:rgba(255,255,255,.6);font-size:14px;font-weight:500;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:color .12s;
+}
+.btn-hero-ghost:hover{color:#fff}
+
+/* hero right panel */
+.hero-panel{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;padding:28px;
+}
+.hp-label{
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;
+  color:rgba(255,255,255,.3);margin-bottom:20px;
+}
+.hp-stat{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 0;border-bottom:1px solid rgba(255,255,255,.07);
+}
+.hp-stat:last-of-type{border-bottom:none;margin-bottom:20px}
+.hp-ic{
+  width:36px;height:36px;border-radius:10px;flex-shrink:0;
+  background:rgba(212,43,43,.12);display:flex;align-items:center;justify-content:center;
+  color:var(--red);
+}
+.hp-n{font-size:22px;font-weight:800;color:#fff;letter-spacing:-1px;line-height:1}
+.hp-l{font-size:12px;color:rgba(255,255,255,.35);margin-top:2px}
+.hp-alert{
+  background:rgba(212,43,43,.08);border:1px solid rgba(212,43,43,.18);
+  border-radius:12px;padding:14px 16px;
+  display:flex;align-items:center;gap:10px;
+}
+.hp-dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0;animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(212,43,43,.5)}50%{box-shadow:0 0 0 6px rgba(212,43,43,0)}}
+.hp-alert-txt{font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.5}
+.hp-alert-txt strong{color:#fff}
+
+/* ── AUDIENCE ── */
+.audience{padding:80px 0;border-bottom:1px solid var(--border)}
+.sec-label{
+  font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px;
+  color:#9CA3AF;margin-bottom:12px;display:block;
+}
+.sec-title{font-size:40px;font-weight:800;line-height:1.1;letter-spacing:-1.5px;margin-bottom:12px}
+.sec-sub{font-size:16px;color:var(--gray);line-height:1.7;max-width:540px;margin-bottom:48px}
+.aud-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.aud-card{
+  border-radius:20px;overflow:hidden;position:relative;
+  min-height:360px;display:flex;flex-direction:column;justify-content:flex-end;
+  background:#111;cursor:pointer;transition:transform .2s;
+}
+.aud-card:hover{transform:translateY(-4px)}
+.aud-bg{
+  position:absolute;inset:0;background-size:cover;background-position:center;
+  opacity:.45;transition:opacity .3s;
+}
+.aud-card:hover .aud-bg{opacity:.55}
+.aud-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.2) 60%,transparent 100%);
+}
+.aud-body{position:relative;z-index:1;padding:28px}
+.aud-icon{
+  width:40px;height:40px;border-radius:10px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:14px;color:rgba(255,255,255,.8);
+}
+.aud-title{font-size:21px;font-weight:700;color:#fff;margin-bottom:6px}
+.aud-desc{font-size:13px;color:rgba(255,255,255,.55);line-height:1.6;margin-bottom:18px}
+.btn-aud{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--red);color:#fff;border-radius:8px;
+  padding:10px 18px;font-size:13px;font-weight:600;
+  transition:opacity .12s;
+}
+.btn-aud:hover{opacity:.88}
+
+/* ── QUIZ ── */
+.quiz-sec{background:var(--light);padding:80px 0;border-top:1px solid var(--border)}
+.quiz-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:40px}
+.quiz-pin-ic{color:var(--red);flex-shrink:0;margin-top:4px}
+.quiz-title-wrap{}
+.quiz-title{font-size:36px;font-weight:800;letter-spacing:-1.5px;margin-bottom:8px}
+.quiz-sub{font-size:15px;color:var(--gray)}
+.quiz-types{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px}
+.qt{
+  display:flex;align-items:center;gap:8px;
+  border:1.5px solid var(--border);border-radius:10px;
+  padding:12px 18px;background:#fff;cursor:pointer;
+  transition:border-color .15s,background .15s;
+}
+.qt:hover{border-color:#9CA3AF}
+.qt.sel{border-color:var(--red);background:rgba(212,43,43,.04)}
+.qt-dot{
+  width:18px;height:18px;border-radius:50%;
+  border:1.5px solid var(--border);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;transition:border-color .15s;
+}
+.qt.sel .qt-dot{border-color:var(--red);background:var(--red)}
+.qt.sel .qt-dot::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff}
+.qt-label{font-size:14px;font-weight:600;color:var(--dark)}
+.qt-price{font-size:12px;color:var(--gray);margin-top:2px}
+
+/* packages row */
+.packs-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pack{
+  background:#fff;border:1.5px solid var(--border);border-radius:16px;
+  padding:24px;position:relative;transition:border-color .15s,transform .15s;
+}
+.pack:hover{border-color:#9CA3AF;transform:translateY(-2px)}
+.pack.rec{border-color:var(--red)}
+.pack-badge{
+  position:absolute;top:-11px;left:20px;
+  background:var(--red);color:#fff;border-radius:100px;
+  font-size:11px;font-weight:700;padding:3px 10px;
+}
+.pack-name{font-size:15px;font-weight:700;margin-bottom:4px}
+.pack-price{font-size:26px;font-weight:800;color:var(--dark);letter-spacing:-1px;margin-bottom:2px}
+.pack-price span{font-size:14px;font-weight:400;color:var(--gray)}
+.pack-equip{font-size:12px;color:var(--gray);margin-bottom:16px}
+.pack-list{list-style:none;display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
+.pack-list li{font-size:13px;color:#374151;display:flex;align-items:center;gap:7px}
+.pack-list li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--red);opacity:.5;flex-shrink:0}
+.btn-pack-red{
+  width:100%;background:var(--red);color:#fff;border-radius:8px;
+  padding:11px;font-size:13.5px;font-weight:600;text-align:center;transition:opacity .12s;
+  display:block;
+}
+.btn-pack-red:hover{opacity:.88}
+.btn-pack-out{
+  width:100%;border:1.5px solid var(--border);color:var(--dark);border-radius:8px;
+  padding:11px;font-size:13.5px;font-weight:600;text-align:center;transition:border-color .12s;
+  display:block;margin-top:8px;background:#fff;
+}
+.btn-pack-out:hover{border-color:#9CA3AF}
+
+/* ── STATS ── */
+.stats-sec{background:var(--dark);padding:72px 0}
+.stats-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:0}
+.stat-item{
+  padding:0 24px;border-right:1px solid rgba(255,255,255,.08);
+  text-align:center;
+}
+.stat-item:first-child{padding-left:0}
+.stat-item:last-child{border-right:none;padding-right:0}
+.stat-n{font-size:38px;font-weight:800;color:#fff;letter-spacing:-1.5px;line-height:1;margin-bottom:8px}
+.stat-n em{color:var(--red);font-style:normal}
+.stat-l{font-size:12px;color:rgba(255,255,255,.4);line-height:1.5}
+
+/* ── HOW ── */
+.how-sec{padding:80px 0;border-bottom:1px solid var(--border)}
+.how-grid{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.how-step{padding:32px 28px;border-right:1px solid var(--border)}
+.how-step:last-child{border-right:none}
+.how-num{font-size:52px;font-weight:800;color:#F3F4F6;letter-spacing:-2px;line-height:1;margin-bottom:16px}
+.how-t{font-size:16px;font-weight:700;margin-bottom:8px}
+.how-d{font-size:13px;color:var(--gray);line-height:1.65;margin-bottom:14px}
+.how-chip{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:11.5px;font-weight:600;color:var(--red);
+  background:rgba(212,43,43,.08);border-radius:100px;padding:4px 10px;
+}
+
+/* ── SERVICES ── */
+.services-sec{padding:80px 0;border-bottom:1px solid var(--border)}
+.svc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.svc-card{
+  border:1.5px solid var(--border);border-radius:16px;padding:28px;
+  transition:border-color .2s,transform .2s;
+}
+.svc-card:hover{border-color:#9CA3AF;transform:translateY(-3px)}
+.svc-ic{
+  width:44px;height:44px;border-radius:12px;background:rgba(212,43,43,.07);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--red);margin-bottom:16px;
+}
+.svc-name{font-size:16px;font-weight:700;margin-bottom:4px}
+.svc-price{font-size:22px;font-weight:800;color:var(--dark);letter-spacing:-0.5px;margin-bottom:8px}
+.svc-price span{font-size:13px;font-weight:400;color:var(--gray)}
+.svc-features{list-style:none;display:flex;flex-direction:column;gap:5px;margin-bottom:20px}
+.svc-features li{font-size:12.5px;color:#374151;display:flex;align-items:center;gap:7px}
+.svc-features li::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--red);opacity:.5;flex-shrink:0}
+.btn-svc{font-size:13px;font-weight:600;color:var(--red);display:inline-flex;align-items:center;gap:4px;transition:gap .12s}
+.btn-svc:hover{gap:8px}
+
+/* ── WHY REFORCE ── */
+.why-sec{padding:80px 0;border-bottom:1px solid var(--border)}
+.why-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.why-img{border-radius:20px;overflow:hidden;aspect-ratio:4/3;background:#F3F4F6;position:relative}
+.why-img img{width:100%;height:100%;object-fit:cover}
+.why-img-placeholder{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#1a1a2e,#16213e);
+}
+.why-list{display:flex;flex-direction:column;gap:24px;margin-top:36px}
+.why-item{display:flex;gap:16px}
+.why-ic{
+  width:40px;height:40px;border-radius:10px;
+  border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;color:var(--dark);
+}
+.why-tx h4{font-size:15px;font-weight:700;margin-bottom:4px}
+.why-tx p{font-size:13px;color:var(--gray);line-height:1.6}
+
+/* ── APP ── */
+.app-sec{background:var(--light);padding:80px 0;border-top:1px solid var(--border)}
+.app-inner{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.app-badges{display:flex;gap:10px;flex-wrap:wrap;margin-top:32px}
+.app-badge{
+  display:flex;align-items:center;gap:12px;
+  background:var(--dark);color:#fff;border-radius:12px;padding:11px 20px;
+  transition:opacity .12s;
+}
+.app-badge:hover{opacity:.85}
+.app-badge-label{font-size:10px;color:rgba(255,255,255,.5);display:block;margin-bottom:1px}
+.app-badge-store{font-size:14px;font-weight:700;display:block}
+.app-img{display:flex;justify-content:center}
+.app-img img{width:260px;border-radius:24px;box-shadow:0 24px 60px rgba(0,0,0,.15)}
+.app-img-placeholder{
+  width:260px;height:420px;border-radius:24px;
+  background:linear-gradient(135deg,#1a1a2e,#16213e);
+  display:flex;align-items:center;justify-content:center;
+}
+
+/* ── REVIEWS ── */
+.reviews-sec{padding:80px 0;border-bottom:1px solid var(--border)}
+.rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.rev-card{border:1.5px solid var(--border);border-radius:16px;padding:28px;transition:border-color .15s}
+.rev-card:hover{border-color:#9CA3AF}
+.rev-stars{color:#F59E0B;font-size:14px;letter-spacing:2px;margin-bottom:14px}
+.rev-text{font-size:14px;color:#374151;line-height:1.75;margin-bottom:20px}
+.rev-author{display:flex;align-items:center;gap:12px;padding-top:18px;border-top:1px solid var(--border)}
+.rev-ava{
+  width:38px;height:38px;border-radius:50%;background:var(--light);
+  border:1px solid var(--border);display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:700;color:var(--gray);flex-shrink:0;
+}
+.rev-name{font-size:14px;font-weight:700}
+.rev-meta{font-size:12px;color:var(--gray);margin-top:2px}
+
+/* ── FAQ ── */
+.faq-sec{padding:80px 0;background:var(--light);border-top:1px solid var(--border)}
+.faq-list{max-width:800px}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{
+  width:100%;display:flex;align-items:center;justify-content:space-between;
+  gap:16px;padding:20px 0;text-align:left;
+  font-size:15px;font-weight:600;color:var(--dark);transition:color .12s;
+}
+.faq-q:hover{color:var(--red)}
+.faq-arrow{color:var(--gray);transition:transform .2s;flex-shrink:0}
+.faq-item.open .faq-arrow{transform:rotate(180deg)}
+.faq-a{
+  max-height:0;overflow:hidden;transition:max-height .3s ease;
+}
+.faq-item.open .faq-a{max-height:300px}
+.faq-a-inner{font-size:14px;color:var(--gray);line-height:1.75;padding-bottom:20px}
+
+/* ── PARTNERS ── */
+.partners-sec{padding:72px 0;border-bottom:1px solid var(--border)}
+.partners-hd{text-align:center;margin-bottom:12px}
+.partners-sub{text-align:center;font-size:15px;color:var(--gray);max-width:560px;margin:0 auto 48px}
+.partners-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:16px;align-items:center}
+.partner-logo{
+  border:1px solid var(--border);border-radius:12px;padding:20px 16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;color:#374151;
+  transition:border-color .15s;min-height:72px;text-align:center;
+}
+.partner-logo:hover{border-color:#9CA3AF}
+.partner-logo.highlight{border-color:rgba(212,43,43,.3);background:rgba(212,43,43,.03);color:var(--red)}
+.partner-more{text-align:center;margin-top:24px;font-size:13px;color:var(--gray)}
+
+/* ── FOOTER ── */
+.footer{background:var(--dark);padding:64px 0 32px}
+.ft-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.07)}
+.ft-desc{font-size:14px;color:rgba(255,255,255,.35);line-height:1.7;max-width:280px;margin:16px 0 24px}
+.ft-phone{font-size:18px;font-weight:700;color:#fff}
+.ft-phone-note{font-size:12px;color:rgba(255,255,255,.3);margin-top:4px}
+.ft-col-t{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.3);margin-bottom:16px}
+.ft-links{list-style:none;display:flex;flex-direction:column;gap:10px}
+.ft-links a{font-size:14px;color:rgba(255,255,255,.45);transition:color .12s}
+.ft-links a:hover{color:rgba(255,255,255,.8)}
+.ft-bot{display:flex;align-items:center;justify-content:space-between;padding-top:28px;flex-wrap:wrap;gap:8px}
+.ft-copy{font-size:12px;color:rgba(255,255,255,.2)}
+.ft-legal{display:flex;gap:20px}
+.ft-legal a{font-size:12px;color:rgba(255,255,255,.2);transition:color .12s}
+.ft-legal a:hover{color:rgba(255,255,255,.5)}
+
+/* ── CITY SNACKBAR ── */
+.city-snack{
+  position:fixed;bottom:24px;left:50%;z-index:500;
+  transform:translateX(-50%) translateY(calc(100% + 40px));
+  transition:transform .4s cubic-bezier(.34,1.3,.64,1);
+  background:#111;border-radius:16px;
+  box-shadow:0 8px 48px rgba(0,0,0,.45),0 2px 8px rgba(0,0,0,.2);
+  padding:16px 16px 14px 20px;
+  min-width:360px;max-width:calc(100vw - 32px);
+  display:flex;flex-direction:column;gap:12px;
+}
+.city-snack.visible{transform:translateX(-50%) translateY(0)}
+.snack-row{display:flex;align-items:center;gap:12px}
+.snack-pin{color:var(--red);flex-shrink:0}
+.snack-txt{font-size:14.5px;font-weight:600;color:#fff;flex:1}
+.snack-txt em{color:rgba(255,255,255,.45);font-style:normal;font-weight:400}
+.snack-btns{display:flex;gap:8px;flex-shrink:0}
+.btn-snack-yes{
+  background:var(--red);color:#fff;border-radius:100px;
+  padding:8px 18px;font-size:13px;font-weight:600;
+  white-space:nowrap;transition:opacity .12s;
+}
+.btn-snack-yes:hover{opacity:.88}
+.btn-snack-other{
+  background:rgba(255,255,255,.1);color:rgba(255,255,255,.7);
+  border:1px solid rgba(255,255,255,.15);border-radius:100px;
+  padding:8px 14px;font-size:13px;font-weight:500;
+  white-space:nowrap;transition:background .12s;
+}
+.btn-snack-other:hover{background:rgba(255,255,255,.18)}
+.snack-progress{height:2px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden}
+.snack-bar{
+  height:100%;background:var(--red);border-radius:2px;
+  width:100%;transform-origin:left;transition:transform 10s linear;
+}
+.snack-bar.running{transform:scaleX(0)}
+
+/* ── CITY MODAL ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:600;
+  display:none;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.open{display:flex}
+.city-modal{
+  background:#fff;border-radius:24px;padding:40px;
+  max-width:440px;width:calc(100% - 48px);
+  box-shadow:0 24px 80px rgba(0,0,0,.25);position:relative;
+}
+.modal-close{
+  position:absolute;top:16px;right:16px;
+  width:32px;height:32px;border-radius:50%;
+  background:var(--light);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;color:var(--gray);cursor:pointer;
+  transition:background .12s;
+}
+.modal-close:hover{background:var(--border)}
+.modal-h{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
+.modal-note{font-size:14px;color:var(--gray);margin-bottom:24px}
+.city-opts{display:flex;flex-direction:column;gap:8px}
+.city-opt{
+  display:flex;align-items:center;gap:14px;
+  border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;
+  cursor:pointer;transition:border-color .15s,background .15s;width:100%;text-align:left;
+  background:#fff;
+}
+.city-opt:hover{border-color:#9CA3AF;background:var(--light)}
+.city-opt.active{border-color:var(--red);background:rgba(212,43,43,.04)}
+.city-opt-pin{color:var(--red)}
+.city-opt-info{flex:1}
+.city-opt-name{font-size:15px;font-weight:700;color:var(--dark)}
+.city-opt-region{font-size:12px;color:var(--gray);margin-top:2px}
+.city-opt-chk{
+  width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;
+}
+.city-opt.active .city-opt-chk{background:var(--red);border-color:var(--red)}
+.city-opt.active .city-opt-chk::after{content:'';width:6px;height:6px;border-radius:50%;background:#fff}
+
+/* ── CALL MODAL ── */
+.call-modal{background:#fff;border-radius:24px;padding:40px;max-width:420px;width:calc(100% - 48px);box-shadow:0 24px 80px rgba(0,0,0,.25);position:relative}
+.m-input{
+  width:100%;height:48px;border:1.5px solid var(--border);border-radius:10px;
+  padding:0 16px;font-size:15px;font-family:inherit;color:var(--dark);
+  background:#fff;transition:border-color .15s;
+}
+.m-input:focus{border-color:var(--red)}
+.m-form{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+.m-submit{
+  width:100%;height:50px;background:var(--red);color:#fff;border-radius:10px;
+  font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:opacity .12s;
+}
+.m-submit:hover{opacity:.88}
+.m-note{font-size:12px;color:var(--gray);text-align:center;margin-top:8px}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     HEADER
+══════════════════════════════════ -->
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="#" class="h-logo">
+      <img src="https://shop.reforce.group/assets/logo-big.svg"
+           onerror="this.onerror=null;this.src='client/assets/logo.svg'"
+           alt="Reforce">
+    </a>
+    <nav class="h-nav">
+      <a href="#" class="active">Главная</a>
+      <a href="#">Для дома</a>
+      <a href="#">Для бизнеса</a>
+      <a href="#">Для партнёров</a>
+      <a href="#">Каталог</a>
+      <a href="#">Карьера</a>
+    </nav>
+    <div class="h-right">
+      <button class="btn-city" id="cityBtn" onclick="openCityModal()">
+        <svg class="city-pin-ic" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        <span id="cityName">Екатеринбург</span>
+        <svg class="city-chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+      <a href="tel:+78005557555" class="h-phone">8 800 555-75-55</a>
+      <button class="btn-call" onclick="openCallModal()">Заказать звонок</button>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════
+     HERO
+══════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="container">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-eyebrow">
+          <span></span>Платформа охраны
+        </div>
+        <h1 class="hero-h1">Безопасность<br>как <em>сервис</em></h1>
+        <p class="hero-sub" id="heroSub">
+          Работаем в <strong>Екатеринбурге и Свердловской области</strong>.<br>
+          Реагирование за <strong id="heroTime">3–7 минут</strong>.
+        </p>
+        <div class="hero-tags">
+          <span class="hero-tag">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Без визита в офис
+          </span>
+          <span class="hero-tag">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Подключение за 24 часа
+          </span>
+          <span class="hero-tag">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Управление из приложения
+          </span>
+        </div>
+        <div class="hero-ctas">
+          <a href="#quiz" class="btn-hero-primary">
+            Подобрать решение
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+          <a href="#how" class="btn-hero-ghost">
+            Как это работает
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="hero-panel">
+        <div class="hp-label">Реальные данные платформы</div>
+        <div class="hp-stat">
+          <div class="hp-ic">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div>
+            <div class="hp-n">50 000+</div>
+            <div class="hp-l">объектов под охраной</div>
+          </div>
+        </div>
+        <div class="hp-stat">
+          <div class="hp-ic">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div>
+            <div class="hp-n" id="heroStatTime">3–7 мин</div>
+            <div class="hp-l">среднее время реагирования</div>
+          </div>
+        </div>
+        <div class="hp-stat">
+          <div class="hp-ic">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div>
+            <div class="hp-n">250+</div>
+            <div class="hp-l">экипажей ГБР</div>
+          </div>
+        </div>
+        <div class="hp-alert">
+          <div class="hp-dot"></div>
+          <div class="hp-alert-txt">ПЦО работает 24/7 — <strong>объект <span id="heroPartner">Варяг</span> на связи</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     AUDIENCE
+══════════════════════════════════ -->
+<section class="audience">
+  <div class="container">
+    <span class="sec-label">Для кого</span>
+    <h2 class="sec-title">Для кого подходит продукт</h2>
+    <div class="aud-grid">
+      <div class="aud-card">
+        <div class="aud-bg" style="background-image:url('https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=600&q=80')"></div>
+        <div class="aud-overlay"></div>
+        <div class="aud-body">
+          <div class="aud-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div class="aud-title">Для дома</div>
+          <div class="aud-desc">Квартира, загородный дом, дача. Поставите на охрану из приложения — приедем, если что-то случится.</div>
+          <a href="#" class="btn-aud">Подробнее
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="aud-card">
+        <div class="aud-bg" style="background-image:url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=80')"></div>
+        <div class="aud-overlay"></div>
+        <div class="aud-body">
+          <div class="aud-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </div>
+          <div class="aud-title">Для бизнеса</div>
+          <div class="aud-desc">Офис, магазин, склад. Контроль всех объектов в одном экране. Смена доступов без звонков в охрану.</div>
+          <a href="#" class="btn-aud">Подробнее
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="aud-card">
+        <div class="aud-bg" style="background-image:url('https://images.unsplash.com/photo-1521791136064-7986c2920216?w=600&q=80')"></div>
+        <div class="aud-overlay"></div>
+        <div class="aud-body">
+          <div class="aud-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <div class="aud-title">Для партнёров</div>
+          <div class="aud-desc">Стать партнёром-ЧОПом. Реагируйте на тревоги клиентов Reforce в вашем городе. Клиенты — наши, экипажи — ваши.</div>
+          <a href="#" class="btn-aud">Подробнее
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     QUIZ
+══════════════════════════════════ -->
+<section id="quiz" class="quiz-sec">
+  <div class="container">
+    <div class="quiz-head">
+      <svg class="quiz-pin-ic" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+      <div class="quiz-title-wrap">
+        <h2 class="quiz-title">Подберите решение в <span id="quizCity">Екатеринбурге</span></h2>
+        <p class="quiz-sub">Выберите тип объекта — покажем подходящие пакеты с ценами</p>
+      </div>
+    </div>
+    <div class="quiz-types">
+      <button class="qt sel" onclick="selectType(this,'apt')">
+        <span class="qt-dot"></span>
+        <div>
+          <div class="qt-label">Квартира</div>
+          <div class="qt-price" id="priceApt">от 890 ₽/мес</div>
+        </div>
+      </button>
+      <button class="qt" onclick="selectType(this,'house')">
+        <span class="qt-dot"></span>
+        <div>
+          <div class="qt-label">Частный дом</div>
+          <div class="qt-price" id="priceHouse">от 1 290 ₽/мес</div>
+        </div>
+      </button>
+      <button class="qt" onclick="selectType(this,'dacha')">
+        <span class="qt-dot"></span>
+        <div>
+          <div class="qt-label">Дача или гараж</div>
+          <div class="qt-price" id="priceDacha">от 690 ₽/мес</div>
+        </div>
+      </button>
+      <button class="qt" onclick="selectType(this,'office')">
+        <span class="qt-dot"></span>
+        <div>
+          <div class="qt-label">Офис или магазин</div>
+          <div class="qt-price" id="priceOffice">от 2 490 ₽/мес</div>
+        </div>
+      </button>
+    </div>
+    <div class="packs-row" id="packsRow">
+      <!-- populated by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     STATS
+══════════════════════════════════ -->
+<section class="stats-sec">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-n">50 000<em>+</em></div>
+        <div class="stat-l">объектов под охраной</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-n">250<em>+</em></div>
+        <div class="stat-l">экипажей ГБР</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-n">30<em>+</em></div>
+        <div class="stat-l">сервисов и функций</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-n">100<em>+</em></div>
+        <div class="stat-l">городов присутствия</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-n">3 000<em>+</em></div>
+        <div class="stat-l">сотрудников в экосистеме</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-n">120<em>+</em></div>
+        <div class="stat-l">партнёров-ЧОПов</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     HOW IT WORKS
+══════════════════════════════════ -->
+<section id="how" class="how-sec">
+  <div class="container">
+    <span class="sec-label">Процесс</span>
+    <h2 class="sec-title" style="margin-bottom:48px">От заявки до охраны — 4 шага</h2>
+    <div class="how-grid">
+      <div class="how-step">
+        <div class="how-num">01</div>
+        <div class="how-t">Выберите пакет</div>
+        <div class="how-d">В каталоге или через квиз — займёт 2 минуты. Подберём под ваш тип объекта.</div>
+        <span class="how-chip">2 минуты</span>
+      </div>
+      <div class="how-step">
+        <div class="how-num">02</div>
+        <div class="how-t">Оформите заявку</div>
+        <div class="how-d">Онлайн, без визита в офис. Укажите адрес объекта — мы свяжемся в течение часа.</div>
+        <span class="how-chip">Без офиса</span>
+      </div>
+      <div class="how-step">
+        <div class="how-num">03</div>
+        <div class="how-t">Дождитесь монтажа</div>
+        <div class="how-d">Мастер приедет в удобное время и установит оборудование за 2–4 часа.</div>
+        <span class="how-chip">1 день</span>
+      </div>
+      <div class="how-step">
+        <div class="how-num">04</div>
+        <div class="how-t">Управляйте охраной</div>
+        <div class="how-d">Ставьте и снимайте с охраны, смотрите видео, управляйте доступами из приложения.</div>
+        <span class="how-chip">24/7</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     SERVICES
+══════════════════════════════════ -->
+<section class="services-sec">
+  <div class="container">
+    <span class="sec-label">Услуги</span>
+    <h2 class="sec-title" style="margin-bottom:48px">Актуальные услуги <span id="svcCity">в Екатеринбурге</span></h2>
+    <div class="svc-grid">
+      <div class="svc-card">
+        <div class="svc-ic">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        </div>
+        <div class="svc-name">Охрана квартиры</div>
+        <div class="svc-price"><span id="svcPriceApt">от 890 ₽</span><span>/мес</span></div>
+        <ul class="svc-features">
+          <li>Датчик движения + датчик открытия двери</li>
+          <li>Кнопка SOS</li>
+          <li>Мобильное приложение</li>
+          <li>Выезд экипажа по тревоге</li>
+        </ul>
+        <a href="#" class="btn-svc">Подробнее
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="svc-card">
+        <div class="svc-ic">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+        </div>
+        <div class="svc-name">Охрана частного дома</div>
+        <div class="svc-price"><span id="svcPriceHouse">от 1 290 ₽</span><span>/мес</span></div>
+        <ul class="svc-features">
+          <li>Периметральная охрана</li>
+          <li>Видеонаблюдение (2 камеры)</li>
+          <li>Датчик пожара</li>
+          <li>Приложение + web-кабинет</li>
+        </ul>
+        <a href="#" class="btn-svc">Подробнее
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="svc-card">
+        <div class="svc-ic">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/></svg>
+        </div>
+        <div class="svc-name">Охрана офиса</div>
+        <div class="svc-price"><span id="svcPriceOffice">от 2 490 ₽</span><span>/мес</span></div>
+        <ul class="svc-features">
+          <li>Охрана периметра</li>
+          <li>Видеонаблюдение с архивом 30 дней</li>
+          <li>Управление доступами сотрудников</li>
+          <li>SLA 96%</li>
+        </ul>
+        <a href="#" class="btn-svc">Подробнее
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+      <div class="svc-card">
+        <div class="svc-ic">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+        </div>
+        <div class="svc-name">Видеонаблюдение</div>
+        <div class="svc-price"><span id="svcPriceVideo">от 490 ₽</span><span>/мес</span></div>
+        <ul class="svc-features">
+          <li>1 камера в комплекте</li>
+          <li>Архив в облаке 14 дней</li>
+          <li>Доступ из приложения и браузера</li>
+          <li>Уведомления о движении</li>
+        </ul>
+        <a href="#" class="btn-svc">Подробнее
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     WHY REFORCE
+══════════════════════════════════ -->
+<section class="why-sec">
+  <div class="container">
+    <div class="why-inner">
+      <div class="why-img">
+        <div class="why-img-placeholder">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>
+        </div>
+      </div>
+      <div>
+        <span class="sec-label">Почему Reforce</span>
+        <h2 class="sec-title">Охрана по-новому — всё онлайн</h2>
+        <div class="why-list">
+          <div class="why-item">
+            <div class="why-ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="why-tx">
+              <h4>Без визита в офис</h4>
+              <p>Выбрали, оформили, мастер приедет к вам. Договор — онлайн.</p>
+            </div>
+          </div>
+          <div class="why-item">
+            <div class="why-ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            </div>
+            <div class="why-tx">
+              <h4>Управление из приложения</h4>
+              <p>Поставить/снять с охраны, посмотреть видео, позвонить оператору — одним касанием.</p>
+            </div>
+          </div>
+          <div class="why-item">
+            <div class="why-ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </div>
+            <div class="why-tx">
+              <h4>Живые экипажи партнёра <span id="whyPartner">Варяг</span></h4>
+              <p>Не просто сигнализация — реальный выезд при тревоге. Лицензия Росгвардии.</p>
+            </div>
+          </div>
+          <div class="why-item">
+            <div class="why-ic">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            </div>
+            <div class="why-tx">
+              <h4>Прозрачные цены</h4>
+              <p>Цена на сайте = цена в договоре. Никаких звонков для уточнения.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     APP
+══════════════════════════════════ -->
+<section class="app-sec">
+  <div class="container">
+    <div class="app-inner">
+      <div>
+        <span class="sec-label">Приложение</span>
+        <h2 class="sec-title">Управляйте охраной из приложения</h2>
+        <p style="font-size:16px;color:var(--gray);line-height:1.7;margin-top:12px;max-width:460px">Поставьте на охрану по дороге на работу. Снимите, когда вернулись. Посмотрите кто приходил. Всё в одном приложении.</p>
+        <div class="app-badges">
+          <a href="#" class="app-badge">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>
+            <div>
+              <span class="app-badge-label">Скачать в</span>
+              <span class="app-badge-store">App Store</span>
+            </div>
+          </a>
+          <a href="#" class="app-badge" style="background:#1a73e8">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <div>
+              <span class="app-badge-label">Скачать в</span>
+              <span class="app-badge-store">Google Play</span>
+            </div>
+          </a>
+          <a href="#" class="app-badge" style="background:#5C4EE5">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2v3m-5 8h5m-5 0-2 2m7-2 2 2m0-7h-5a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h5a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2Z"/></svg>
+            <div>
+              <span class="app-badge-label">Скачать в</span>
+              <span class="app-badge-store">RuStore</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="app-img">
+        <div class="app-img-placeholder">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     REVIEWS
+══════════════════════════════════ -->
+<section class="reviews-sec">
+  <div class="container">
+    <span class="sec-label">Отзывы</span>
+    <h2 class="sec-title" style="margin-bottom:48px">Клиенты о Reforce</h2>
+    <div class="rev-grid">
+      <div class="rev-card">
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">«Поставил охрану на квартиру. Всё сделали за один день — мастер приехал, установил датчики, объяснил как пользоваться. Теперь ставлю на охрану прямо с работы.»</p>
+        <div class="rev-author">
+          <div class="rev-ava">А</div>
+          <div>
+            <div class="rev-name">Алексей К.</div>
+            <div class="rev-meta" id="rev1City">Екатеринбург · Квартира</div>
+          </div>
+        </div>
+      </div>
+      <div class="rev-card">
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">«Офис под охраной уже 8 месяцев. Удобно, что всё в одном приложении: видео, доступы сотрудников, история событий. Один раз была ложная тревога — приехали за 5 минут.»</p>
+        <div class="rev-author">
+          <div class="rev-ava">М</div>
+          <div>
+            <div class="rev-name">Марина В.</div>
+            <div class="rev-meta" id="rev2City">Екатеринбург · Офис</div>
+          </div>
+        </div>
+      </div>
+      <div class="rev-card">
+        <div class="rev-stars">★★★★☆</div>
+        <p class="rev-text">«Дача была без охраны несколько лет. После установки Reforce спокойнее — приложение показывает все события. Мастер всё объяснил доступно.»</p>
+        <div class="rev-author">
+          <div class="rev-ava">О</div>
+          <div>
+            <div class="rev-name">Олег Н.</div>
+            <div class="rev-meta" id="rev3City">Екатеринбург · Дача</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     FAQ
+══════════════════════════════════ -->
+<section class="faq-sec">
+  <div class="container">
+    <span class="sec-label">FAQ</span>
+    <h2 class="sec-title" style="margin-bottom:48px">Частые вопросы</h2>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Сколько времени занимает подключение?
+          <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Обычно один день. Оставляете заявку сегодня — мастер приедет в удобное время, за 2–4 часа установит оборудование.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Нужно ли ехать в офис?
+          <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Нет. Всё оформляется онлайн — договор, оплата, управление. Мастер сам приедет к вам на объект.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Что происходит при срабатывании тревоги?
+          <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Автоматически отправляется сигнал на пульт. Оператор связывается с вами, и при необходимости выезжает экипаж. Среднее время реагирования в <span id="faqCity">Екатеринбурге</span> — <span id="faqTime">3–7 минут</span>.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Есть ли контракт? Могу ли я отказаться?
+          <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Договор помесячный. Можно расторгнуть в любой момент — без штрафов.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Работаете ли вы в моём районе?
+          <svg class="faq-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="faq-a"><div class="faq-a-inner">Сейчас работаем в Екатеринбурге и Свердловской области, Челябинске, Кургане. Сеть расширяется — проверьте наличие в вашем городе в шапке сайта.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     PARTNERS
+══════════════════════════════════ -->
+<section class="partners-sec">
+  <div class="container">
+    <div class="partners-hd">
+      <span class="sec-label" style="display:block;text-align:center">Партнёры</span>
+      <h2 class="sec-title">Реагирование обеспечивают лицензированные ЧОПы</h2>
+    </div>
+    <p class="partners-sub">Мы — платформа. Экипажи — наши партнёры с лицензией Росгвардии. Вы платите нам, ЧОП реагирует на тревоги.</p>
+    <!-- city-specific partners: shown/hidden via JS -->
+    <div class="partners-grid" id="partnersGrid">
+      <!-- populated by JS -->
+    </div>
+    <p class="partner-more">Всего 120+ партнёров-ЧОПов в 100+ городах России</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     FOOTER
+══════════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <div class="ft-top">
+      <div>
+        <a href="#" class="ft-logo">
+          <img src="https://shop.reforce.group/assets/logo-big.svg"
+               onerror="this.onerror=null;this.src='client/assets/logo.svg'"
+               alt="Reforce" style="height:24px;filter:brightness(0) invert(1);opacity:.7">
+        </a>
+        <p class="ft-desc">Единая платформа охраны — для дома, бизнеса и партнёров. Мониторинг, реагирование и управление в одном месте.</p>
+        <div class="ft-phone">8 800 555-75-55</div>
+        <div class="ft-phone-note">бесплатно по России</div>
+        <div style="font-size:13px;color:rgba(255,255,255,.3);margin-top:8px" id="ftAddress">г. Екатеринбург</div>
+      </div>
+      <div>
+        <div class="ft-col-t">Продукт</div>
+        <ul class="ft-links">
+          <li><a href="#">Для дома</a></li>
+          <li><a href="#">Для бизнеса</a></li>
+          <li><a href="#">Для партнёров</a></li>
+          <li><a href="#">Каталог</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="ft-col-t">Компания</div>
+        <ul class="ft-links">
+          <li><a href="#">О нас</a></li>
+          <li><a href="#">Карьера</a></li>
+          <li><a href="#">Блог</a></li>
+          <li><a href="#">Контакты</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="ft-col-t">Поддержка</div>
+        <ul class="ft-links">
+          <li><a href="#">Частые вопросы</a></li>
+          <li><a href="#">Оферта</a></li>
+          <li><a href="#">Политика конфиденциальности</a></li>
+          <li><a href="#">Telegram</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ft-bot">
+      <span class="ft-copy">© 2026 Reforce Group. Все права защищены</span>
+      <div class="ft-legal">
+        <a href="#">Оферта</a>
+        <a href="#">Политика конфиденциальности</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════
+     CITY SNACKBAR
+══════════════════════════════════ -->
+<div class="city-snack" id="citySnack">
+  <div class="snack-row">
+    <svg class="snack-pin" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+    <div class="snack-txt">Ваш город — <span id="snackCityName">Екатеринбург</span>?</div>
+    <div class="snack-btns">
+      <button class="btn-snack-yes" onclick="confirmCity()">Да, верно</button>
+      <button class="btn-snack-other" onclick="changeCity()">Другой город</button>
+    </div>
+  </div>
+  <div class="snack-progress"><div class="snack-bar" id="snackBar"></div></div>
+</div>
+
+<!-- ══════════════════════════════════
+     CITY MODAL
+══════════════════════════════════ -->
+<div class="modal-overlay" id="modalCity" onclick="if(event.target===this)closeModal('modalCity')">
+  <div class="city-modal">
+    <button class="modal-close" onclick="closeModal('modalCity')">×</button>
+    <div class="modal-h">Выберите город</div>
+    <p class="modal-note">Покажем услуги, цены и партнёра-ЧОП для вашего города</p>
+    <div class="city-opts">
+      <button class="city-opt active" id="city-ekb" onclick="selectCity('ekb')">
+        <svg class="city-opt-pin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        <div class="city-opt-info">
+          <div class="city-opt-name">Екатеринбург</div>
+          <div class="city-opt-region">Свердловская область · партнёр Варяг</div>
+        </div>
+        <div class="city-opt-chk"></div>
+      </button>
+      <button class="city-opt" id="city-chel" onclick="selectCity('chel')">
+        <svg class="city-opt-pin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        <div class="city-opt-info">
+          <div class="city-opt-name">Челябинск</div>
+          <div class="city-opt-region">Челябинская область · партнёр Гольфстрим</div>
+        </div>
+        <div class="city-opt-chk"></div>
+      </button>
+      <button class="city-opt" id="city-kurgan" onclick="selectCity('kurgan')">
+        <svg class="city-opt-pin" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        <div class="city-opt-info">
+          <div class="city-opt-name">Курган</div>
+          <div class="city-opt-region">Курганская область · партнёр Delta</div>
+        </div>
+        <div class="city-opt-chk"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     CALL MODAL
+══════════════════════════════════ -->
+<div class="modal-overlay" id="modalCall" onclick="if(event.target===this)closeModal('modalCall')">
+  <div class="call-modal">
+    <button class="modal-close" onclick="closeModal('modalCall')">×</button>
+    <div class="modal-h">Заказать звонок</div>
+    <p class="modal-note" style="font-size:14px;color:var(--gray);margin-top:6px">Менеджер свяжется в течение 15 минут</p>
+    <div class="m-form">
+      <input class="m-input" type="text" placeholder="Имя">
+      <input class="m-input" type="tel" placeholder="Телефон">
+      <button class="m-submit" onclick="closeModal('modalCall')">Перезвоните мне</button>
+      <p class="m-note">Нажимая кнопку, вы соглашаетесь с <a href="#" style="color:var(--red)">условиями обработки данных</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══ CITY CONFIG ══ */
+var CITIES = {
+  ekb: {
+    name:       'Екатеринбург',
+    nameDat:    'Екатеринбурге',   /* в Екатеринбурге */
+    region:     'Свердловской области',
+    time:       '3–7 минут',
+    timeShort:  '3–7 мин',
+    partner:    'Варяг',
+    address:    'г. Екатеринбург',
+    prices: { apt:'от 890 ₽', house:'от 1 290 ₽', office:'от 2 490 ₽', dacha:'от 690 ₽', video:'от 490 ₽' },
+    packPrices: ['от 890 ₽/мес', 'от 1 290 ₽/мес', 'от 1 890 ₽/мес'],
+    partners: ['Варяг', 'Гольфстрим', 'Delta', 'Цезарь', 'Нева', 'Арсенал'],
+    partnerHighlight: 'Варяг'
+  },
+  chel: {
+    name:       'Челябинск',
+    nameDat:    'Челябинске',
+    region:     'Челябинской области',
+    time:       '4–8 минут',
+    timeShort:  '4–8 мин',
+    partner:    'Гольфстрим',
+    address:    'г. Челябинск',
+    prices: { apt:'от 850 ₽', house:'от 1 190 ₽', office:'от 2 290 ₽', dacha:'от 650 ₽', video:'от 490 ₽' },
+    packPrices: ['от 850 ₽/мес', 'от 1 190 ₽/мес', 'от 1 790 ₽/мес'],
+    partners: ['Гольфстрим', 'Варяг', 'Delta', 'Цезарь', 'Нева', 'Гарант'],
+    partnerHighlight: 'Гольфстрим'
+  },
+  kurgan: {
+    name:       'Курган',
+    nameDat:    'Кургане',
+    region:     'Курганской области',
+    time:       '5–10 минут',
+    timeShort:  '5–10 мин',
+    partner:    'Delta',
+    address:    'г. Курган',
+    prices: { apt:'от 790 ₽', house:'от 1 090 ₽', office:'от 2 090 ₽', dacha:'от 590 ₽', video:'от 450 ₽' },
+    packPrices: ['от 790 ₽/мес', 'от 1 090 ₽/мес', 'от 1 590 ₽/мес'],
+    partners: ['Delta', 'Гольфстрим', 'Варяг', 'Цезарь', 'Гарант', 'Нева'],
+    partnerHighlight: 'Delta'
+  }
+};
+
+var DEFAULT = 'ekb';
+var currentCity = DEFAULT;
+var snackTimer = null;
+
+/* ── PACK TEMPLATES ── */
+var PACK_DEFS = [
+  { name:'Защита', desc:'Базовая охрана с датчиком движения и SOS', features:['Датчик движения','Датчик открытия дверей','Кнопка SOS','Выезд ГБР по тревоге'], rec:false },
+  { name:'Защита+', desc:'Рекомендованный комплект с видеонаблюдением', features:['Всё из Защиты','Камера видеонаблюдения','Архив 14 дней','Уведомления о движении'], rec:true },
+  { name:'Защита Pro', desc:'Максимальная защита с расширенными функциями', features:['Всё из Защита+','2 камеры','Датчик дыма и пожара','Управление доступами'], rec:false }
+];
+
+function buildPacks(city) {
+  var c = CITIES[city];
+  var html = '';
+  PACK_DEFS.forEach(function(p, i) {
+    var badge = p.rec ? '<div class="pack-badge">Рекомендованный</div>' : '';
+    var featHtml = p.features.map(function(f){ return '<li>'+f+'</li>'; }).join('');
+    html += '<div class="pack'+(p.rec?' rec':'')+'">'+badge+
+      '<div class="pack-name">'+p.name+'</div>'+
+      '<div class="pack-price">'+c.packPrices[i]+'</div>'+
+      '<div class="pack-equip">оборудование от 0 ₽ (рассрочка)</div>'+
+      '<ul class="pack-list">'+featHtml+'</ul>'+
+      '<a href="#" class="btn-pack-red">Выбрать</a>'+
+      (p.rec ? '' : '<a href="#" class="btn-pack-out">Подробнее</a>')+
+      '</div>';
+  });
+  document.getElementById('packsRow').innerHTML = html;
+}
+
+function buildPartners(city) {
+  var c = CITIES[city];
+  var html = c.partners.map(function(name) {
+    var cls = name === c.partnerHighlight ? 'partner-logo highlight' : 'partner-logo';
+    var extra = name === c.partnerHighlight ? '<br><span style="font-size:10px;font-weight:400;opacity:.7">главный партнёр</span>' : '';
+    return '<div class="'+cls+'">'+name+extra+'</div>';
+  }).join('');
+  document.getElementById('partnersGrid').innerHTML = html;
+}
+
+/* ── APPLY CITY ── */
+function applyCity(code, silent) {
+  var c = CITIES[code] || CITIES[DEFAULT];
+  currentCity = code;
+
+  // header
+  document.getElementById('cityName').textContent = c.name;
+  // snackbar
+  document.getElementById('snackCityName').textContent = c.name;
+  // hero
+  document.getElementById('heroSub').innerHTML =
+    'Работаем в <strong>'+c.name+' и '+c.region+'</strong>.<br>Реагирование за <strong id="heroTime">'+c.time+'</strong>.';
+  document.getElementById('heroStatTime').textContent = c.timeShort;
+  document.getElementById('heroPartner').textContent = c.partner;
+  // quiz
+  document.getElementById('quizCity').textContent = c.nameDat;
+  // service prices
+  document.getElementById('svcPriceApt').textContent = c.prices.apt;
+  document.getElementById('svcPriceHouse').textContent = c.prices.house;
+  document.getElementById('svcPriceOffice').textContent = c.prices.office;
+  document.getElementById('svcPriceVideo').textContent = c.prices.video;
+  // quiz type prices
+  document.getElementById('priceApt').textContent = c.prices.apt+'/мес';
+  document.getElementById('priceHouse').textContent = c.prices.house+'/мес';
+  document.getElementById('priceDacha').textContent = c.prices.dacha+'/мес';
+  document.getElementById('priceOffice').textContent = c.prices.office+'/мес';
+  // services title
+  document.getElementById('svcCity').textContent = 'в '+c.nameDat;
+  // why
+  document.getElementById('whyPartner').textContent = c.partner;
+  // FAQ
+  document.getElementById('faqCity').textContent = c.nameDat;
+  document.getElementById('faqTime').textContent = c.time;
+  // reviews location
+  ['rev1City','rev2City','rev3City'].forEach(function(id, i) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = c.name + (i===0?' · Квартира':i===1?' · Офис':' · Дача');
+  });
+  // partners
+  buildPartners(code);
+  // packages
+  buildPacks(code);
+  // footer
+  document.getElementById('ftAddress').textContent = c.address;
+  // modal active state
+  Object.keys(CITIES).forEach(function(k) {
+    var btn = document.getElementById('city-'+k);
+    if (btn) btn.classList.toggle('active', k === code);
+  });
+}
+
+/* ── PERSISTENCE ── */
+function getSaved() { try { return localStorage.getItem('rf_city'); } catch(e) { return null; } }
+function save(code) { try { localStorage.setItem('rf_city', code); } catch(e) {} }
+
+/* ── SNACKBAR ── */
+function showSnack() {
+  var snack = document.getElementById('citySnack');
+  snack.classList.add('visible');
+  setTimeout(function() { document.getElementById('snackBar').classList.add('running'); }, 50);
+  snackTimer = setTimeout(function() { confirmCity(); }, 10000);
+}
+function hideSnack() {
+  clearTimeout(snackTimer);
+  document.getElementById('citySnack').classList.remove('visible');
+}
+function confirmCity() { save(currentCity); hideSnack(); }
+function changeCity() { hideSnack(); openModal('modalCity'); }
+
+/* ── CITY SELECT ── */
+function selectCity(code) {
+  applyCity(code);
+  save(code);
+  closeModal('modalCity');
+  hideSnack();
+}
+
+/* ── MODALS ── */
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+function openCityModal() { openModal('modalCity'); }
+function openCallModal() { openModal('modalCall'); }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.open').forEach(function(m) {
+      m.classList.remove('open');
+    });
+    document.body.style.overflow = '';
+  }
+});
+
+/* ── QUIZ TYPE ── */
+function selectType(el, type) {
+  document.querySelectorAll('.qt').forEach(function(b) { b.classList.remove('sel'); });
+  el.classList.add('sel');
+}
+
+/* ── FAQ ── */
+function toggleFaq(btn) {
+  var item = btn.closest('.faq-item');
+  var isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(function(i) { i.classList.remove('open'); });
+  if (!isOpen) item.classList.add('open');
+}
+
+/* ── INIT ── */
+(function() {
+  var saved = getSaved();
+  if (saved && CITIES[saved]) {
+    applyCity(saved, true);
+    // no snackbar — city already confirmed
+  } else {
+    applyCity(DEFAULT, true);
+    // show snackbar after 1.5s (simulating geolocation as if confirmed default)
+    setTimeout(showSnack, 1500);
+  }
+})();
+</script>
+</body>
+</html>
